@@ -38,7 +38,7 @@ export default function Profile() {
       console.log(
         "sending request to backend to get number of flagged documents"
       );
-      const response = await fetch("wrapcapstone.com/num-flags", {
+      const response = await fetch("/num-flags", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -59,8 +59,8 @@ export default function Profile() {
   async function fetchNumOfUserDocuments() {
     try {
       const token = localStorage.getItem("token");
-      console.log("Sending request twrapcapstone.comer of user documents");
-      const response = await fetch("wrapcapstone.com/getNumOfUserDoc", {
+      console.log("Sending request to backend to get number of user documents");
+      const response = await fetch("/getNumOfUserDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ export default function Profile() {
     try {
       const token = localStorage.getItem("token");
       console.log("Fetching user information...");
-      const response = await fetch("wrapcapstone.com/getUserInfo", {
+      const response = await fetch("/getUserInfo", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
