@@ -618,7 +618,7 @@ app.post("/process-question", async (req, res) => {
       });
     }
 
-    const response = await axios.post("https://localhost:5000/get-QA", {
+    const response = await axios.post("https://wrapcapstone.com/get-QA", {
       text: original_document,
       question: question,
     });
