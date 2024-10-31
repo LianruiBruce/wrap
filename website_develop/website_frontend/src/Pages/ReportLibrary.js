@@ -43,7 +43,7 @@ function ReportLibrary() {
     try {
       const token = localStorage.getItem("token");
       navigate("/mainpage");
-      const response = await fetch("http://wrapcapstone.com/response-docID", {
+      const response = await fetch("http://localhost:3000/response-docID", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ function ReportLibrary() {
   const toggleFlag = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://wrapcapstone.com/toggleFlagOfDoc", {
+      const response = await fetch("http://localhost:3000/toggleFlagOfDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -127,7 +127,7 @@ function ReportLibrary() {
     console.log("Downloading document with ID:", documentID);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://wrapcapstone.com/download-pdf", {
+      const response = await fetch("http://localhost:3000/download-pdf", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -181,7 +181,7 @@ function ReportLibrary() {
       }
 
       const token = localStorage.getItem("token");
-      const response = await fetch("http://wrapcapstone.com/delete-doc", {
+      const response = await fetch("http://localhost:3000/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -213,7 +213,7 @@ function ReportLibrary() {
     async function fetchDocuments() {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://wrapcapstone.com/user-documents", {
+        const response = await fetch("http://localhost:3000/user-documents", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -268,7 +268,7 @@ function ReportLibrary() {
 
             // Fetch the flag status for each document
             const flagResponse = await fetch(
-              "http://wrapcapstone.com/getFlagOfDoc",
+              "http://localhost:3000/getFlagOfDoc",
               {
                 method: "POST",
                 headers: {

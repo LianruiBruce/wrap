@@ -16,16 +16,17 @@ import LibraryNavigator from "../Components/LibraryNavigator";
 const theme = createTheme();
 
 export default function Profile() {
-  const [flaggedDocumentsCount, setFlaggedDocumentsCount] = useState(0);
-  const [numOfUserDocuments, setNumOfUserDocuments] = useState(0);
-  const [userInfo, setUserInfo] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    createDate: "",
-  });
+const [flaggedDocumentsCount, setFlaggedDocumentsCount] = useState(0);
+const [numOfUserDocuments, setNumOfUserDocuments] = useState(0);
+const [userInfo, setUserInfo] = useState({
+  firstName: "",
+  lastName: "",
+  email: "",
+  createDate: "",
+});
 
   useEffect(() => {
+
     fetchNumOfFlags();
     fetchNumOfUserDocuments();
     fetchUserInfo();
@@ -33,12 +34,10 @@ export default function Profile() {
 
   async function fetchNumOfFlags() {
     try {
-      const token = localStorage.getItem("token");
-      console.log("token" + token);
-      console.log(
-        "sending request to backend to get number of flagged documents"
-      );
-      const response = await fetch("http://wrapcapstone.com/num-flags", {
+    const token = localStorage.getItem("token");
+    console.log("token" + token); 
+     console.log("sending request to backend to get number of flagged documents");
+      const response = await fetch("http://localhost:3000/num-flags", { 
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -50,7 +49,7 @@ export default function Profile() {
       }
       const userData = await response.json();
       console.log("the number of flaged doc is :", userData);
-      setFlaggedDocumentsCount(userData.flagNum);
+      setFlaggedDocumentsCount(userData.flagNum); 
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -59,10 +58,8 @@ export default function Profile() {
   async function fetchNumOfUserDocuments() {
     try {
       const token = localStorage.getItem("token");
-      console.log(
-        "Sending request to backewrapcapstone.comer of user documents"
-      );
-      const response = await fetch("http://wrapcapstone.com/getNumOfUserDoc", {
+      console.log("Sending request to backend to get number of user documents");
+      const response = await fetch("http://localhost:3000/getNumOfUserDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,10 +79,10 @@ export default function Profile() {
 
   async function fetchUserInfo() {
     try {
-      const token = localStorage.getItem("twrapcapstone.com
+      const token = localStorage.getItem("token");
       console.log("Fetching user information...");
 
-      const response = await fetch("http://wrapcapstone.com/getUserInfo", {
+      const response = await fetch("http://localhost:3000/getUserInfo", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -105,6 +102,7 @@ export default function Profile() {
     }
   }
 
+
   // Placeholder user data
   const userData = {
     username: "lianruigeng",
@@ -112,7 +110,7 @@ export default function Profile() {
     bio: "I am coding and I hate this.",
     email: userInfo.email,
     avatarUrl: "https://picsum.photos/400/400",
-    createdAt: userInfo.createDate,
+    createdAt:userInfo.createDate,
     reports: numOfUserDocuments,
     flagged: flaggedDocumentsCount,
     comments: 15,

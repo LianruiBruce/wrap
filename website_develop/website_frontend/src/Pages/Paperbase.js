@@ -47,25 +47,26 @@ export default function Paperbase() {
     const fetchDocuments = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://wrapcapstone.com/user-documents", {
+        const response = await fetch("http://localhost:3000/user-documents", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, 
             "Content-Type": "application/json",
           },
         });
-
+  
         const data = await response.json();
-        setDocuments(data);
-        setIsLoading(false);
+        setDocuments(data);  
+        setIsLoading(false); 
       } catch (error) {
         console.error("Error fetching documents:", error);
-        setIsLoading(false);
+        setIsLoading(false);  
       }
     };
-
-    fetchDocuments();
+  
+    fetchDocuments();  
   }, []);
+  
 
   const theme = createTheme({
     palette: {
@@ -216,8 +217,8 @@ export default function Paperbase() {
   const [isShortNavigator, setIsShortNavigator] = useState(false);
   const [isDocumentSettingsClicked, setIsDocumentSettingsClicked] =
     useState(false);
-  const [documents, setDocuments] = useState([]); // Empty array to hold document data
-  const [isLoading, setIsLoading] = useState(true);
+  const [documents, setDocuments] = useState([]);  // Empty array to hold document data
+  const [isLoading, setIsLoading] = useState(true); 
 
   const drawerWidth = isShortNavigator ? 100 : 256;
 
@@ -246,10 +247,10 @@ export default function Paperbase() {
             <ShortNavigator
               PaperProps={{ style: { width: drawerWidth } }}
               variant="temporary"
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-              documents={documents}
-              isLoading={isLoading}
+              open={mobileOpen}  
+              onClose={handleDrawerToggle}  
+              documents={documents}  
+              isLoading={isLoading}  
             />
           )}
 
@@ -258,14 +259,14 @@ export default function Paperbase() {
             isShortNavigator ? (
               <ShortNavigator
                 PaperProps={{ style: { width: drawerWidth } }}
-                documents={documents}
-                isLoading={isLoading}
+                documents={documents}  
+                isLoading={isLoading}  
               />
             ) : (
               <Navigator
                 PaperProps={{ style: { width: drawerWidth } }}
-                documents={documents}
-                isLoading={isLoading}
+                documents={documents}  
+                isLoading={isLoading}  
               />
             )
           ) : null}

@@ -425,7 +425,7 @@ export default function Content({ isDocumentSettingsClicked }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("http://wrapcapstone.com", {
+    const socket = io.connect("http://localhost:3000", {
       query: { token: token },
     });
 
@@ -478,8 +478,10 @@ export default function Content({ isDocumentSettingsClicked }) {
       console.log("current doc id is " + currentDocumentID);
       console.log("deleted doc id is " + deletedDocumentID);
       if (currentDocumentID === deletedDocumentID) {
-        console.log("Current document was deleted, clearing the report data.");
-
+        console.log(
+          "Current document was deleted, clearing the report data."
+        );
+    
         // Clear all data fields to avoid bugs
         setOriginalDocument(""); // Empty document content
         setSections([]); // Reset sections to empty array
@@ -503,9 +505,9 @@ export default function Content({ isDocumentSettingsClicked }) {
     //     try {
     //       const token = localStorage.getItem("token");
     //       const response = await fetch(
-    //         "http://wrapcapstone.com/getLatestReportAfterDelete",
+    //         "http://localhost:3000/getLatestReportAfterDelete",
     //         {
-    //           methodwrapcapstone.com
+    //           method: "POST",
     //           headers: {
     //             Authorization: `Bearer ${token}`,
     //             "Content-Type": "application/json",
@@ -1091,10 +1093,7 @@ export default function Content({ isDocumentSettingsClicked }) {
                 </Box>
                 {/* Content */}
                 <Box sx={{ p: 2, overflowY: "auto", flexGrow: 1 }}>
-                  {(categoryLabelsData && Array.isArray(categoryLabelsData)
-                    ? categoryLabelsData
-                    : []
-                  ).map((item, index) => (
+                {(categoryLabelsData && Array.isArray(categoryLabelsData) ? categoryLabelsData : []).map((item, index) =>(
                     <div key={index} style={{ marginBottom: "16px" }}>
                       <Typography
                         variant="body1"
