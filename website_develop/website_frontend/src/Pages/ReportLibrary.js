@@ -43,7 +43,7 @@ function ReportLibrary() {
     try {
       const token = localStorage.getItem("token");
       navigate("/mainpage");
-      const response = await fetch("http://localhost:3000/response-docID", {
+      const response = await fetch("wrapcapstone.com/response-docID", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ function ReportLibrary() {
   const toggleFlag = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/toggleFlagOfDoc", {
+      const response = await fetch("wrapcapstone.com/toggleFlagOfDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -127,7 +127,7 @@ function ReportLibrary() {
     console.log("Downloading document with ID:", documentID);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/download-pdf", {
+      const response = await fetch("wrapcapstone.com/download-pdf", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -181,7 +181,7 @@ function ReportLibrary() {
       }
 
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/delete-doc", {
+      const response = await fetch("wrapcapstone.com/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -213,7 +213,7 @@ function ReportLibrary() {
     async function fetchDocuments() {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:3000/user-documents", {
+        const response = await fetch("wrapcapstone.com/user-documents", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -267,17 +267,14 @@ function ReportLibrary() {
             riskLevelCounts[overallRiskLevel] += 1;
 
             // Fetch the flag status for each document
-            const flagResponse = await fetch(
-              "http://localhost:3000/getFlagOfDoc",
-              {
-                method: "POST",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ docID: doc.DocumentID }),
-              }
-            );
+            const flagResponse = await fetch("wrapcapstone.com/getFlagOfDoc", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ docID: doc.DocumentID }),
+            });
 
             const flagData = await flagResponse.json();
             const flagStatus = flagData.success ? flagData.flag : false;

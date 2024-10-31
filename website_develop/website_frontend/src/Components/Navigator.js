@@ -52,12 +52,15 @@ function Navigator(props) {
     const cacheTimestamp = parseInt(localStorage.getItem("cacheTimestamp"), 10);
     const CACHE_VALIDITY_DURATION = 10 * 60 * 1000; // 10 minutes
 
-    if (cachedDocuments && (Date.now() - cacheTimestamp) < CACHE_VALIDITY_DURATION) {
+    if (
+      cachedDocuments &&
+      Date.now() - cacheTimestamp < CACHE_VALIDITY_DURATION
+    ) {
       console.log("Using cached documents");
       setCategories(transformDocuments(cachedDocuments));
       setIsLoading(false);
 
-      const socket = io.connect("http://localhost:3000", {
+      const socket = io.connect("wrapcapstone.com", {
         query: { token: token },
       });
       socket.on("reportList", (documents) => {
@@ -70,7 +73,7 @@ function Navigator(props) {
       });
       socket.on("error", console.error);
 
-      return () => socket.disconnect();
+      return () => socket.disconnwrapcapstone.com;
     } else {
       console.log("Fetching fresh documents from the server");
       const socket = io.connect("http://localhost:3000", {
@@ -91,10 +94,9 @@ function Navigator(props) {
     }
   }, []);
 
-
   // const handleDocumentDownload = async (documentID) => {
   //   console.log("Downloading document with ID:", documentID);
-  //   try {
+  //   try {wrapcapstone.com
   //     const token = localStorage.getItem("token");
   //     const response = await fetch("http://localhost:3000/download-pdf", {
   //       method: "POST",
@@ -124,6 +126,7 @@ function Navigator(props) {
 
   const handleDocumentDelete = async (documentID) => {
     try {
+      wrapcapstone.com;
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:3000/delete-doc", {
         method: "POST",
@@ -146,7 +149,7 @@ function Navigator(props) {
       console.error("Error sending document ID:", error);
     }
   };
-
+  wrapcapstone.com;
   const handleDocumentSelect = async (documentID) => {
     try {
       const response = await fetch("http://localhost:3000/response-docID", {
@@ -169,7 +172,7 @@ function Navigator(props) {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItwrapcapstone.com;
       try {
         setIsUploading(true); // Start showing the uploading animation
         const response = await fetch("http://localhost:3000/upload-pdf", {

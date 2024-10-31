@@ -1,5 +1,5 @@
 function reportError() {
-    const modalCSS = `
+  const modalCSS = `
     /* Reset some default styles */
     * {
         box-sizing: border-box;
@@ -120,133 +120,140 @@ function reportError() {
     }    
     `;
 
-    // Insert CSS into the <head>
-    const styleElement = document.createElement('style');
-    styleElement.type = 'text/css';
-    styleElement.appendChild(document.createTextNode(modalCSS));
-    document.head.appendChild(styleElement);
-    // Create the container for the modal
-    const modalContainer = document.createElement('div');
-    modalContainer.setAttribute('id', 'report-error');
-    modalContainer.setAttribute('class', 'report-error');
-    modalContainer.style.display = 'none'; // Start hidden, display it based on certain conditions
+  // Insert CSS into the <head>
+  const styleElement = document.createElement("style");
+  styleElement.type = "text/css";
+  styleElement.appendChild(document.createTextNode(modalCSS));
+  document.head.appendChild(styleElement);
+  // Create the container for the modal
+  const modalContainer = document.createElement("div");
+  modalContainer.setAttribute("id", "report-error");
+  modalContainer.setAttribute("class", "report-error");
+  modalContainer.style.display = "none"; // Start hidden, display it based on certain conditions
 
-    // Modal content
-    const modalContent = document.createElement('div');
-    modalContent.setAttribute('class', 'modal-content');
+  // Modal content
+  const modalContent = document.createElement("div");
+  modalContent.setAttribute("class", "modal-content");
 
-    // Adding the title
-    const title = document.createElement('h2');
-    title.textContent = 'Wrap Issue Report';
+  // Adding the title
+  const title = document.createElement("h2");
+  title.textContent = "Wrap Issue Report";
 
-    // Form
-    const form = document.createElement('form');
-    form.setAttribute('action', '/submit-issue');
-    form.setAttribute('method', 'post');
-    form.setAttribute('enctype', 'multipart/form-data');
+  // Form
+  const form = document.createElement("form");
+  form.setAttribute("action", "/submit-issue");
+  form.setAttribute("method", "post");
+  form.setAttribute("enctype", "multipart/form-data");
 
-    // Issue Description
-    const issueDescLabel = document.createElement('label');
-    issueDescLabel.setAttribute('for', 'issue-description');
-    issueDescLabel.textContent = 'Issue Description';
-    const issueDescTextarea = document.createElement('textarea');
-    issueDescTextarea.setAttribute('id', 'issue-description');
-    issueDescTextarea.setAttribute('name', 'issue-description');
-    issueDescTextarea.setAttribute('placeholder', 'Describe your issue in detail...');
+  // Issue Description
+  const issueDescLabel = document.createElement("label");
+  issueDescLabel.setAttribute("for", "issue-description");
+  issueDescLabel.textContent = "Issue Description";
+  const issueDescTextarea = document.createElement("textarea");
+  issueDescTextarea.setAttribute("id", "issue-description");
+  issueDescTextarea.setAttribute("name", "issue-description");
+  issueDescTextarea.setAttribute(
+    "placeholder",
+    "Describe your issue in detail..."
+  );
 
-    // Issue Image
-    const issueImageLabel = document.createElement('label');
-    issueImageLabel.setAttribute('for', 'issue-image');
-    issueImageLabel.textContent = 'Issue Showcase';
-    const issueImageInput = document.createElement('input');
-    issueImageInput.setAttribute('type', 'file');
-    issueImageInput.setAttribute('id', 'issue-image');
-    issueImageInput.setAttribute('name', 'issue-image');
+  // Issue Image
+  const issueImageLabel = document.createElement("label");
+  issueImageLabel.setAttribute("for", "issue-image");
+  issueImageLabel.textContent = "Issue Showcase";
+  const issueImageInput = document.createElement("input");
+  issueImageInput.setAttribute("type", "file");
+  issueImageInput.setAttribute("id", "issue-image");
+  issueImageInput.setAttribute("name", "issue-image");
 
-    // Email Address
-    const emailLabel = document.createElement('label');
-    emailLabel.setAttribute('for', 'email');
-    emailLabel.textContent = 'Email Address';
-    const emailInput = document.createElement('input');
-    emailInput.setAttribute('type', 'email');
-    emailInput.setAttribute('id', 'email');
-    emailInput.setAttribute('name', 'email');
+  // Email Address
+  const emailLabel = document.createElement("label");
+  emailLabel.setAttribute("for", "email");
+  emailLabel.textContent = "Email Address";
+  const emailInput = document.createElement("input");
+  emailInput.setAttribute("type", "email");
+  emailInput.setAttribute("id", "email");
+  emailInput.setAttribute("name", "email");
 
-    // Buttons
-    const buttonsDiv = document.createElement('div');
-    buttonsDiv.setAttribute('class', 'buttons');
-    const cancelButton = document.createElement('button');
-    cancelButton.setAttribute('type', 'button');
-    cancelButton.setAttribute('class', 'cancel-btn');
-    cancelButton.textContent = 'Cancel';
-    const submitButton = document.createElement('button');
-    submitButton.setAttribute('type', 'submit');
-    submitButton.setAttribute('class', 'submit-btn');
-    submitButton.textContent = 'Submit';
+  // Buttons
+  const buttonsDiv = document.createElement("div");
+  buttonsDiv.setAttribute("class", "buttons");
+  const cancelButton = document.createElement("button");
+  cancelButton.setAttribute("type", "button");
+  cancelButton.setAttribute("class", "cancel-btn");
+  cancelButton.textContent = "Cancel";
+  const submitButton = document.createElement("button");
+  submitButton.setAttribute("type", "submit");
+  submitButton.setAttribute("class", "submit-btn");
+  submitButton.textContent = "Submit";
 
-    // Appending elements
-    buttonsDiv.appendChild(cancelButton);
-    buttonsDiv.appendChild(submitButton);
+  // Appending elements
+  buttonsDiv.appendChild(cancelButton);
+  buttonsDiv.appendChild(submitButton);
 
-    form.appendChild(issueDescLabel);
-    form.appendChild(issueDescTextarea);
-    form.appendChild(issueImageLabel);
-    form.appendChild(issueImageInput);
-    form.appendChild(emailLabel);
-    form.appendChild(emailInput);
-    form.appendChild(buttonsDiv);
+  form.appendChild(issueDescLabel);
+  form.appendChild(issueDescTextarea);
+  form.appendChild(issueImageLabel);
+  form.appendChild(issueImageInput);
+  form.appendChild(emailLabel);
+  form.appendChild(emailInput);
+  form.appendChild(buttonsDiv);
 
-    modalContent.appendChild(title);
-    modalContent.appendChild(form);
+  modalContent.appendChild(title);
+  modalContent.appendChild(form);
 
-    modalContainer.appendChild(modalContent);
+  modalContainer.appendChild(modalContent);
 
-    // Append the modal to the document body
-    document.body.appendChild(modalContainer);
-    // Listen for messages from the popup
-    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-        if (request.action === 'openModal') {
-            modalContainer.style.display = 'block'; // Show the modal
-            sendResponse({status: 'Modal opened'});
-        }
-    });
+  // Append the modal to the document body
+  document.body.appendChild(modalContainer);
+  // Listen for messages from the popup
+  chrome.runtime.onMessage.addListener(function (
+    request,
+    sender,
+    sendResponse
+  ) {
+    if (request.action === "openModal") {
+      modalContainer.style.display = "block"; // Show the modal
+      sendResponse({ status: "Modal opened" });
+    }
+  });
 
-    // Functionality to close the modal
-    cancelButton.addEventListener('click', function() {
-        modalContainer.style.display = 'none';
-    });
+  // Functionality to close the modal
+  cancelButton.addEventListener("click", function () {
+    modalContainer.style.display = "none";
+  });
 
-     // Functionality to submit the form
-     submitButton.addEventListener('click', async function(event) {
-        event.preventDefault(); // Prevent default form submission
-    
-        const formData = new FormData(form);
-    
-        // Log form data for debugging
-        for (let pair of formData.entries()) {
-            console.log(pair[0], pair[1]); // Check if file and other inputs are being logged correctly
-        }
-    
-        try {
-            const response = await fetch('http://localhost:3000/submit-issue', {
-                method: 'POST',
-                body: formData
-            });
-    
-            // Log the response status and check if it's OK (200-299)
-            if (response.ok) {
-                alert('Issue report submitted successfully!');
-                modalContainer.style.display = 'none';
-            } else {
-                const errorText = await response.text(); // Get the error message from the server (if any)
-                console.error('Server Error:', response.status, errorText);
-                alert(`Failed to submit the issue report. Status: ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Fetch Error:', error); // Log any fetch-specific errors (like network issues)
-            alert('Error submitting the issue report. Please try again.');
-        }
-    });    
+  // Functionality to submit the form
+  submitButton.addEventListener("click", async function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const formData = new FormData(form);
+
+    // Log form data for debugging
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]); // Check if file and other inputs are being logged correctly
+    }
+
+    try {
+      const response = await fetch("wrapcapstone.com/submit-issue", {
+        method: "POST",
+        body: formData,
+      });
+
+      // Log the response status and check if it's OK (200-299)
+      if (response.ok) {
+        alert("Issue report submitted successfully!");
+        modalContainer.style.display = "none";
+      } else {
+        const errorText = await response.text(); // Get the error message from the server (if any)
+        console.error("Server Error:", response.status, errorText);
+        alert(`Failed to submit the issue report. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Fetch Error:", error); // Log any fetch-specific errors (like network issues)
+      alert("Error submitting the issue report. Please try again.");
+    }
+  });
 }
 
-reportError()
+reportError();

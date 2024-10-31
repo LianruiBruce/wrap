@@ -57,7 +57,7 @@ function Header({
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("http://localhost:3000", {
+    const socket = io.connect("wrapcapstone.com", {
       query: { token: token },
     });
 
