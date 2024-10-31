@@ -65,8 +65,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (tab.url && tab.url.startsWith("wrapcapstone.com")) {
-    console.log("Skipping legal document detection for localhost:3000");
-    return; // Don't execute further if the URL matches localhost:3000
+    console.log("Skipping legal document detection for wrapcapstone.com");
+    return; // Don't execute further if the URL matches wrapcapstone.com
   }
 
   chrome.storage.local.get("token", (result) => {

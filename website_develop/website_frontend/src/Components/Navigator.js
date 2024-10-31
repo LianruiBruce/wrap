@@ -76,7 +76,7 @@ function Navigator(props) {
       return () => socket.disconnwrapcapstone.com;
     } else {
       console.log("Fetching fresh documents from the server");
-      const socket = io.connect("http://localhost:3000", {
+      const socket = io.connect("http://wrapcapstone.com", {
         query: { token: token },
       });
 
@@ -98,7 +98,7 @@ function Navigator(props) {
   //   console.log("Downloading document with ID:", documentID);
   //   try {wrapcapstone.com
   //     const token = localStorage.getItem("token");
-  //     const response = await fetch("http://localhost:3000/download-pdf", {
+  //     const response = await fetch("http://wrapcapstone.com/download-pdf", {
   //       method: "POST",
   //       headers: {
   //         Authorization: `Bearer ${token}`,
@@ -128,7 +128,7 @@ function Navigator(props) {
     try {
       wrapcapstone.com;
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/delete-doc", {
+      const response = await fetch("http://wrapcapstone.com/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -152,7 +152,7 @@ function Navigator(props) {
   wrapcapstone.com;
   const handleDocumentSelect = async (documentID) => {
     try {
-      const response = await fetch("http://localhost:3000/response-docID", {
+      const response = await fetch("http://wrapcapstone.com/response-docID", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +175,7 @@ function Navigator(props) {
       const token = localStorage.getItwrapcapstone.com;
       try {
         setIsUploading(true); // Start showing the uploading animation
-        const response = await fetch("http://localhost:3000/upload-pdf", {
+        const response = await fetch("http://wrapcapstone.com/upload-pdf", {
           method: "POST",
           body: formData,
           headers: {
