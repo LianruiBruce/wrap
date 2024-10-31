@@ -28,13 +28,15 @@ chrome.runtime.onInstalled.addListener(() => {
       privacyPolicy: true,
       contractAgreement: true,
       cookiePolicy: true,
-    }, () => {
+    },
+    () => {
       console.log("Default settings saved.");
-    });
+    }
+  );
 
-  chrome.storage.local.remove(['token', 'reportInfo', 'riskInfo'], () => {
+  chrome.storage.local.remove(["token", "reportInfo", "riskInfo"], () => {
     chrome.action.setIcon({ path: "icons/Wrap_Red.png" });
-    console.log('Token and report data removed from storage');
+    console.log("Token and report data removed from storage");
   });
 });
 
@@ -47,22 +49,24 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
           {
             target: { tabId: tab.id },
             files: ["parse_tab.js"],
-          }, () => {
+          },
+          () => {
             chrome.tabs.sendMessage(tab.id, {
               action: "parseURL",
               url: info.linkUrl,
               html: html,
             });
-          });
+          }
+        );
       })
       .catch((error) => console.error("Error fetching URL:", error));
   }
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (tab.url && tab.url.startsWith("http://localhost:3000")) {
-    console.log("Skipping legal document detection for localhost:3000");
-    return; // Don't execute further if the URL matches localhost:3000
+  if (tab.url && tab.url.startsWith("http://wrapcapstone.com")) {
+    console.log("Skipping legal document detection for wrapcapstone.com");
+    return; // Don't execute further if the URL matches wrapcapstone.com
   }
 
   chrome.storage.local.get("token", (result) => {
@@ -77,9 +81,11 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
             {
               target: { tabId: tab.id },
               files: ["parse_tab.js"],
-            }, () => {
+            },
+            () => {
               chrome.tabs.sendMessage(tab.id, { action: "parseTab" });
-            });
+            }
+          );
         }
         if (!isDuplicateRequest(tab, changeInfo)) {
           chrome.action.setIcon({ path: "icons/Wrap.png" });
@@ -107,7 +113,8 @@ chrome.runtime.onMessage.addListener(async function (
           {
             target: { tabId: currentTabId },
             files: ["parse_tab.js"],
-          }, () => {
+          },
+          () => {
             chrome.tabs.sendMessage(currentTabId, { action: "parseTab" });
             console.log("Script injected successfully");
             sendResponse({ success: true, tabId: currentTabId });
@@ -120,7 +127,7 @@ chrome.runtime.onMessage.addListener(async function (
   }
 
   if (message.type === "extracted-data") {
-    if (message.data.url == "http://localhost:3000/mainpage") {
+    if (message.data.url == "http://wrapcapstone.com/mainpage") {
       chrome.action.setPopup({ popup: "extension_frontend/wrap.html" });
       return true;
     }
@@ -131,12 +138,18 @@ chrome.runtime.onMessage.addListener(async function (
 
     console.log("Extracted data");
     chrome.action.setPopup({ popup: "extension_frontend/wrap_detected.html" });
-    let isLegalDoc = (await isLegalDocument(message.data.headers, message.data.title, message.data.url)).valueOf();
+    let isLegalDoc = (
+      await isLegalDocument(
+        message.data.headers,
+        message.data.title,
+        message.data.url
+      )
+    ).valueOf();
     console.log("Is legal document: ", isLegalDoc);
 
     if (isLegalDoc) {
-      chrome.storage.local.remove(['reportInfo', 'riskInfo'], () => {
-        console.log('Token and report data removed from storage');
+      chrome.storage.local.remove(["reportInfo", "riskInfo"], () => {
+        console.log("Token and report data removed from storage");
       });
 
       chrome.action.setIcon({ path: "icons/Wrap_Yellow.png" });
@@ -178,12 +191,14 @@ chrome.runtime.onMessage.addListener(async function (
 
                 chrome.storage.local.set({ riskInfo: riskAssessment }, () => {
                   chrome.action.setIcon({ path: "icons/Wrap_Green.png" });
-                  console.log('Risk data saved', JSON.stringify(riskAssessment));
+                  console.log(
+                    "Risk data saved",
+                    JSON.stringify(riskAssessment)
+                  );
                 });
 
                 await sendRiskToPopup(riskAssessment);
-              }
-              else {
+              } else {
                 chrome.action.setIcon({ path: "icons/Wrap_Red.png" });
                 handleRiskAssessmentError(riskAssessmentData);
               }
@@ -193,12 +208,14 @@ chrome.runtime.onMessage.addListener(async function (
             } finally {
               keepAlive(false);
             }
-          }
-          else {
-            chrome.storage.local.set({ riskStatus: 'hideRiskContainer' }, () => {
-              chrome.action.setIcon({ path: "icons/Wrap_Green.png" });
-              console.log('Stored hideRiskContainer status in storage.');
-            });
+          } else {
+            chrome.storage.local.set(
+              { riskStatus: "hideRiskContainer" },
+              () => {
+                chrome.action.setIcon({ path: "icons/Wrap_Green.png" });
+                console.log("Stored hideRiskContainer status in storage.");
+              }
+            );
           }
         });
         await sendDataToPopup(reportData);
@@ -206,16 +223,16 @@ chrome.runtime.onMessage.addListener(async function (
         scan_button = false;
 
         keepAlive(false);
-      }
-      else {
+      } else {
         getCurrentSettings(async (settings) => {
           if (settings.showNotification) {
-            chrome.notifications.create('documentDetect', {
-              type: 'basic',
-              iconUrl: 'icons/error.png',
-              title: 'Error to Get Report',
-              message: 'A legal document have detected, but have error to show report!',
-              priority: 1
+            chrome.notifications.create("documentDetect", {
+              type: "basic",
+              iconUrl: "icons/error.png",
+              title: "Error to Get Report",
+              message:
+                "A legal document have detected, but have error to show report!",
+              priority: 1,
             });
           }
         });
@@ -249,12 +266,12 @@ chrome.runtime.onMessage.addListener(async function (
       console.log("Token stored in chrome.storage.local");
       getCurrentSettings(async (settings) => {
         if (settings.showNotification) {
-          chrome.notifications.create('Login', {
-            type: 'basic',
-            iconUrl: 'icons/notification.png',
-            title: 'Login Successfully',
-            message: 'You have Login extension successfully!',
-            priority: 1
+          chrome.notifications.create("Login", {
+            type: "basic",
+            iconUrl: "icons/notification.png",
+            title: "Login Successfully",
+            message: "You have Login extension successfully!",
+            priority: 1,
           });
         }
       });
@@ -266,17 +283,17 @@ chrome.runtime.onMessage.addListener(async function (
   }
 
   if (message.type === "USER_LOGOUT") {
-    chrome.storage.local.remove(['token', 'reportInfo', 'riskInfo'], () => {
+    chrome.storage.local.remove(["token", "reportInfo", "riskInfo"], () => {
       chrome.action.setIcon({ path: "icons/Wrap_Red.png" });
-      console.log('Token and report data removed from storage');
+      console.log("Token and report data removed from storage");
       getCurrentSettings(async (settings) => {
         if (settings.showNotification) {
-          chrome.notifications.create('Logout', {
-            type: 'basic',
-            iconUrl: 'icons/notification.png',
-            title: 'Logout Successfully',
-            message: 'You have Logout extension successfully!',
-            priority: 1
+          chrome.notifications.create("Logout", {
+            type: "basic",
+            iconUrl: "icons/notification.png",
+            title: "Logout Successfully",
+            message: "You have Logout extension successfully!",
+            priority: 1,
           });
         }
       });
@@ -309,7 +326,7 @@ chrome.runtime.onMessage.addListener(async function (
 
       keepAlive(true);
 
-      fetch(`http://localhost:3000/getReportByDocumentID`, {
+      fetch(`http://wrapcapstone.com/getReportByDocumentID`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -355,7 +372,13 @@ function handleRiskAssessmentError(error) {
 
 function getCurrentSettings(callback) {
   chrome.storage.sync.get(
-    ["saveToDatabase", "detectLegalDoc", "generateReport", "showNotification", "safeMode"],
+    [
+      "saveToDatabase",
+      "detectLegalDoc",
+      "generateReport",
+      "showNotification",
+      "safeMode",
+    ],
     callback
   );
 }
@@ -380,7 +403,7 @@ async function sendDataToServer(data) {
   isProcessing = true;
 
   try {
-    const response = await fetch("http://localhost:3000/process-webpage", {
+    const response = await fetch("http://wrapcapstone.com/process-webpage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -435,7 +458,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
         return;
       }
 
-      fetch("http://localhost:3000/generate-report", {
+      fetch("http://wrapcapstone.com/generate-report", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -576,31 +599,31 @@ async function isLegalDocument(header, title, url) {
   const documentLabels = {
     "terms and conditions": settings.termsConditions
       ? [
-        "terms & conditions",
-        "terms and conditions",
-        "terms of use",
-        "terms of service",
-        "user agreement",
-        "other conditions",
-      ]
+          "terms & conditions",
+          "terms and conditions",
+          "terms of use",
+          "terms of service",
+          "user agreement",
+          "other conditions",
+        ]
       : [],
     "privacy policy": settings.privacyPolicy
       ? [
-        "privacy policy",
-        "policy documents",
-        "data privacy",
-        "gdpr compliance",
-        "privacy statement",
-      ]
+          "privacy policy",
+          "policy documents",
+          "data privacy",
+          "gdpr compliance",
+          "privacy statement",
+        ]
       : [],
     "contract agreement": settings.contractAgreement
       ? [
-        "contract agreement",
-        "legal agreement",
-        "end user license agreement",
-        "eula",
-        "service agreement",
-      ]
+          "contract agreement",
+          "legal agreement",
+          "end user license agreement",
+          "eula",
+          "service agreement",
+        ]
       : [],
     "cookie policy": settings.cookiePolicy
       ? ["cookie policy", "cookie notice", "use of cookies", "tracking policy"]
@@ -791,14 +814,24 @@ function updateSettingsBasedOnSafeMode(safeMode) {
     );
 
     // Use webRequest listeners to log request and response headers
-    chrome.webRequest.onBeforeSendHeaders.addListener(logRequestHeaders, { urls: ["<all_urls>"] }, ["requestHeaders"]);
-    chrome.webRequest.onHeadersReceived.addListener(logResponseHeaders, { urls: ["<all_urls>"] }, ["responseHeaders"]);
-  }
-  else {
+    chrome.webRequest.onBeforeSendHeaders.addListener(
+      logRequestHeaders,
+      { urls: ["<all_urls>"] },
+      ["requestHeaders"]
+    );
+    chrome.webRequest.onHeadersReceived.addListener(
+      logResponseHeaders,
+      { urls: ["<all_urls>"] },
+      ["responseHeaders"]
+    );
+  } else {
     // remove listeners
-    chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: nonEssentialCookieRuleIds }, () => {
-      console.log("Non-essential cookie blocking rules removed.");
-    });
+    chrome.declarativeNetRequest.updateSessionRules(
+      { removeRuleIds: nonEssentialCookieRuleIds },
+      () => {
+        console.log("Non-essential cookie blocking rules removed.");
+      }
+    );
     chrome.webRequest.onBeforeSendHeaders.removeListener(logRequestHeaders);
     chrome.webRequest.onHeadersReceived.removeListener(logResponseHeaders);
   }
@@ -824,12 +857,16 @@ function logResponseHeaders(details) {
   return { responseHeaders: details.responseHeaders };
 }
 
-getCurrentSettings((settings) => updateSettingsBasedOnSafeMode(settings.safeMode));
+getCurrentSettings((settings) =>
+  updateSettingsBasedOnSafeMode(settings.safeMode)
+);
 
 // Listen for storage changes
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "sync" && changes.safeMode) {
     console.log("Save Mode is changed to " + changes.safeMode.newValue);
-    getCurrentSettings((settings) => updateSettingsBasedOnSafeMode(settings.safeMode.newValue));
+    getCurrentSettings((settings) =>
+      updateSettingsBasedOnSafeMode(settings.safeMode.newValue)
+    );
   }
 });

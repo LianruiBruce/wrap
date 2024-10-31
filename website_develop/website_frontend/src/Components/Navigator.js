@@ -52,12 +52,15 @@ function Navigator(props) {
     const cacheTimestamp = parseInt(localStorage.getItem("cacheTimestamp"), 10);
     const CACHE_VALIDITY_DURATION = 10 * 60 * 1000; // 10 minutes
 
-    if (cachedDocuments && (Date.now() - cacheTimestamp) < CACHE_VALIDITY_DURATION) {
+    if (
+      cachedDocuments &&
+      Date.now() - cacheTimestamp < CACHE_VALIDITY_DURATION
+    ) {
       console.log("Using cached documents");
       setCategories(transformDocuments(cachedDocuments));
       setIsLoading(false);
 
-      const socket = io.connect("http://localhost:3000", {
+      const socket = io.connect("http://wrapcapstone.com", {
         query: { token: token },
       });
       socket.on("reportList", (documents) => {
@@ -73,7 +76,7 @@ function Navigator(props) {
       return () => socket.disconnect();
     } else {
       console.log("Fetching fresh documents from the server");
-      const socket = io.connect("http://localhost:3000", {
+      const socket = io.connect("http://wrapcapstone.com", {
         query: { token: token },
       });
 
@@ -91,12 +94,11 @@ function Navigator(props) {
     }
   }, []);
 
-
   // const handleDocumentDownload = async (documentID) => {
   //   console.log("Downloading document with ID:", documentID);
   //   try {
   //     const token = localStorage.getItem("token");
-  //     const response = await fetch("http://localhost:3000/download-pdf", {
+  //     const response = await fetch("http://wrapcapstone.com/download-pdf", {
   //       method: "POST",
   //       headers: {
   //         Authorization: `Bearer ${token}`,
@@ -125,7 +127,7 @@ function Navigator(props) {
   const handleDocumentDelete = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/delete-doc", {
+      const response = await fetch("http://wrapcapstone.com/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -149,7 +151,7 @@ function Navigator(props) {
 
   const handleDocumentSelect = async (documentID) => {
     try {
-      const response = await fetch("http://localhost:3000/response-docID", {
+      const response = await fetch("http://wrapcapstone.com/response-docID", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,7 +174,7 @@ function Navigator(props) {
       const token = localStorage.getItem("token");
       try {
         setIsUploading(true); // Start showing the uploading animation
-        const response = await fetch("http://localhost:3000/upload-pdf", {
+        const response = await fetch("http://wrapcapstone.com/upload-pdf", {
           method: "POST",
           body: formData,
           headers: {

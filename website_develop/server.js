@@ -71,7 +71,7 @@ app.get("*", (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running on http://wrapcapstone.com`);
 });
 
 io.on("connection", (socket) => {
@@ -206,23 +206,26 @@ app.post("/num-flags", authenticateToken, async (req, res) => {
 app.post("/getNumOfUserDoc", authenticateToken, async (req, res) => {
   console.log("Received request for /getNumOfUserDoc");
   try {
-    const userID = req.user.userId;  
+    const userID = req.user.userId;
     console.log("user is requesting number of  document :", userID);
-    const numOfUserDoc = await fetchNumOfUserDoc(userID); 
+    const numOfUserDoc = await fetchNumOfUserDoc(userID);
 
     if (numOfUserDoc !== undefined && numOfUserDoc !== null) {
       console.log("Fetched number of documents:", numOfUserDoc);
       return res.status(200).json({ numOfUserDoc });
     } else {
       console.error("Number of user documents not found");
-      return res.status(404).json({ message: "Number of user documents not found" });
+      return res
+        .status(404)
+        .json({ message: "Number of user documents not found" });
     }
   } catch (error) {
     console.error("Error fetching number of user documents:", error);
-    return res.status(500).json({ message: "Error fetching number of user documents" });
+    return res
+      .status(500)
+      .json({ message: "Error fetching number of user documents" });
   }
 });
-
 
 app.post("/api/login", async (req, res) => {
   try {
@@ -354,7 +357,7 @@ app.post("/generate-report", authenticateToken, async (req, res) => {
     category: category,
     readability: readability,
     textTags: textTags,
-    saveToDatabase: saveToDatabase
+    saveToDatabase: saveToDatabase,
   } = req.body;
 
   console.log("Received request for /generate-report");
@@ -379,9 +382,8 @@ app.post("/generate-report", authenticateToken, async (req, res) => {
         risk_assessment: risk_assessment,
         sections: sections_get,
       };
-      
-      if (saveToDatabase)
-      {
+
+      if (saveToDatabase) {
         addUserDocument(userID, document._id, Date.now());
       }
 
@@ -436,8 +438,7 @@ app.post("/generate-report", authenticateToken, async (req, res) => {
         { $set: { sections: sections_get } }
       );
 
-      if (saveToDatabase)
-      {
+      if (saveToDatabase) {
         addUserDocument(userID, result._id, Date.now());
       }
     }
@@ -516,7 +517,14 @@ app.post("/api/signup", async (req, res) => {
       10
     );
 
-    addUser(email.toLowerCase(), hashedPassword, firstName, lastName, securityQuestion, hashedSecurityAnswer);
+    addUser(
+      email.toLowerCase(),
+      hashedPassword,
+      firstName,
+      lastName,
+      securityQuestion,
+      hashedSecurityAnswer
+    );
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
@@ -610,7 +618,7 @@ app.post("/process-question", async (req, res) => {
       });
     }
 
-    const response = await axios.post("http://localhost:5000/get-QA", {
+    const response = await axios.post("http://wrapcapstone.com/get-QA", {
       text: original_document,
       question: question,
     });
@@ -638,12 +646,14 @@ app.post("/getReportByDocumentID", authenticateToken, async (req, res) => {
   try {
     const documentData = await pullUpDocandRepByDocID(documentID);
 
-    console.log("The current document infomation is: " + JSON.stringify(documentData));
+    console.log(
+      "The current document infomation is: " + JSON.stringify(documentData)
+    );
 
     if (documentData) {
-      io.on('connection', (socket) => {
-        console.log('Sending document data to client:', socket.id);
-        socket.emit('selectDocument', documentData); // Send the data to the connected client
+      io.on("connection", (socket) => {
+        console.log("Sending document data to client:", socket.id);
+        socket.emit("selectDocument", documentData); // Send the data to the connected client
       });
       // io.emit("selectDocument", documentData);
       console.log("Received Document id correctly");
