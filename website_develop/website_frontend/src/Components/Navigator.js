@@ -73,7 +73,7 @@ function Navigator(props) {
       });
       socket.on("error", console.error);
 
-      return () => socket.disconnwrapcapstone.com;
+      return () => socket.disconnect();
     } else {
       console.log("Fetching fresh documents from the server");
       const socket = io("https://wrapcapstone.com", {
