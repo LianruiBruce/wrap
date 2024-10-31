@@ -1,7 +1,7 @@
 {
   "name": "website_frontend",
   "version": "0.1.0",
-  "proxy": "http://localhost:3001",
+  "proxy": "https://localhost:3001",
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.x",

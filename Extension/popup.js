@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document
       .getElementById("report-btn")
       .addEventListener("click", function () {
-        chrome.tabs.create({ url: "http://wrapcapstone.com/" });
+        chrome.tabs.create({ url: "https://wrapcapstone.com/" });
         chrome.storage.local.get("documentID", (result) => {
           const documentID = result.documentID;
 
@@ -509,7 +509,7 @@ wrapcapstone.com
         document
           .getElementById("report-btn")
           .addEventListener("click", function () {
-            chrome.tabs.create({ url: "http://wrapcapstone.com/" });
+            chrome.tabs.create({ url: "https://wrapcapstone.com/" });
 
             chrome.storage.local.get("documentID", (result) => {
               const documentID = result.documentID;
