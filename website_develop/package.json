@@ -4,7 +4,7 @@
   "description": "",
   "main": "test.js",
   "scripts": {
-    "build": "cd website_frontend && npm install && npm run build && cd .. && npm install",
+    "build": "cd website_frontend && npm install && npm run frontend-build && cd .. && npm install",
     "start": "node server.js"
   },
   "keywords": [],

@@ -3,7 +3,6 @@ node_modules/
 /NLP/src/__pycache__
 /NLP/__pycache__
 /NLP/tests/__pycache__
-website_develop/website_frontend/package.json
 .DS_Store
 /website_develop/node_modules
 website_develop/.env
