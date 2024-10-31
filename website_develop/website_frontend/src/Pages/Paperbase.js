@@ -47,7 +47,7 @@ export default function Paperbase() {
     const fetchDocuments = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("wrapcapstone.com/user-documents", {
+        const response = await fetch("/user-documents", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
