@@ -326,7 +326,7 @@ chrome.runtime.onMessage.addListener(async function (
 
       keepAlive(true);
 
-      fetch(`wrapcapstone.com/getReportByDocumentID`, {
+      fetch(`/getReportByDocumentID`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -403,7 +403,7 @@ async function sendDataToServer(data) {
   isProcessing = true;
 
   try {
-    const response = await fetch("wrapcapstone.com/process-webpage", {
+    const response = await fetch("/process-webpage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -458,7 +458,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
         return;
       }
 
-      fetch("wrapcapstone.com/generate-report", {
+      fetch("/generate-report", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

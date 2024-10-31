@@ -235,7 +235,7 @@ function reportError() {
     }
 
     try {
-      const response = await fetch("wrapcapstone.com/submit-issue", {
+      const response = await fetch("/submit-issue", {
         method: "POST",
         body: formData,
       });

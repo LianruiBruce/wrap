@@ -76,7 +76,7 @@ export default function SettingPage() {
     console.log("Settings saved:", settings);
 
     // Send the settings to the backend
-    fetch("wrapcapstone.com/api/settings", {
+    fetch("/api/settings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

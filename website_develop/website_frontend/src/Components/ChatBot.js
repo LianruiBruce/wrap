@@ -27,7 +27,7 @@ export default function ChatBot({ onClose, documentID }) {
 
   const fetchAnswerFromServer = async (question) => {
     try {
-      const response = await fetch("wrapcapstone.com/process-question", {
+      const response = await fetch("/process-question", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

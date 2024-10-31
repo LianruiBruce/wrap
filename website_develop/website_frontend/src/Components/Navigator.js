@@ -152,7 +152,7 @@ function Navigator(props) {
 
   const handleDocumentSelect = async (documentID) => {
     try {
-      const response = await fetch("https://wrapcapstone.com/response-docID", {
+      const response = await fetch("/response-docID", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,10 +172,10 @@ function Navigator(props) {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const token = localStorage.getItwrapcapstone.com;
+      const token = localStorage.getItem("token");
       try {
         setIsUploading(true); // Start showing the uploading animation
-        const response = await fetch("https://wrapcapstone.com/upload-pdf", {
+        const response = await fetch("/upload-pdf", {
           method: "POST",
           body: formData,
           headers: {
