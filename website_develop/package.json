@@ -4,8 +4,10 @@
   "description": "",
   "main": "test.js",
   "scripts": {
-    "build": "npm install && cd website_frontend && npm install && npm run build",
-    "start": "cd .. && node server.js"
+    "install-frontend": "cd website_frontend && npm install",
+    "build-frontend": "cd website_frontend && npm run build",
+    "build": "npm run install-frontend && npm run build-frontend",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "Lianrui Geng",
