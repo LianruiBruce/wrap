@@ -82,7 +82,6 @@ export default function Profile() {
     try {
       const token = localStorage.getItem("token");
       console.log("Fetching user information...");
-      wrapcapstone.com;
       const response = await fetch("wrapcapstone.com/getUserInfo", {
         method: "POST",
         headers: {

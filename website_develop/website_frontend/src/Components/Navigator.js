@@ -126,7 +126,6 @@ function Navigator(props) {
 
   const handleDocumentDelete = async (documentID) => {
     try {
-      wrapcapstone.com;
       const token = localStorage.getItem("token");
       const response = await fetch("http://wrapcapstone.com/delete-doc", {
         method: "POST",
@@ -149,7 +148,7 @@ function Navigator(props) {
       console.error("Error sending document ID:", error);
     }
   };
-  wrapcapstone.com;
+
   const handleDocumentSelect = async (documentID) => {
     try {
       const response = await fetch("http://wrapcapstone.com/response-docID", {
