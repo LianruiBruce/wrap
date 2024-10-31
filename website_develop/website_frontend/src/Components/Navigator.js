@@ -60,7 +60,7 @@ function Navigator(props) {
       setCategories(transformDocuments(cachedDocuments));
       setIsLoading(false);
 
-      const socket = io.connect("wrapcapstone.com", {
+      const socket = io.connect("https://wrapcapstone.com", {
         query: { token: token },
       });
       socket.on("reportList", (documents) => {
