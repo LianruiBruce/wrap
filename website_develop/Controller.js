@@ -30,9 +30,12 @@ async function processData(data) {
   }
 
   try {
-    const response = await axios.post("https://wrapcapstone.com:5000/process-url", {
-      data,
-    });
+    const response = await axios.post(
+      "https://wrapcapstone.com:5000/process-url",
+      {
+        data,
+      }
+    );
 
     console.log("Response Data is :" + response.data);
 
@@ -98,7 +101,7 @@ async function generateSections(data) {
     throw error;
   }
 }
-https://
+
 async function generateTitleReportByPDF(text) {
   try {
     console.log("Generating report with NLP service(generateTitleReportByPDF)");
@@ -284,7 +287,7 @@ async function generateReportByPDF(text, userSettings, io, userID) {
       console.log("the current pdf uploaded is already in the database" + data);
       // saveReport(data);
 
-      io.https://eportGenerated", data);
+      io.emit("reportGenerated", data);
     } else {
       console.log("starting generate reprot by PDF");
       const response = await axios.post(

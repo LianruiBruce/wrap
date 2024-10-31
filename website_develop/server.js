@@ -71,7 +71,7 @@ app.get("*", (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`Server running on https://localhost:${port}`);
+  console.log(`Server running on https://wrapcapstone.com`);
 });
 
 io.on("connection", (socket) => {
