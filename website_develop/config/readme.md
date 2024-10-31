@@ -1,0 +1,1 @@
+This directory can be useful for managing configuration files. These might define different settings for development, testing, and production environments.

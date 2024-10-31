@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+    <title>Extension Popup</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../popup.js"></script>
+  </head>
+  <body>
+    <header>
+      <button id="wrap_settings" class="wrap_settings"></button>
+      <button id="home-btn" class="home-btn"></button>
+      <button id="close-btn" class="close-btn"></button>
+    </header>
+    <div class="extension-wrap">
+      <div class="extension-header">
+          <h1>Wrap</h1>
+          <hr>
+      </div>
+      <div class="space">
+        <span class="Report" id="company"></span>
+      </div>
+      <div class="readability-container">
+        <hr>
+        <div class="readability-label" id="readability-score-label">Readability Score</div>
+        <div class="readability-bar-container">
+          <div class="readability-score-box" id="readability-score"></div>
+          <div class="readability-bar">
+            <div class="readability-fill" id="readability-fill"></div>
+          </div>
+        </div>
+        <div class="readability-level" id="readability-text"></div>
+        <hr>
+      </div>    
+      <div class="loading-container">
+        <div class="loading-wheel"></div>
+        <div class="status">
+          <span id="loading-status">Generating report...</span>
+        </div>
+      </div>
+      <div class="risk-container" style="display: none;">
+        <div class="risk-label">Risk Scores</div>
+        <div class="risk-row">
+          <div class="risk-item">
+            <label for="financial-risk">Legal</label>
+            <div class="circle-chart" id="financial-risk">
+              <svg class="circle-chart" viewBox="0 0 36 36">
+                <path class="circle-bg"
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="circle"
+                    stroke-dasharray="0, 100"
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+            </div>   
+            <div class="risk-level" id="legal-risk-level"></div>         
+          </div>
+        <!-- </div>
+        <div class="risk-row"> -->
+          <div class="risk-item">
+            <label for="privacy-risk">Financial</label>
+            <div class="circle-chart" id="privacy-risk">
+              <svg class="circle-chart" viewBox="0 0 36 36">
+                <path class="circle-bg"
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="circle"
+                    stroke-dasharray="0, 100"
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+            </div>
+            <div class="risk-level" id="financial-risk-level"></div>
+          </div>
+        <!-- </div>
+        <div class="risk-row"> -->
+          <div class="risk-item">
+            <label for="data-risk">Data</label>
+            <div class="circle-chart" id="data-risk">
+              <svg class="circle-chart" viewBox="0 0 36 36">
+                <path class="circle-bg"
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                <path class="circle"
+                    stroke-dasharray="0, 100"
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              </svg>
+            </div>
+            <div class="risk-level" id="data-risk-level"></div>
+          </div>
+        </div>
+      </div>      
+      <footer class="extension-div-footer">
+          <div class="subtext">
+            <span id="company-name"></span> <br>
+            <span id="category"></span> <br>
+            <span class="effective-date">Effective: <span id="date"></span></span>
+            </div>
+      </footer>
+      <button id="report-btn" class="report-btn" disabled>View Report</button>
+    </div>
+  </body>
+</html>

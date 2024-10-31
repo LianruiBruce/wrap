@@ -1,0 +1,141 @@
+.chatbox-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  height: 450px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+body, .chatbox-container {
+  font-family: 'Quicksand', 'Comfortaa', sans-serif;
+}
+
+.chatbox-header {
+  background-color: #000;
+  color: white;
+  height: 40px;
+  padding: 0 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 16px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.chatbox-messages {
+  padding: 10px;
+  flex-grow: 1;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+
+.chatbox-message-content span {
+  display: inline-block;
+  max-width: 100%;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.chatbox-message {
+  display: flex;
+  /* align-items: center; */
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.chatbox-message.bot {
+  justify-content: flex-start;
+}
+
+.chatbox-message.bot .px-4 {
+  background-color: black;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.chatbox-message.user {
+  justify-content: flex-end;
+}
+
+.chatbox-message.user .px-4 {
+  background-color: #f7f7f7;
+  border: 1px solid #c1c1c1;
+  border-radius: 15px;
+  color: #000000;
+  max-width: 70%;
+  padding: 10px;
+}
+
+.chatbox-message .chatbot-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.chatbox-message.user .chatbot-avatar {
+  margin-right: 0;
+  margin-left: 10px;
+}
+
+.chatbox-message-content {
+  display: flex;
+  align-items: center;
+}
+
+.chatbox-input-container {
+  display: flex;
+  padding: 5px;
+  border-top: 1px solid #ccc;
+  height: auto;
+  box-sizing: border-box;
+  font-family: 'Quicksand', 'Comfortaa', sans-serif;
+}
+
+.chatbox-input {
+  flex-grow: 1;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none; 
+  overflow: hidden;
+  height: 40px;
+  max-height: 80px; 
+  font-family: 'Quicksand', 'Comfortaa', sans-serif;
+}
+
+.send-btn {
+  margin-left: 5px;
+  padding: 5px 10px;
+  background-color: #000; 
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  height: 100%;
+  font-family: 'Quicksand', 'Comfortaa', sans-serif;
+}
+
+.word-limit-warning {
+  color: red;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 5px;
+}
+

@@ -1,0 +1,51 @@
+{
+  "name": "Wrap",
+  "description": "Chrome Practice Extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "scripting",
+    "storage",
+    "declarativeNetRequest",
+    "webRequest",
+    "notifications",
+    "contextMenus"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["popup.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "extension_frontend/wrap.html",
+    "default_icon": "icons/Wrap.png"
+  },
+  "icons": {
+    "38": "icons/Wrap.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["contentScript.js"],
+      "matches": ["<all_urls>"]
+    },
+    {
+      "resources": ["extension_frontend/report.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

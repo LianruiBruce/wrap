@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+    <title>Extension Popup</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../settings.js"></script>
+  </head>
+  <body>
+    <header>
+      <button id="back-btn" class="back-btn"></button>
+    </header>
+    <div class="extension-wrap">
+      <div class="extension-header">
+          <h1>Wrap Setting</h1>
+      </div>
+      <div class="actions">
+        <div class="settings-container">
+          <div class="settings-option">
+              <input type="checkbox" id="saveToDatabase" name="saveToDatabase" checked>
+              <label for="saveToDatabase">Automatically save report to library</label>
+          </div>
+          <div class="settings-option">
+              <input type="checkbox" id="detectLegalDoc" name="detectLegalDoc" checked>
+              <label for="detectLegalDoc">Automatically detect legal document</label>
+          </div>
+          <div class="settings-option">
+              <input type="checkbox" id="generateReport" name="generateReport" checked>
+              <label for="generateReport">Automatically report generation</label>
+          </div>
+          <div class="settings-option">
+            <input type="checkbox" id="showNotification" name="showNotification" checked>
+            <label for="showNotification">Show Notification</label>
+          </div>
+          <div class="settings-option">
+            <input type="checkbox" id="safeMode" name="safeMode" checked>
+            <label for="safeMode">Safe Mode</label>
+          </div>
+          <hr class="divider">
+          <label for="dropdown">Legal Document Category Detect:</label>
+          <select id="dropdown">
+              <option value="termsConditions">Terms and Conditions</option>
+              <option value="privacyPolicy">Privacy Policy</option>
+              <option value="contractAgreement">Contract Agreement</option>
+              <option value="cookiePolicy">Cookie Policy</option>
+              <option value="all">All of Above</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

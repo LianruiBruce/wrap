@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+    <title>Extension Popup</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../popup.js"></script>
+  </head>
+  <body>
+    <header>
+      <button id="wrap_settings" class="wrap_settings"></button>
+      <button id="close-btn" class="close-btn"></button>
+    </header>
+    <div class="extension-wrap">
+      <div class="extension-header">
+          <h1>Wrap</h1>
+          <hr>
+          <div class="status"><span id="status-update">Report Error</span></div>
+          <div class="subtext">Document is detected as legal document, <br>
+                                but some technique issue happen. <br>
+                                Please try again, or use Report an <br>
+                                Issue button to connect technique team.
+            </div>
+          <hr>
+      </div>
+      <div class="actions">
+          <button id="scan-btn" class="scan-btn">Scan Page</button>
+          <button id="upload-btn" class="upload-btn">Manual Upload</button>
+      </div>
+      <footer class="extension-footer">
+          <button id="report-error-btn" class="report-error-btn">Report an Issue</button>
+      </footer>
+    </div>
+  </body>
+</html>
