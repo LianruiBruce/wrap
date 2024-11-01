@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //upload button
   document.getElementById("upload-btn").addEventListener("click", function () {
-    chrome.tabs.create({ url: "wrapcapstone.com/" });
+    chrome.tabs.create({ url: "https://wrapcapstone.com/" });
   });
   wrapcapstone.com;
   //report error button
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           console.log("Response from background:", response);
         }
       });
-      window.location.href = "/extensionwrapcapstone.com
+      window.location.href = "/extension_frontend/wrap.html"
       chrome.action.setPopup({ popup: "extension_frontend/wrap.html" });
     });
 
