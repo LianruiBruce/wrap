@@ -403,7 +403,7 @@ async function sendDataToServer(data) {
   isProcessing = true;
 
   try {
-    const response = await fetch("/process-webpage", {
+    const response = await fetch("https://wrapcapstone.com/process-webpage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -458,7 +458,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
         return;
       }
 
-      fetch("/generate-report", {
+      fetch("https://wrapcapstone.com/generate-report", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
