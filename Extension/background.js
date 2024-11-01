@@ -745,9 +745,8 @@ function isDuplicateRequest(tab, changeInfo) {
 // );
 
 function updateSettingsBasedOnSafeMode(safeMode) {
+  const nonEssentialCookieRuleIds = [1000, 1001];
   if (safeMode) {
-    const nonEssentialCookieRuleIds = [1000, 1001];
-
     // Update cookie blocking rules to block third-party cookies only
     chrome.declarativeNetRequest.updateSessionRules(
       {
