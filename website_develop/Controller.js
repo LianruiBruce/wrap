@@ -31,7 +31,7 @@ async function processData(data) {
 
   try {
     const response = await axios.post(
-      "https://implicitly-sacred-moose.ngrok-free.app/process-url",
+      "https://3194-73-98-181-213.ngrok-free.app/process-url",
       {
         data,
       }
@@ -73,7 +73,7 @@ async function generateReport(data) {
   try {
     console.log("Generating report with NLP service");
     const response = await axios.post(
-      "https://implicitly-sacred-moose.ngrok-free.app/generate-report",
+      "https://3194-73-98-181-213.ngrok-free.app/generate-report",
       {
         data,
       }
@@ -90,7 +90,7 @@ async function generateSections(data) {
     //
     https: console.log("Generating sections with NLP service");
     const response = await axios.post(
-      "https://implicitly-sacred-moose.ngrok-free.app/generate-sections",
+      "https://3194-73-98-181-213.ngrok-free.app/generate-sections",
       {
         data,
       }
@@ -106,7 +106,7 @@ async function generateTitleReportByPDF(text) {
   try {
     console.log("Generating report with NLP service(generateTitleReportByPDF)");
     const response = await axios.post(
-      "https://implicitly-sacred-moose.ngrok-free.app/get-PDF-info",
+      "https://3194-73-98-181-213.ngrok-free.app/get-PDF-info",
       {
         text,
       }
@@ -294,7 +294,7 @@ async function generateReportByPDF(text, userSettings, io, userID) {
     } else {
       console.log("starting generate reprot by PDF");
       const response = await axios.post(
-        "https://implicitly-sacred-moose.ngrok-free.app/generate-reportByPDF",
+        "https://3194-73-98-181-213.ngrok-free.app/generate-reportByPDF",
         {
           text: text,
           userSettings: userSettings,
