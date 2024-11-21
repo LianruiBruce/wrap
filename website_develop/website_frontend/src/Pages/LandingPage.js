@@ -197,7 +197,7 @@ function LandingPage() {
       icon: <ExtensionIcon />,
       details: [
         "Quick installation process",
-        "Supports all major browsers",
+        "Supports major browsers",
         "Automatic updates",
         "Lightweight and fast",
       ],
@@ -262,7 +262,7 @@ function LandingPage() {
       gradient: "linear-gradient(135deg, #4DB33D20 0%, #2E7D3220 100%)",
       details: [
         "One-click analysis",
-        "Works on any website",
+        "Works on most websites",
         "Real-time processing",
         "Secure connection",
       ],
@@ -286,12 +286,7 @@ function LandingPage() {
         "Your documents are processed with enterprise-grade security and privacy.",
       icon: <SecurityIcon sx={{ fontSize: 40, color: "#FF6B6B" }} />,
       gradient: "linear-gradient(135deg, #FF6B6B20 0%, #CC4B4B20 100%)",
-      details: [
-        "End-to-end encryption",
-        "Data privacy",
-        "Secure processing",
-        "No data storage",
-      ],
+      details: ["Password encryption", "Data privacy", "Secure processing"],
     },
   ];
 
