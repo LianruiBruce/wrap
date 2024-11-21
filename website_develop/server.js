@@ -15,6 +15,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 const multer = require("multer");
+const crypto = require("crypto");
 
 const {
   addDocument,
@@ -71,7 +72,7 @@ app.get("*", (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`Server running on https://wrapcapstone.com`);
+  console.log(`Server running on http://localhost:${port}`);
 });
 
 io.on("connection", (socket) => {
@@ -118,6 +119,8 @@ io.on("connection", (socket) => {
 // let savedReport = "";
 
 const jwt = require("jsonwebtoken");
+
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
 app.post("/getLatestReportAfterDelete", authenticateToken, async (req, res) => {
   try {
@@ -422,6 +425,10 @@ app.post("/generate-report", authenticateToken, async (req, res) => {
         risk_assessment: risk_assessment,
       };
 
+      if (saveToDatabase) {
+        addUserDocument(userID, result._id, Date.now());
+      }
+
       res.json({ success: true, data: data, documentID: result._id });
 
       // Generate sections
@@ -437,10 +444,6 @@ app.post("/generate-report", authenticateToken, async (req, res) => {
         { _id: result._id },
         { $set: { sections: sections_get } }
       );
-
-      if (saveToDatabase) {
-        addUserDocument(userID, result._id, Date.now());
-      }
     }
   } catch (error) {
     console.error("Failed to generate report:", error);
@@ -457,6 +460,8 @@ app.post("/getLatestReport", authenticateToken, async (req, res) => {
     const userID = req.user.userId;
     const selectInfo = await getUserLatestDocument(userID);
     io.emit("selectDocument", selectInfo);
+    // TODO: check bug here
+    console.log("Get latest report from getLatestReport");
     res.json({ success: true, information: selectInfo });
   } catch (error) {
     console.error(error); // Log the error to the server console
@@ -467,6 +472,11 @@ app.post("/getLatestReport", authenticateToken, async (req, res) => {
 app.post("/response-docID", async (req, res) => {
   try {
     const { documentID } = req.body;
+    // TODO: check bug here
+    console.log(
+      "Received request for /response-docID with documentID:",
+      documentID
+    );
     const selectInfo = await pullUpDocandRepByDocID(documentID);
     io.emit("selectDocument", selectInfo);
     res.json({ success: true, information: selectInfo });
@@ -517,6 +527,8 @@ app.post("/api/signup", async (req, res) => {
       10
     );
 
+    // await verificationCode(email.toLowerCase(), firstName + ' ' + lastName);
+
     addUser(
       email.toLowerCase(),
       hashedPassword,
@@ -545,7 +557,13 @@ app.post(
         console.log("uploading PDF from app.post(/upload-pdf)");
         const text = await convertPdfToText(req.file.buffer);
         // TODO: fetch python process pdf
-        await generateReportByPDF(text, userSettings, io, userID);
+        await generateReportByPDF(
+          req.file.buffer,
+          text,
+          userSettings,
+          io,
+          userID
+        );
         res.json({ success: true, text: text });
       } catch (error) {
         res.status(500).json({
@@ -585,15 +603,51 @@ app.post("/api/settings", (req, res) => {
 // Route to handle form submissions
 app.post("/submit-issue", upload.single("issue-image"), (req, res) => {
   try {
-    console.log("Issue Description:", req.body["issue-description"]);
-    console.log("Email:", req.body.email);
+    const emailData = {
+      sender: { name: "Wrap Support Team", email: "wrapcapstone01@gmail.com" },
+      to: [{ email: req.body.email, name: "Wrap User" }],
+      cc: [{ email: "wrapcapstone01@gmail.com", name: "Wrap" }],
+      subject: "Your Issue Report Has Been Received",
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <a href="http://localhost:${port}" style="text-decoration: none;" target="_blank">
+              <div style="border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; border: 2px solid #333; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 36px; font-weight: bold; color: #333;">W</span>
+              </div>
+            </a>
+          </div>
+          <p>Dear User,</p>
+          <p>Thank you for reaching out to us. We have received your issue report and our Support Team is reviewing it.</p>
+          <hr style="border: 1px solid #999; margin: 20px 0;">
+          <p><strong>Issue:</strong></p>
+          <p>${req.body["issue-description"]}</p>
+          <hr style="border: 1px solid #999; margin: 20px 0;">
+          <p>If you provided additional details or a file, our team will review it carefully to resolve your issue as quickly as possible. You can expect to hear back from us shortly.</p>
+          <p>Best regards,</p>
+          <p><strong>Wrap Support Team</strong></p>
+        </div>
+      `,
+    };
 
-    if (req.file) {
-      console.log("Uploaded file:", req.file.originalname);
-    } else {
-      console.log("No file uploaded");
-    }
-
+    // 发送请求
+    axios
+      .post("https://api.brevo.com/v3/smtp/email", emailData, {
+        headers: {
+          accept: "application/json",
+          "api-key": BREVO_API_KEY,
+          "content-type": "application/json",
+        },
+      })
+      .then((response) => {
+        console.log("Email sent:", response.data);
+      })
+      .catch((error) => {
+        console.error(
+          "Error:",
+          error.response ? error.response.data : error.message
+        );
+      });
     // Respond to the client
     res.status(200).json({ message: "Issue report received successfully!" });
   } catch (error) {
@@ -610,15 +664,15 @@ app.post("/process-question", async (req, res) => {
   try {
     const document = await Document.findOne({ _id: documentID }); // 通过 documentID 查找文档
     const original_document = document ? document.documentFile : null;
-    //
-    https: if (!original_document) {
+
+    if (!original_document) {
       return res.json({
         success: false,
         answer: "Original document not found.",
       });
     }
 
-    const response = await axios.post("https://wrapcapstone.com/get-QA", {
+    const response = await axios.post("http://localhost:5000/get-QA", {
       text: original_document,
       question: question,
     });
@@ -640,7 +694,7 @@ app.post("/process-question", async (req, res) => {
   }
 });
 
-app.post("/getReportByDocumentID", authenticateToken, async (req, res) => {
+app.post("/get-report-by-documentID", authenticateToken, async (req, res) => {
   const { documentID } = req.body;
 
   try {
@@ -737,5 +791,116 @@ app.post("/api/reset-password", async (req, res) => {
   } catch (error) {
     console.error("Password reset error:", error);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.post("/api/verification-code", async (req, res) => {
+  const { email, name } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required." });
+  }
+
+  try {
+    const verificationCode = crypto
+      .randomInt(0, Math.pow(10, 6))
+      .toString()
+      .padStart(6, "0");
+
+      const token = jwt.sign({ email, code: verificationCode }, process.env.JWT_SECRET, {
+        expiresIn: "5m",
+      });
+
+    const emailData = {
+      sender: { name: "Wrap", email: "wrapcapstone01@gmail.com" },
+      to: [{ email: email, name: name || "User" }],
+      subject: "Wrap Verification Code",
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="text-align: center; color: #333;">Verification Code</h2>
+          <div style="text-align: center; margin-bottom: 20px;">
+            <a href="http://localhost:${port}" style="text-decoration: none;" target="_blank">
+              <div style="border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; border: 2px solid #333; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 36px; font-weight: bold; color: #333;">W</span>
+              </div>
+            </a>
+          </div>
+          <p>Dear ${name},</p>
+          <p>Thank you for using our service. Here is your verification code:</p>
+          <div style="text-align: center; margin: 20px;">
+            <span style="font-size: 24px; font-weight: bold; color: #007BFF;">${verificationCode}</span>
+          </div>
+          <p>Please enter this code on the website or app to complete your verification. This code is valid for 10 minutes.</p>
+          <p>If you did not request this code, please ignore this email or contact our support team.</p>
+          <p>Best regards,</p>
+          <p><strong>Wrap Support Team</strong></p>
+        </div>
+      `,
+    };
+
+    await axios.post("https://api.brevo.com/v3/smtp/email", emailData, {
+      headers: {
+        accept: "application/json",
+        "api-key": BREVO_API_KEY,
+        "content-type": "application/json",
+      },
+    });
+
+    console.log("Email sent to:", email);
+    return res
+      .status(200)
+      .json({ message: "Verification code sent.", token });
+  } catch (error) {
+    console.error(
+      "Error sending email:",
+      error.response?.data || error.message
+    );
+    return res
+      .status(500)
+      .json({ message: "Failed to send verification code." });
+  }
+});
+
+app.post("/api/verify-code", (req, res) => {
+  const { token, enteredCode } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.code === enteredCode) {
+      res.status(200).json({ message: "Verification successful" });
+    } else {
+      res.status(400).json({ message: "Invalid code" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: "Invalid or expired token" });
+  }
+});
+
+app.post("/api/reset-password-with-code", async (req, res) => {
+  const { email, code, token, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (decoded.code === code) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      user.password = hashedPassword;
+  
+      await user.save();
+
+      res.status(200).json({ message: "Verification successful" });
+    } else {
+      res.status(400).json({ message: "Invalid code" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: "Invalid or expired token" });
   }
 });

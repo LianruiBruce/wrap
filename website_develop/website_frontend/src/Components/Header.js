@@ -1,6 +1,6 @@
 // Header.js
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   AppBar,
   Avatar,
@@ -19,6 +19,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
+import { ThemeContext } from "../colorTheme/ThemeContext";
 
 function Header({
   onDocumentSettingsClick,
@@ -29,6 +30,7 @@ function Header({
   const navigate = useNavigate();
   const theme = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
+  const { mode } = useContext(ThemeContext);
 
   const [documentCompany, setDocumentCompany] = useState("Welcome to Wrap");
   const [documentCategory, setDocumentCategory] = useState(
@@ -57,7 +59,7 @@ function Header({
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("wrapcapstone.com", {
+    const socket = io.connect("http://localhost:3000", {
       query: { token: token },
     });
 
@@ -102,9 +104,12 @@ function Header({
     ? "View Summary"
     : "View Original Document";
 
+  const headerBackgroundColor =
+    mode === "light" ? "rgb(245, 245, 245)" : "rgb(18, 18, 18)";
+
   const headerStyle = {
     appBar: {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: headerBackgroundColor,
       color: theme.palette.text.primary,
       boxShadow: "none",
     },
@@ -199,6 +204,7 @@ function Header({
                 fontWeight: 700,
                 marginBottom: 0.5,
                 fontSize: `${fontSize * 1.75}px`,
+                color: theme.palette.text.primary,
               }}
             >
               {documentCompany}

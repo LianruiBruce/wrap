@@ -60,7 +60,7 @@ function Navigator(props) {
       setCategories(transformDocuments(cachedDocuments));
       setIsLoading(false);
 
-      const socket = io.connect("https://wrapcapstone.com", {
+      const socket = io.connect("http://localhost:3000", {
         query: { token: token },
       });
       socket.on("reportList", (documents) => {
@@ -76,9 +76,8 @@ function Navigator(props) {
       return () => socket.disconnect();
     } else {
       console.log("Fetching fresh documents from the server");
-      const socket = io("https://wrapcapstone.com", {
-        secure: true,
-        query: { token },
+      const socket = io.connect("http://localhost:3000", {
+        query: { token: token },
       });
 
       socket.on("reportList", (documents) => {
@@ -95,40 +94,10 @@ function Navigator(props) {
     }
   }, []);
 
-  // const handleDocumentDownload = async (documentID) => {
-  //   console.log("Downloading document with ID:", documentID);
-  //   try {wrapcapstone.com
-  //     const token = localStorage.getItem("token");
-  //     const response = await fetch("https://wrapcapstone.com/download-pdf", {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ documentID }),
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error(`Failed to download PDF: ${response.statusText}`);
-  //     }
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = `document-${documentID}.pdf`;
-  //     document.body.appendChild(a);
-  //     a.click();
-
-  //     a.remove();
-  //     window.URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     console.error("Error downloading the document:", error);
-  //   }
-  // };
-
   const handleDocumentDelete = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("https://wrapcapstone.com/delete-doc", {
+      const response = await fetch("http://localhost:3000/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -152,7 +121,7 @@ function Navigator(props) {
 
   const handleDocumentSelect = async (documentID) => {
     try {
-      const response = await fetch("/response-docID", {
+      const response = await fetch("http://localhost:3000/response-docID", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +144,7 @@ function Navigator(props) {
       const token = localStorage.getItem("token");
       try {
         setIsUploading(true); // Start showing the uploading animation
-        const response = await fetch("/upload-pdf", {
+        const response = await fetch("http://localhost:3000/upload-pdf", {
           method: "POST",
           body: formData,
           headers: {
@@ -240,9 +209,6 @@ function Navigator(props) {
       "&:hover, &:focus": {
         bgcolor: "rgba(255, 255, 255, 0.1)",
         borderRadius: "20px",
-        width: "90%",
-        marginLeft: "auto",
-        marginRight: "auto",
       },
       "& .MuiListItemIcon-root": {
         color: "#ffffff",
@@ -319,15 +285,6 @@ function Navigator(props) {
                 sx={styles.listItem}
                 secondaryAction={
                   <>
-                    {/* <IconButton
-                      edge="end"
-                      aria-label="download"
-                      onClick={() =>
-                        handleDocumentDownload(category.documentID)
-                      }
-                    >
-                      <DownloadIcon sx={{ color: "#ffffff" }} />
-                    </IconButton> */}
                     <IconButton
                       edge="end"
                       aria-label="delete"
@@ -359,14 +316,24 @@ function Navigator(props) {
         <Divider sx={styles.thickDivider} />
         {/* Fixed section for Upload and Exit */}
         <List>
-          <ListItemButton sx={styles.listItem} onClick={triggerFileUpload}>
+        <ListItemButton
+            sx={{
+              ...styles.listItem,
+              pointerEvents: isUploading ? "none" : "auto",
+              opacity: isUploading ? 0.5 : 1,
+            }}
+            onClick={triggerFileUpload}
+            disabled={isUploading} 
+           >
             {isUploading ? (
-              <CircularProgress size={24} /> // A small-sized circular progress indicator
+              <CircularProgress size={24} /> 
             ) : (
               <UploadIcon />
             )}
-            <ListItemText primary="Upload" />
+            <ListItemText primary={isUploading ? "Processing" : "Upload"} />
           </ListItemButton>
+
+
           <ListItemButton sx={styles.listItem} onClick={handleExit}>
             <ListItemIcon>
               <ExitToAppIcon />

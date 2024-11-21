@@ -12,6 +12,8 @@ if (userToken) {
 window.addEventListener("message", (event) => {
   if (event.source !== window) return;
 
+  if (event.origin !== "http://localhost:3000") return;
+
   if (event.data.type === "USER_LOGIN") {
     chrome.runtime.sendMessage(
       { type: "USER_LOGIN", token: event.data.token },

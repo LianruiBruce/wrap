@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+// Profile.js
+
+import React, { useEffect, useState, useContext } from "react";
 import {
   Avatar,
   Typography,
@@ -6,16 +8,14 @@ import {
   CssBaseline,
   Box,
   Grid,
-  Button,
   Divider,
 } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import EditIcon from "@mui/icons-material/Edit";
 import LibraryNavigator from "../Components/LibraryNavigator";
-
-const theme = createTheme();
+import { ThemeContext } from "../colorTheme/ThemeContext";
 
 export default function Profile() {
+  const { mode } = useContext(ThemeContext);
+
   const [flaggedDocumentsCount, setFlaggedDocumentsCount] = useState(0);
   const [numOfUserDocuments, setNumOfUserDocuments] = useState(0);
   const [userInfo, setUserInfo] = useState({
@@ -24,6 +24,7 @@ export default function Profile() {
     email: "",
     createDate: "",
   });
+  const profileImage = "./Images/Default_profile.png"; // default profile picture
 
   useEffect(() => {
     fetchNumOfFlags();
@@ -38,7 +39,7 @@ export default function Profile() {
       console.log(
         "sending request to backend to get number of flagged documents"
       );
-      const response = await fetch("/num-flags", {
+      const response = await fetch("http://localhost:3000/num-flags", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -60,7 +61,7 @@ export default function Profile() {
     try {
       const token = localStorage.getItem("token");
       console.log("Sending request to backend to get number of user documents");
-      const response = await fetch("/getNumOfUserDoc", {
+      const response = await fetch("http://localhost:3000/getNumOfUserDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -82,7 +83,8 @@ export default function Profile() {
     try {
       const token = localStorage.getItem("token");
       console.log("Fetching user information...");
-      const response = await fetch("/getUserInfo", {
+
+      const response = await fetch("http://localhost:3000/getUserInfo", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -104,9 +106,8 @@ export default function Profile() {
 
   // Placeholder user data
   const userData = {
-    username: "lianruigeng",
+    username: userInfo.firstName + " " + userInfo.lastName,
     fullName: userInfo.firstName + " " + userInfo.lastName,
-    bio: "I am coding and I hate this.",
     email: userInfo.email,
     avatarUrl: "https://picsum.photos/400/400",
     createdAt: userInfo.createDate,
@@ -116,7 +117,7 @@ export default function Profile() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       {/* Container matching the ReportLibrary layout */}
       <Grid
@@ -139,43 +140,31 @@ export default function Profile() {
           <Container maxWidth="md">
             <Box
               sx={{
-                backgroundColor: "#fff",
+                backgroundColor: "background.paper",
                 borderRadius: 2,
                 boxShadow: 3,
                 p: 4,
               }}
             >
               <Grid container spacing={4}>
-                {/* Left Column */}
                 <Grid item xs={12} sm={4} sx={{ textAlign: "center" }}>
                   <Avatar
-                    alt={userData.fullName}
-                    src={userData.avatarUrl || "/default-avatar.png"}
+                    alt={userInfo.fullName}
+                    src={profileImage}
                     sx={{ width: 150, height: 150, margin: "0 auto" }}
                   />
                   <Typography variant="h5" sx={{ mt: 2 }}>
-                    {userData.fullName}
+                    {userInfo.firstName + " " + userInfo.lastName}
                   </Typography>
                   <Typography variant="subtitle1" color="textSecondary">
-                    @{userData.username}
+                    @
+                    {userInfo.username ||
+                      userInfo.firstName + " " + userInfo.lastName}
                   </Typography>
-                  <Button
-                    variant="outlined"
-                    startIcon={<EditIcon />}
-                    sx={{ mt: 2 }}
-                    onClick={() => alert("Edit Profile button clicked!")}
-                  >
-                    Edit Profile
-                  </Button>
                 </Grid>
 
                 {/* Right Column */}
                 <Grid item xs={12} sm={8}>
-                  {/* Bio */}
-                  <Typography variant="h6">Bio</Typography>
-                  <Typography variant="body1" sx={{ mb: 2 }}>
-                    {userData.bio || "This user has not added a bio yet."}
-                  </Typography>
                   <Divider sx={{ my: 2 }} />
 
                   {/* Additional Information */}
@@ -217,10 +206,7 @@ export default function Profile() {
                       <Typography variant="h6">Flagged</Typography>
                       <Typography variant="h5">{userData.flagged}</Typography>
                     </Grid>
-                    <Grid item xs={4} sx={{ textAlign: "center" }}>
-                      <Typography variant="h6">Comments</Typography>
-                      <Typography variant="h5">{userData.comments}</Typography>
-                    </Grid>
+                   
                   </Grid>
                 </Grid>
               </Grid>
@@ -228,6 +214,6 @@ export default function Profile() {
           </Container>
         </Grid>
       </Grid>
-    </ThemeProvider>
+    </>
   );
 }

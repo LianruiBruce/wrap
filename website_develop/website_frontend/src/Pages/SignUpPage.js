@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Alert from "@mui/material/Alert";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import axios from "axios";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import Link from "@mui/material/Link";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const defaultTheme = createTheme();
 
@@ -21,6 +21,7 @@ export default function SignUp() {
   const [errors, setErrors] = useState({});
   const [securityQuestion, setSecurityQuestion] = useState("");
   const [securityAnswer, setSecurityAnswer] = useState("");
+  const navigate = useNavigate();
 
   const validateEmail = (email) => {
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -76,24 +77,40 @@ export default function SignUp() {
     };
 
     if (validateForm(user)) {
-      axios
-        .post("/api/signup", user)
-        .then((response) => {
-          console.log(response.data);
-          setSignupStatus({
-            status: "success",
-            message: "You have successfully signed up!",
+        navigate("/verification-code", { 
+            state: { 
+              // email: user.email, 
+              // name: `${user.firstName} ${user.lastName}` 
+              user: user
+            } 
           });
-        })
-        .catch((error) => {
-          console.error("Signup error", error);
-          setSignupStatus({
-            status: "error",
-            message:
-              error.response?.data?.message ||
-              "Signup failed. Please try again.",
-          });
-        });
+      // axios
+      //   .post("/api/signup", user)
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     setSignupStatus({
+      //       status: "success",
+      //       message: "You have successfully signed up!",
+      //     });
+
+      //     navigate("/verification-code", { 
+      //       state: { 
+      //         // email: user.email, 
+      //         // name: `${user.firstName} ${user.lastName}` 
+      //         user: user
+      //       } 
+      //     });
+          
+      //   })
+      //   .catch((error) => {
+      //     console.error("Signup error", error);
+      //     setSignupStatus({
+      //       status: "error",
+      //       message:
+      //         error.response?.data?.message ||
+      //         "Signup failed. Please try again.",
+      //     });
+      //   });
     } else {
       setSignupStatus({
         status: "error",

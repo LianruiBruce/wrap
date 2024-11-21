@@ -15,6 +15,7 @@ import {
   Tooltip,
   Divider,
   Fab,
+  useTheme,
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SearchIcon from "@mui/icons-material/Search";
@@ -71,6 +72,9 @@ export default function Content({ isDocumentSettingsClicked }) {
   const [fontSize, setFontSize] = useState(
     JSON.parse(localStorage.getItem("fontSize")) || 16 // Default to 16px
   );
+
+  // Import the theme
+  const theme = useTheme();
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -266,7 +270,10 @@ export default function Content({ isDocumentSettingsClicked }) {
       const parts = text.split(regex);
       return parts.map((part, index) =>
         regex.test(part) ? (
-          <mark key={index} style={{ backgroundColor: "lightblue" }}>
+          <mark
+            key={index}
+            style={{ backgroundColor: theme.palette.action.selected }}
+          >
             {part}
           </mark>
         ) : (
@@ -289,7 +296,10 @@ export default function Content({ isDocumentSettingsClicked }) {
         }
         // Add the highlighted match
         result.push(
-          <mark key={start} style={{ backgroundColor: "lightblue" }}>
+          <mark
+            key={start}
+            style={{ backgroundColor: theme.palette.action.selected }}
+          >
             {text.substring(start, end + 1)}
           </mark>
         );
@@ -313,7 +323,10 @@ export default function Content({ isDocumentSettingsClicked }) {
     const parts = text.split(regex);
     return parts.map((part, index) =>
       regex.test(part) ? (
-        <span key={index} style={{ backgroundColor: "lightblue" }}>
+        <span
+          key={index}
+          style={{ backgroundColor: theme.palette.action.selected }}
+        >
           {part}
         </span>
       ) : (
@@ -335,6 +348,8 @@ export default function Content({ isDocumentSettingsClicked }) {
           maxHeight: "250px",
           overflowY: "auto",
           marginTop: "8px",
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
         }}
       >
         <List>
@@ -347,7 +362,7 @@ export default function Content({ isDocumentSettingsClicked }) {
                 style={{
                   cursor: "pointer",
                   padding: "10px",
-                  borderBottom: "1px solid #ddd",
+                  borderBottom: `1px solid ${theme.palette.divider}`,
                 }}
               >
                 <Typography variant="body2" style={{ whiteSpace: "pre-wrap" }}>
@@ -425,7 +440,7 @@ export default function Content({ isDocumentSettingsClicked }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("wrapcapstone.com", {
+    const socket = io.connect("http://localhost:3000/", {
       query: { token: token },
     });
 
@@ -433,11 +448,12 @@ export default function Content({ isDocumentSettingsClicked }) {
 
     socket.on("connect", () => {
       console.log("Connected to WebSocket server");
-      socket.emit("requestLatestReport");
+      // socket.emit("requestLatestReport");
     });
 
     socket.on("reportGenerated", (report) => {
       setOriginalDocument(report.original_document);
+      console.log("section  is: ", report.sections);
       setSections(report.sections);
 
       const section_summary = JSON.parse(report.section_summary);
@@ -489,47 +505,6 @@ export default function Content({ isDocumentSettingsClicked }) {
         setCurrentDocumentID(null); // Clear the current document ID
       }
     });
-
-    // DON"T DELETE !!!
-    // socket.on("documentDeleted", async (data) => {
-    //   const { documentID: deletedDocumentID } = data;
-    //   console.log("current doc id is " + currentDocumentID);
-    //   console.log("deleted doc id is " + deletedDocumentID);
-    //   if (currentDocumentID === deletedDocumentID) {
-    //     console.log(
-    //       "Current document was deleted, fetching the latest report."
-    //     );
-
-    //     try {
-    //       const token = localStorage.getItem("token");
-    //       const response = await fetch(
-    //         "wrapcapstone.com/getLatestReportAfterDelete",
-    //         {
-    //          wrapcapstone.com
-    //           headers: {
-    //             Authorization: `Bearer ${token}`,
-    //             "Content-Type": "application/json",
-    //           },
-    //         }
-    //       );
-
-    //       const data = await response.json();
-
-    //       if (data.success) {
-    //         setOriginalDocument(data.information.original_document);
-    //         setSections(data.information.sections);
-    //         setCategoryLabelsData(data.information.section_summary); // Update here
-    //         setSummaryContentRef(data.information.general_summary);
-    //         setRiskAssessmentContent(data.information.risk_assessment);
-    //         setCurrentDocumentID(data.information.documentID);
-    //       } else {
-    //         console.error("Failed to fetch the latest report:", data.message);
-    //       }
-    //     } catch (error) {
-    //       console.error("Error fetching the latest report:", error);
-    //     }
-    //   }
-    // });
 
     socket.on("disconnect", () => {
       console.log("Disconnected from WebSocket server");
@@ -583,7 +558,7 @@ export default function Content({ isDocumentSettingsClicked }) {
       console.log("Disconnecting WebSocket");
       socket.disconnect();
     };
-  }, [currentDocumentID]);
+  }, []);
 
   useEffect(() => {
     if (currentDocumentID) {
@@ -733,7 +708,7 @@ export default function Content({ isDocumentSettingsClicked }) {
                     style: {
                       fontSize: `${fontSize}px`,
                       ...(isHighlightedSentence && {
-                        backgroundColor: "lightyellow",
+                        backgroundColor: theme.palette.action.hover,
                       }),
                     },
                   };
@@ -805,11 +780,11 @@ export default function Content({ isDocumentSettingsClicked }) {
                       return (
                         <blockquote
                           style={{
-                            borderLeft: "4px solid #ccc",
+                            borderLeft: `4px solid ${theme.palette.divider}`,
                             paddingLeft: "16px",
                             marginBottom: "1.5em",
                             fontStyle: "italic",
-                            color: "#555",
+                            color: theme.palette.text.secondary,
                             fontSize: `${fontSize}px`,
                           }}
                           {...commonProps}
@@ -877,7 +852,10 @@ export default function Content({ isDocumentSettingsClicked }) {
                 {summary && (
                   <Typography
                     variant="body2"
-                    style={{ color: "#666", fontSize: `${fontSize}px` }}
+                    style={{
+                      color: theme.palette.text.secondary,
+                      fontSize: `${fontSize}px`,
+                    }}
                   >
                     {summary}
                   </Typography>
@@ -952,8 +930,9 @@ export default function Content({ isDocumentSettingsClicked }) {
                 ),
                 style: {
                   borderRadius: "25px",
-                  backgroundColor: "#fff",
-                  boxShadow: "0px 3px 6px rgba(0,0,0,0.1)",
+                  backgroundColor: theme.palette.background.paper,
+                  boxShadow: theme.shadows[1],
+                  color: theme.palette.text.primary,
                 },
               }}
             />
@@ -970,7 +949,7 @@ export default function Content({ isDocumentSettingsClicked }) {
                     alignItems: "center",
                     justifyContent: "space-between",
                     p: 2,
-                    borderBottom: "1px solid #e0e0e0",
+                    borderBottom: `1px solid ${theme.palette.divider}`,
                     position: "relative",
                   }}
                 >
@@ -1034,7 +1013,7 @@ export default function Content({ isDocumentSettingsClicked }) {
                 <Box
                   sx={{
                     p: 2,
-                    borderBottom: "1px solid #e0e0e0",
+                    borderBottom: `1px solid ${theme.palette.divider}`,
                     display: "flex",
                     alignItems: "center",
                     position: "relative",
@@ -1073,7 +1052,7 @@ export default function Content({ isDocumentSettingsClicked }) {
                 <Box
                   sx={{
                     p: 2,
-                    borderBottom: "1px solid #e0e0e0",
+                    borderBottom: `1px solid ${theme.palette.divider}`,
                     display: "flex",
                     alignItems: "center",
                     position: "relative",
@@ -1127,7 +1106,7 @@ export default function Content({ isDocumentSettingsClicked }) {
               <Box
                 sx={{
                   p: 2,
-                  borderBottom: "1px solid #e0e0e0",
+                  borderBottom: `1px solid ${theme.palette.divider}`,
                   display: "flex",
                   alignItems: "center",
                   position: "relative",

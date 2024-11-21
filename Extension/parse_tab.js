@@ -261,7 +261,16 @@ if (!window.isListenerRegistered) {
                 sections: main.sections,
                 url: request.url,
                 title: doc.title,
-                headers: cleanText(doc.querySelector('h1') ? doc.querySelector('h1').textContent : ''),
+                headers: cleanText(
+                    Array.from(document.querySelectorAll('h1'))
+                        .map(h1 => h1.textContent)
+                        .join(' ')
+                ),
+                headers2: cleanText(
+                    Array.from(document.querySelectorAll('h2'))
+                        .map(h2 => h2.textContent)
+                        .join(' ')
+                ),
                 footer: getFooterText(doc)
             };
 
@@ -279,7 +288,16 @@ if (!window.isListenerRegistered) {
                     sections: main.sections,
                     url: window.location.href,
                     title: document.title,
-                    headers: cleanText(document.querySelector('h1') ? document.querySelector('h1').textContent : ''),
+                    headers: cleanText(
+                        Array.from(document.querySelectorAll('h1'))
+                            .map(h1 => h1.textContent)
+                            .join(' ')
+                    ),
+                    headers2: cleanText(
+                        Array.from(document.querySelectorAll('h2'))
+                            .map(h2 => h2.textContent)
+                            .join(' ')
+                    ),
                     footer: getFooterText(document)
                 };
 

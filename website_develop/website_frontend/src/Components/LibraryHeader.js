@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+// LibraryHeader.js
+
+import React, { useState, useContext } from "react";
 import {
   AppBar,
   Box,
   IconButton,
   Toolbar,
-  Avatar,
   InputBase,
   Tooltip,
   useTheme,
   Typography,
+  FormControl, InputLabel, Select, MenuItem 
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -18,16 +20,19 @@ import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import { styled, alpha } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+// import { ThemeContext } from "../colorTheme/ThemeContext";
 
+// const { mode } = useContext(ThemeContext);
+// const headerBackgroundColor =
+//   mode === "light" ? "rgb(245, 245, 245)" : "rgb(18, 18, 18)";
 
-// Custom styled components for search bar
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: "50px",
-  backgroundColor: alpha(theme.palette.common.white, 0.85),
-  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+  backgroundColor: alpha(theme.palette.background.paper, 0.85),
+  boxShadow: theme.shadows[2],
   "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 1),
+    backgroundColor: alpha(theme.palette.background.paper, 1),
   },
   marginLeft: 0,
   width: "100%",
@@ -49,7 +54,7 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "black",
+  color: theme.palette.text.primary,
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 2, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
@@ -69,9 +74,14 @@ function Header({
   onFilterChange,
   onToggleFlaggedFilter,
   showFlaggedOnly,
+  sortBy,
+  setSortBy,
+  sortOrder,
+  setSortOrder,
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleSettingsClick = () => {
     navigate("/settings");
@@ -104,7 +114,7 @@ function Header({
     <AppBar
       position="static"
       sx={{
-        backgroundColor: "transparent",
+        backgroundColor: theme.palette.background.paper,
         boxShadow: "none",
         padding: "10px 30px",
       }}
@@ -125,13 +135,16 @@ function Header({
             flexGrow: 1,
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", color: theme.palette.text.primary }}
+          >
             Report Library
           </Typography>
 
           <Search>
             <SearchIconWrapper>
-              <SearchIcon sx={{ color: "#666" }} />
+              <SearchIcon sx={{ color: theme.palette.text.secondary }} />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search"
@@ -147,25 +160,64 @@ function Header({
             sx={{ marginLeft: "10px" }}
           >
             {showFlaggedOnly ? (
-              <FlagIcon sx={{ color: "#f44336", fontSize: "2rem" }} />
+              <FlagIcon
+                sx={{ color: theme.palette.error.main, fontSize: "2rem" }}
+              />
             ) : (
-              <FlagOutlinedIcon sx={{ color: "#7a7a7a", fontSize: "2rem" }} />
+              <FlagOutlinedIcon
+                sx={{ color: theme.palette.text.secondary, fontSize: "2rem" }}
+              />
             )}
           </IconButton>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel id="sort-by-label">Sort By</InputLabel>
+              <Select
+                labelId="sort-by-label"
+                value={sortBy}
+                label="Sort By"
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <MenuItem value="None">None</MenuItem>
+                <MenuItem value="risk score">Risk Score</MenuItem>
+              </Select>
+            </FormControl>
+
+            {sortBy === "risk score" && (
+              <FormControl sx={{ minWidth: 150 }}>
+                <InputLabel id="sort-order-label">Sort Order</InputLabel>
+                <Select
+                  labelId="sort-order-label"
+                  value={sortOrder}
+                  label="Sort Order"
+                  onChange={(e) => setSortOrder(e.target.value)}
+                >
+                  <MenuItem value="high to low">High to Low</MenuItem>
+                  <MenuItem value="low to high">Low to High</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+          </Box>
         </Box>
 
         {/* Right-aligned icons */}
         <Box sx={{ display: "flex", gap: "15px", alignItems: "center" }}>
           <IconButton onClick={handleSettingsClick}>
-            <SettingsIcon sx={{ fontSize: "2rem", color: "#333" }} />
+            <SettingsIcon
+              sx={{ fontSize: "2rem", color: theme.palette.text.primary }}
+            />
           </IconButton>
 
           <IconButton onClick={handleHistoryClick}>
-            <HistoryIcon sx={{ fontSize: "2rem", color: "#333" }} />
+            <HistoryIcon
+              sx={{ fontSize: "2rem", color: theme.palette.text.primary }}
+            />
           </IconButton>
 
           <IconButton onClick={handleProfileClick}>
-            <AccountCircleIcon sx={{ fontSize: "2rem", color: "#333" }} />
+            <AccountCircleIcon
+              sx={{ fontSize: "2rem", color: theme.palette.text.primary }}
+            />
           </IconButton>
         </Box>
       </Toolbar>

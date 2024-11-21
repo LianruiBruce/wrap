@@ -1,35 +1,48 @@
 // Paperbase.js
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   CssBaseline,
   Link,
   Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Content from "../Components/Content";
 import Header from "../Components/Header";
 import Navigator from "../Components/Navigator";
 import ShortNavigator from "../Components/ShortNavigator";
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Wrap
-      </Link>{" "}
-      {new Date().getFullYear()}.
-    </Typography>
-  );
-}
+import { ThemeContext } from "../colorTheme/ThemeContext";
 
 export default function Paperbase() {
+  const theme = useTheme();
+  const { mode } = useContext(ThemeContext); // Global theme mode
   const [fontSize, setFontSize] = useState(
     JSON.parse(localStorage.getItem("fontSize")) || 16
   );
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isShortNavigator, setIsShortNavigator] = useState(false);
+  const [isDocumentSettingsClicked, setIsDocumentSettingsClicked] =
+    useState(false);
+  const [documents, setDocuments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const isSmUp = useMediaQuery((theme) => theme.breakpoints.up("sm"));
+  const drawerWidth = isShortNavigator ? 100 : 256;
+
+  // Define background colors based on theme mode
+  const mainBgColor = mode === "dark" ? "#1A1A1A" : "#ffffff";
+
+  // Dark mode styles for Navigator and ShortNavigator
+  const darkModeStyles = {
+    backgroundColor: "#1A1A1A", // Dark background
+    borderRight: "1px solid rgba(255, 255, 255, 0.05)", // Light border
+  };
+
+  const darkModeSecondary = {
+    backgroundColor: "#2D2D2D", // Darker background for secondary elements
+    borderRight: "1px solid rgba(255, 255, 255, 0.05)",
+  };
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -38,16 +51,14 @@ export default function Paperbase() {
     };
 
     window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("/user-documents", {
+        const response = await fetch("http://localhost:3000/user-documents", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -67,160 +78,6 @@ export default function Paperbase() {
     fetchDocuments();
   }, []);
 
-  const theme = createTheme({
-    palette: {
-      primary: {
-        light: "#63a4ff",
-        main: "rgb(178,178,178)",
-        dark: "#004ba0",
-        contrastText: "#2D3E4E",
-      },
-      secondary: {
-        light: "#63a4ff",
-        main: "rgb(178,178,178)",
-        dark: "#004ba0",
-        contrastText: "#2D3E4E",
-      },
-    },
-    typography: {
-      fontFamily: '"QuickSand", Comforta',
-      h5: {
-        fontWeight: 400,
-        fontSize: "1.5rem",
-        letterSpacing: "0.0075em",
-      },
-      body1: {
-        fontSize: `${fontSize}px`,
-        fontWeight: 300,
-        lineHeight: 1.5,
-      },
-    },
-    shape: {
-      borderRadius: 8,
-    },
-    components: {
-      MuiTab: {
-        defaultProps: {
-          disableRipple: true,
-        },
-      },
-      MuiDrawer: {
-        styleOverrides: {
-          paper: {
-            backgroundColor: "#181B1B",
-          },
-        },
-      },
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            textTransform: "none",
-          },
-          contained: {
-            boxShadow: "none",
-            "&:active": {
-              boxShadow: "none",
-            },
-          },
-        },
-      },
-      MuiTabs: {
-        styleOverrides: {
-          root: {
-            marginLeft: 8,
-          },
-          indicator: {
-            height: 3,
-            borderTopLeftRadius: 3,
-            borderTopRightRadius: 3,
-            backgroundColor: "#181B1B",
-          },
-        },
-      },
-      MuiTab: {
-        styleOverrides: {
-          root: {
-            textTransform: "none",
-            margin: "0 16px",
-            minWidth: 0,
-            padding: 0,
-            "&:hover": {
-              color: "#4fc3f7",
-            },
-          },
-        },
-      },
-      MuiIconButton: {
-        styleOverrides: {
-          root: {
-            padding: 8,
-          },
-        },
-      },
-      MuiTooltip: {
-        styleOverrides: {
-          tooltip: {
-            borderRadius: 4,
-          },
-        },
-      },
-      MuiDivider: {
-        styleOverrides: {
-          root: {
-            backgroundColor: "#181B1B",
-          },
-        },
-      },
-      MuiListItemButton: {
-        styleOverrides: {
-          root: {
-            "&.Mui-selected": {
-              color: "#4fc3f7",
-            },
-          },
-        },
-      },
-      MuiListItemText: {
-        styleOverrides: {
-          primary: {
-            fontSize: 14,
-            fontWeight: 500,
-          },
-        },
-      },
-      MuiListItemIcon: {
-        styleOverrides: {
-          root: {
-            color: "inherit",
-            minWidth: "auto",
-            marginRight: 8,
-            "& svg": {
-              fontSize: 20,
-            },
-          },
-        },
-      },
-      MuiAvatar: {
-        styleOverrides: {
-          root: {
-            width: 32,
-            height: 32,
-          },
-        },
-      },
-    },
-  });
-
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
-  const [isShortNavigator, setIsShortNavigator] = useState(false);
-  const [isDocumentSettingsClicked, setIsDocumentSettingsClicked] =
-    useState(false);
-  const [documents, setDocuments] = useState([]); // Empty array to hold document data
-  const [isLoading, setIsLoading] = useState(true);
-
-  const drawerWidth = isShortNavigator ? 100 : 256;
-
   const handleDocumentSettingsClick = () => {
     setIsDocumentSettingsClicked((prev) => !prev);
   };
@@ -234,87 +91,178 @@ export default function Paperbase() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex", minHeight: "100vh" }}>
-        <CssBaseline />
-        {/* Navigator */}
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        >
-          {!isSmUp && (
-            <ShortNavigator
-              PaperProps={{ style: { width: drawerWidth } }}
-              variant="temporary"
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-              documents={documents}
-              isLoading={isLoading}
-            />
-          )}
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        backgroundColor: mainBgColor, // Apply common background color
+        color: theme.palette.text.primary,
+      }}
+    >
+      <CssBaseline />
 
-          {/* Tablet and Desktop view */}
-          {isSmUp ? (
-            isShortNavigator ? (
+      {/* Navigator */}
+      <Box
+        component="nav"
+        sx={{
+          width: { sm: drawerWidth },
+          flexShrink: { sm: 0 },
+          transition: theme.transitions.create(["width", "margin"], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+        }}
+      >
+        {!isSmUp && (
+          <ShortNavigator
+            PaperProps={{
+              style: {
+                width: drawerWidth,
+                ...darkModeStyles, // Apply dark mode styles unconditionally
+              },
+            }}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            documents={documents}
+            isLoading={isLoading}
+          />
+        )}
+
+        {isSmUp && (
+          <>
+            {isShortNavigator ? (
               <ShortNavigator
-                PaperProps={{ style: { width: drawerWidth } }}
+                PaperProps={{
+                  style: {
+                    width: drawerWidth,
+                    ...darkModeSecondary, // Apply dark mode styles unconditionally
+                  },
+                }}
                 documents={documents}
                 isLoading={isLoading}
               />
             ) : (
               <Navigator
-                PaperProps={{ style: { width: drawerWidth } }}
+                PaperProps={{
+                  style: {
+                    width: drawerWidth,
+                    ...darkModeSecondary, // Apply dark mode styles unconditionally
+                  },
+                }}
                 documents={documents}
                 isLoading={isLoading}
               />
-            )
-          ) : null}
-        </Box>
+            )}
+          </>
+        )}
+      </Box>
 
-        {/* Main Content Area */}
+      {/* Main Content Area */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          backgroundColor: mainBgColor, // Apply common background color
+          transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
+      >
+        {/* Header */}
+        <Header
+          onDocumentSettingsClick={handleDocumentSettingsClick}
+          isDocumentSettingsClicked={isDocumentSettingsClicked}
+          toggleNavigator={toggleNavigator}
+          isShortNavigator={isShortNavigator}
+          backgroundColor={mainBgColor} // Pass background color to Header
+        />
+
+        {/* Content */}
         <Box
+          component="main"
           sx={{
             flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            overflow: "auto",
+            position: "relative",
+            overflow: "hidden",
+            backgroundColor: mainBgColor, // Apply common background color
           }}
         >
-          {/* Header */}
-          <Header
-            onDocumentSettingsClick={handleDocumentSettingsClick}
-            isDocumentSettingsClicked={isDocumentSettingsClicked}
-            toggleNavigator={toggleNavigator}
-            isShortNavigator={isShortNavigator}
-          />
-
-          {/* Content */}
+          {/* Scrollable Content */}
           <Box
-            component="main"
             sx={{
-              flex: 1,
-              position: "relative",
-              overflow: "auto",
+              flexGrow: 1,
+              height: "100%",
+              overflowY: "auto",
+              p: 3,
+              "&::-webkit-scrollbar": {
+                width: "8px",
+                backgroundColor:
+                  mode === "dark"
+                    ? "rgba(255, 255, 255, 0.05)"
+                    : "rgba(0, 0, 0, 0.05)",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor:
+                  mode === "dark"
+                    ? "rgba(255, 255, 255, 0.2)"
+                    : "rgba(0, 0, 0, 0.2)",
+                borderRadius: "4px",
+                "&:hover": {
+                  backgroundColor:
+                    mode === "dark"
+                      ? "rgba(255, 255, 255, 0.3)"
+                      : "rgba(0, 0, 0, 0.3)",
+                },
+              },
             }}
           >
-            {/* Scrollable Content */}
-            <Box
-              sx={{
-                flexGrow: 1,
-                overflowY: "auto",
-                p: 2,
-              }}
-            >
-              <Content isDocumentSettingsClicked={isDocumentSettingsClicked} />
-            </Box>
-          </Box>
-
-          {/* Footer */}
-          <Box component="footer" sx={{ p: 2, bgcolor: "white" }}>
-            <Copyright />
+            <Content isDocumentSettingsClicked={isDocumentSettingsClicked} />
           </Box>
         </Box>
+
+        {/* Footer */}
+        <Box
+          component="footer"
+          sx={{
+            p: 2,
+            backgroundColor: mainBgColor, // Apply common background color
+            borderTop: `1px solid ${
+              mode === "dark"
+                ? "rgba(255, 255, 255, 0.05)"
+                : "rgba(0, 0, 0, 0.05)"
+            }`,
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              color: mode === "dark" ? "#B0B0B0" : theme.palette.text.secondary,
+              textAlign: "center",
+            }}
+          >
+            {"Copyright © "}
+            <Link
+              href="https://mui.com/"
+              sx={{
+                color: mode === "dark" ? "#90CAF9" : theme.palette.primary.main,
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                  color:
+                    mode === "dark" ? "#64B5F6" : theme.palette.primary.dark,
+                },
+              }}
+            >
+              Wrap
+            </Link>{" "}
+            {new Date().getFullYear()}.
+          </Typography>
+        </Box>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 }

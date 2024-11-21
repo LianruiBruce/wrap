@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
+// SettingPage.js
+import React, { useEffect, useState, useContext } from "react";
 import ShortNavigator from "../Components/ShortNavigator"; // import the ShortNavigator component
+import { Switch, FormControlLabel } from "@mui/material"; // import for colorMode switch
+
 import {
   Box,
   Button,
@@ -11,36 +14,7 @@ import {
   Slider,
   Typography,
 } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-
-// Custom theme to match your design
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#181B1B", // dark mode color
-    },
-    secondary: {
-      main: "#FFC773", // highlight color
-    },
-    background: {
-      default: "#F5F5F5", // Light background for the settings
-    },
-  },
-  typography: {
-    fontFamily: '"Quicksand", sans-serif',
-    h6: {
-      fontWeight: 500,
-      fontSize: "1.25rem",
-      letterSpacing: "0.0075em",
-    },
-    body1: {
-      fontSize: "1rem",
-      fontWeight: 400,
-      lineHeight: 1.5,
-      color: "#333",
-    },
-  },
-});
+import { ThemeContext } from "../colorTheme/ThemeContext"; // Import ThemeContext`
 
 export default function SettingPage() {
   // Initialize state from localStorage or provide default values
@@ -57,22 +31,28 @@ export default function SettingPage() {
     JSON.parse(localStorage.getItem("fontSize")) || 16 // Default to 16px
   ); // New state for font size
 
-  // Save updated values to localStorage whenever state changes
-  useEffect(() => {
-    localStorage.setItem("numberOfSections", JSON.stringify(numberOfSections));
-    localStorage.setItem("summaryLength", JSON.stringify(summaryLength));
-    localStorage.setItem("reportSpeed", JSON.stringify(reportSpeed));
-    localStorage.setItem("fontSize", JSON.stringify(fontSize)); // Save font size
-  }, [numberOfSections, summaryLength, reportSpeed, fontSize]);
+  const { mode, setMode } = useContext(ThemeContext); // Get mode and setMode from context
 
-  // Function to save settings to the backend
+  // State to track unsaved changes
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
+
+  // Function to save settings to localStorage and backend
   const handleSave = () => {
     const settings = {
       numberOfSections,
       summaryLength,
       reportSpeed,
-      fontSize, // Include font size
+      fontSize,
+      colorMode: mode, // Save color mode from context
     };
+
+    // Save settings to localStorage
+    localStorage.setItem("numberOfSections", JSON.stringify(numberOfSections));
+    localStorage.setItem("summaryLength", JSON.stringify(summaryLength));
+    localStorage.setItem("reportSpeed", JSON.stringify(reportSpeed));
+    localStorage.setItem("fontSize", JSON.stringify(fontSize)); // Save font size
+    localStorage.setItem("colorMode", mode); // Save color mode from context
+
     console.log("Settings saved:", settings);
 
     // Send the settings to the backend
@@ -87,6 +67,8 @@ export default function SettingPage() {
       .then((data) => {
         if (data.success) {
           console.log("Settings successfully saved to the server");
+          // Reset unsaved changes after successful save
+          setUnsavedChanges(false);
         } else {
           console.error("Failed to save settings to the server");
         }
@@ -96,19 +78,74 @@ export default function SettingPage() {
       });
   };
 
-  // Function to reset settings
+  // Function to reset settings and save immediately
   const resetSettings = () => {
     const userToken = localStorage.getItem("userToken");
 
+    // Reset state variables to default values
     setNumberOfSections(3);
     setSummaryLength(100);
     setReportSpeed(4);
-    setFontSize(16); // Reset font size to default
+    setFontSize(16);
+    setMode("light"); // Reset to light mode
+
+    // Save the reset settings immediately to localStorage
+    localStorage.setItem("numberOfSections", JSON.stringify(3));
+    localStorage.setItem("summaryLength", JSON.stringify(100));
+    localStorage.setItem("reportSpeed", JSON.stringify(4));
+    localStorage.setItem("fontSize", JSON.stringify(16));
+    localStorage.setItem("colorMode", "light"); // Save light mode
+
+    // Send the reset settings to the backend
+    const settings = {
+      numberOfSections: 3,
+      summaryLength: 100,
+      reportSpeed: 4,
+      fontSize: 16,
+      colorMode: "light", // Reset to light
+    };
+
+    fetch("/api/settings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(settings),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          console.log("Settings successfully reset on the server");
+        } else {
+          console.error("Failed to reset settings on the server");
+        }
+      })
+      .catch((error) => {
+        console.error("Error resetting settings on the server:", error);
+      });
+
+    // Reset unsaved changes
+    setUnsavedChanges(false);
+
     if (userToken) {
       localStorage.setItem("userToken", userToken);
     }
     console.log("Settings reset, token preserved.");
   };
+
+  // Prompt user before leaving the page if there are unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (unsavedChanges) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [unsavedChanges]);
 
   // Marks for the number of sections slider
   const sectionMarks = [
@@ -143,136 +180,178 @@ export default function SettingPage() {
     { value: 24, label: "24px" },
   ];
 
+  const handleColorModeChange = () => {
+    const newMode = mode === "light" ? "dark" : "light";
+    setMode(newMode);
+    localStorage.setItem("colorMode", newMode);
+    setUnsavedChanges(true);
+  };
+
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex", minHeight: "100vh" }}>
-        {/* Add ShortNavigator to the left */}
-        <ShortNavigator />
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      {/* Add ShortNavigator to the left */}
+      <ShortNavigator />
 
-        {/* Settings content */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            flexGrow: 1,
-            padding: "20px",
-            backgroundColor: "#f7f8fc",
-          }}
-        >
-          <Card sx={{ maxWidth: 800, width: "100%", padding: 3 }}>
-            <CardContent>
-              <Typography variant="h5" align="center" sx={{ mb: 3 }}>
-                User Settings
-              </Typography>
+      {/* Settings content */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          flexGrow: 1,
+          padding: "20px",
+          backgroundColor: "background.default",
+        }}
+      >
+        <Card sx={{ maxWidth: 800, width: "100%", padding: 3 }}>
+          <CardContent>
+            <Typography variant="h5" align="center" sx={{ mb: 3 }}>
+              User Settings
+            </Typography>
 
-              <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 2 }} />
 
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Report Settings
-              </Typography>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Report Settings
+            </Typography>
 
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Typography variant="body1">Number of Sections</Typography>
-                  <Slider
-                    value={numberOfSections}
-                    min={3}
-                    max={5}
-                    marks={sectionMarks}
-                    step={1}
-                    onChange={(e, newValue) => setNumberOfSections(newValue)}
-                    aria-labelledby="sections-slider"
-                    sx={{ mt: 2 }}
-                  />
-                </Grid>
-
-                {/* Add Divider */}
-                <Divider sx={{ my: 2 }} />
-
-                <Grid item xs={12}>
-                  <Typography variant="body1">Summary Length</Typography>
-                  <Slider
-                    value={summaryLength}
-                    min={100}
-                    max={250}
-                    marks={summaryMarks}
-                    step={null}
-                    onChange={(e, newValue) => setSummaryLength(newValue)}
-                    aria-labelledby="summary-length-slider"
-                    sx={{ mt: 2 }}
-                  />
-                  <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                    Current summary length: {summaryLength} words
-                  </Typography>
-                </Grid>
-
-                {/* Add Divider */}
-                <Divider sx={{ my: 2 }} />
-
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    Report Speed (1 = Fast, 8 = Precise)
-                  </Typography>
-                  <Slider
-                    value={reportSpeed}
-                    min={1}
-                    max={8}
-                    marks={speedMarks}
-                    step={1}
-                    onChange={(e, newValue) => setReportSpeed(newValue)}
-                    aria-labelledby="report-speed-slider"
-                    sx={{ mt: 2 }}
-                  />
-                  <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                    Current report speed: {reportSpeed}
-                  </Typography>
-                </Grid>
-
-                {/* Add Divider */}
-                <Divider sx={{ my: 2 }} />
-
-                <Grid item xs={12}>
-                  <Typography variant="body1">Font Size</Typography>
-                  <Slider
-                    value={fontSize}
-                    min={12}
-                    max={24}
-                    marks={fontSizeMarks}
-                    step={null} // Only allow selecting predefined values
-                    onChange={(e, newValue) => setFontSize(newValue)}
-                    aria-labelledby="font-size-slider"
-                    sx={{ mt: 2 }}
-                  />
-                  <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                    Current font size: {fontSize}px
-                  </Typography>
-                </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Typography variant="body1">Number of Sections</Typography>
+                <Slider
+                  value={numberOfSections}
+                  min={3}
+                  max={5}
+                  marks={sectionMarks}
+                  step={1}
+                  onChange={(e, newValue) => {
+                    setNumberOfSections(newValue);
+                    setUnsavedChanges(true);
+                  }}
+                  aria-labelledby="sections-slider"
+                  sx={{ mt: 2 }}
+                />
               </Grid>
-
+              {/* Add Divider */}
+              <Divider sx={{ my: 2 }} />
+              <Grid item xs={12}>
+                <Typography variant="body1">Summary Length</Typography>
+                <Slider
+                  value={summaryLength}
+                  min={100}
+                  max={250}
+                  marks={summaryMarks}
+                  step={null}
+                  onChange={(e, newValue) => {
+                    setSummaryLength(newValue);
+                    setUnsavedChanges(true);
+                  }}
+                  aria-labelledby="summary-length-slider"
+                  sx={{ mt: 2 }}
+                />
+                <Typography variant="body2" align="center" sx={{ mt: 1 }}>
+                  Current summary length: {summaryLength} words
+                </Typography>
+              </Grid>
+              {/* Add Divider */}
+              <Divider sx={{ my: 2 }} />
+              <Grid item xs={12}>
+                <Typography variant="body1">
+                  Report Speed (1 = Fast, 8 = Precise)
+                </Typography>
+                <Slider
+                  value={reportSpeed}
+                  min={1}
+                  max={8}
+                  marks={speedMarks}
+                  step={1}
+                  onChange={(e, newValue) => {
+                    setReportSpeed(newValue);
+                    setUnsavedChanges(true);
+                  }}
+                  aria-labelledby="report-speed-slider"
+                  sx={{ mt: 2 }}
+                />
+                <Typography variant="body2" align="center" sx={{ mt: 1 }}>
+                  Current report speed: {reportSpeed}
+                </Typography>
+              </Grid>
+              {/* Add Divider */}
+              <Divider sx={{ my: 2 }} />
+              <Grid item xs={12}>
+                <Typography variant="body1">Font Size</Typography>
+                <Slider
+                  value={fontSize}
+                  min={12}
+                  max={24}
+                  marks={fontSizeMarks}
+                  step={null} // Only allow selecting predefined values
+                  onChange={(e, newValue) => {
+                    setFontSize(newValue);
+                    setUnsavedChanges(true);
+                  }}
+                  aria-labelledby="font-size-slider"
+                  sx={{ mt: 2 }}
+                />
+                <Typography variant="body2" align="center" sx={{ mt: 1 }}>
+                  Current font size: {fontSize}px
+                </Typography>
+              </Grid>
+              {/* Add Divider */}
               <Divider sx={{ my: 2 }} />
 
-              <CardActions sx={{ justifyContent: "space-between" }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSave}
-                >
-                  Save Settings
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={resetSettings}
-                >
-                  Reset Settings
-                </Button>
-              </CardActions>
-            </CardContent>
-          </Card>
-        </Box>
+              {/* Add color mode switch */}
+              <Grid item xs={12}>
+                <Typography variant="body1">Dark Mode</Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={mode === "dark"}
+                      onChange={handleColorModeChange}
+                      color="primary"
+                    />
+                  }
+                  label={mode === "dark" ? "Dark Mode" : "Light Mode"}
+                  sx={{ mt: 1 }}
+                />
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 2 }} />
+
+            {/* Display unsaved changes message */}
+            {unsavedChanges && (
+              <Typography
+                variant="body2"
+                color="error"
+                align="center"
+                sx={{ mt: 1 }}
+              >
+                You have unsaved changes!
+              </Typography>
+            )}
+
+            <CardActions sx={{ justifyContent: "space-between" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSave}
+                disabled={!unsavedChanges} // Disable save button if no changes
+              >
+                Save Settings
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={resetSettings}
+              >
+                Reset Settings
+              </Button>
+            </CardActions>
+          </CardContent>
+        </Card>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 }

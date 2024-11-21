@@ -1,7 +1,7 @@
 {
-  "name": "Wrap_github",
-  "description": "Chrome Practice Extension",
-  "version": "1.1",
+  "name": "Wrap",
+  "description": "Legal Document Generation",
+  "version": "1.0",
   "manifest_version": 3,
   "permissions": [
     "activeTab",
@@ -9,6 +9,7 @@
     "scripting",
     "storage",
     "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
     "webRequest",
     "notifications",
     "contextMenus"
@@ -47,5 +48,14 @@
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ad_block_rules",
+        "enabled": true,
+        "path": "rules/ad_block_rules.json"
+      }
+    ]
   }
 }

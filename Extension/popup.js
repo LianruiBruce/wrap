@@ -47,9 +47,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //upload button
   document.getElementById("upload-btn").addEventListener("click", function () {
-    chrome.tabs.create({ url: "https://wrapcapstone.com/" });
+    chrome.tabs.create({ url: "http://localhost:3000/" });
   });
-  wrapcapstone.com;
+
   //report error button
   document
     .getElementById("report-error-btn")
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           console.log("Response from background:", response);
         }
       });
-      window.location.href = "/extension_frontend/wrap.html"
+      window.location.href = "/extension_frontend/wrap.html";
       chrome.action.setPopup({ popup: "extension_frontend/wrap.html" });
     });
 
@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document
       .getElementById("report-btn")
       .addEventListener("click", function () {
-        chrome.tabs.create({ url: "https://wrapcapstone.com/" });
+        chrome.tabs.create({ url: "http://localhost:3000/" });
         chrome.storage.local.get("documentID", (result) => {
           const documentID = result.documentID;
 
@@ -248,14 +248,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (riskStatus === "hideRiskContainer") {
       document.querySelector(".risk-container").style.display = "none";
+      document.querySelector(".loading-container").style.display = "none";
+      document.getElementById("report-btn").style.display = "none";
     } else if (riskStatus === "loginError") {
       document.querySelector(".risk-container").style.display = "none";
+      document.querySelector(".loading-container").style.display = "none";
     } else if (riskStatus === "reportError") {
       document.querySelector(".risk-container").style.display = "none";
+      document.querySelector(".loading-container").style.display = "none";
     } else {
       console.log("No risk status found.");
     }
-    chrome.storage.local.remove("riskStatus");
   });
 });
 
@@ -473,7 +476,7 @@ function updatePopupContent(receivedData) {
         document.getElementById("date").textContent =
           receivedData.date ?? "No Date";
         updateReadability(receivedData.readability);
-wrapcapstone.com
+
         console.log("Updated Readability by updatePopupContent");
 
         //settings set
@@ -509,7 +512,7 @@ wrapcapstone.com
         document
           .getElementById("report-btn")
           .addEventListener("click", function () {
-            chrome.tabs.create({ url: "https://wrapcapstone.com/" });
+            chrome.tabs.create({ url: "http://localhost:3000/" });
 
             chrome.storage.local.get("documentID", (result) => {
               const documentID = result.documentID;

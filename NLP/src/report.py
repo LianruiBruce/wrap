@@ -1,8 +1,24 @@
-from src import anthropic_request
 from src import summarize
-import anthropic
 import re
 import json
+import anthropic
+
+def make_request(model, system, content):
+    client = anthropic.Anthropic(api_key="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")
+
+    message = client.messages.create(
+        model= model,
+        max_tokens=1000,
+        temperature=0.0,
+        system=system,
+        messages=[
+            {
+                "role": "user",
+                "content": content
+            }
+            ]
+    )   
+    return message.content[0].text
 
 def transformers_summary(text, model, tokenizer, device):
     return summarize.transformers_summary(text, model, tokenizer, device)
@@ -16,7 +32,7 @@ def tokens_count(input):
     return token_count
 
 def general_summary(input, num_words=150):
-    response = anthropic_request.make_request(
+    response = make_request(
         "claude-3-5-sonnet-20240620",
         "Provide concise, clear, and legally accurate summaries.",
         f"""
@@ -37,7 +53,7 @@ def general_summary(input, num_words=150):
     return response
 
 def section_summary(input, num_sections):
-    response = anthropic_request.make_request(
+    response = make_request(
         "claude-3-5-sonnet-20240620",
         "Provide concise, clear, and legally accurate responses.",
         f"""
@@ -65,7 +81,7 @@ def section_summary(input, num_sections):
     return response
 
 def risk_assessment(input):
-    response = anthropic_request.make_request(
+    response = make_request(
         "claude-3-5-sonnet-20240620",
         "Provide concise, clear, and legally accurate responses.",
         f"""
@@ -113,7 +129,7 @@ def risk_assessment(input):
     return response
 
 def pdf_info(input):
-    response = anthropic_request.make_request(
+    response = make_request(
         "claude-3-5-sonnet-20240620",
         "Provide concise, clear and direct responses.",
         f"""
@@ -121,14 +137,22 @@ def pdf_info(input):
         If Yes:
         What is the category, 'Terms and Conditions', 'Privacy Policy', 'Contract Agreement' or a 'Cookie Policy'?
         What is the name of the company referred to?  
-        What is the effective Date of this document?\n {input}
+        What is the effective Date of this document?
+        
+        Answer with this format:
+        
+        Category: ...
+        Company name: ...
+        Effective Date: ...
+            
+        {input}
         """
         )
     
     return response
 
 def consolidated_report(input, num_words=150, num_sections=3):
-    response = anthropic_request.make_request(
+    response = make_request(
         "claude-3-5-sonnet-20240620",
         "Provide concise, clear, and legally accurate responses.",
         f"""
@@ -138,7 +162,7 @@ def consolidated_report(input, num_words=150, num_sections=3):
         - Capture the main themes and important legal, data, financial, policy, and practical points.
         - Avoid unnecessary technical language but keep the legal meaning intact.
         - Make sure the summary highlights any obligations, risks, or critical information.
-        - Keep the summary length at around {num_words} words.
+        - Keep the summary length at around {num_words} words and use bullet points.
         - Strict response format:
           <<GENERAL_SUMMARY>>
           {{
@@ -147,7 +171,7 @@ def consolidated_report(input, num_words=150, num_sections=3):
           <<END_GENERAL_SUMMARY>>
 
         2. **Section Summary**:
-        - Select the {num_sections} main points in this legal document, focusing specifically on key dates, relevant data, financial information, and significant legal details. Provide a short description of each point that highlights these crucial aspects for user comprehension.
+        - Select the main points in this legal document, focusing specifically on key dates, deadlines, data usage, financial and payments, and significant legal details. Provide a short description of each point that highlights these crucial aspects for user comprehension.
         - Strict response format (ensure proper JSON formatting):
           <<SECTION_SUMMARY>>
           [

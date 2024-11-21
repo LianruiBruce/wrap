@@ -152,6 +152,7 @@ async function fetchUserDocuments(userId) {
         reportDate: userDoc.reportDate,
         documentType: userDoc.documentID.category,
         risky: userDoc.documentID.risky,
+        readability: userDoc.documentID.readability,
       });
     }
   }

@@ -129,7 +129,7 @@ def summarize_batch(batch_texts, bart_model, bart_tokenizer, device, max_length=
 def section_summary(sections, bart_model, bart_tokenizer, bert_model, bert_tokenizer, 
                     device, chunk_size=512, batch_size=12, max_length=96, min_length=32):
     """Summarize sections: Only keep summaries, otherwise use empty strings."""
-    sections = json.loads(sections)  # Load JSON input
+    #sections = json.loads(sections)  # Load JSON input
     preprocessed_sections = []
 
     # Preprocess each section's content

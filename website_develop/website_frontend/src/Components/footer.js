@@ -1,10 +1,6 @@
-import * as React from "react";
-import CssBaseline from "@mui/material/CssBaseline";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
+import React from "react";
+import { CssBaseline, Box, Typography, Container, Link } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 function Copyright() {
   return (
@@ -19,12 +15,12 @@ function Copyright() {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-const defaultTheme = createTheme();
-
 export default function StickyFooter() {
+  const theme = useTheme();
+
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <>
+      <CssBaseline />
       <Box
         sx={{
           display: "flex",
@@ -32,27 +28,16 @@ export default function StickyFooter() {
           minHeight: "100vh",
         }}
       >
-        <CssBaseline />
-        {/* <Container component="main" sx={{ mt: 8, mb: 2 }} maxWidth="sm">
-          <Typography variant="h2" component="h1" gutterBottom>
-            Sticky footer
-          </Typography>
-          <Typography variant="h5" component="h2" gutterBottom>
-            {'Pin a footer to the bottom of the viewport.'}
-            {'The footer will move as the main element of the page grows.'}
-          </Typography>
-          <Typography variant="body1">Sticky footer placeholder.</Typography>
-        </Container> */}
+        {/* Main content can be added here if needed */}
+
         <Box
           component="footer"
           sx={{
             py: 3,
             px: 2,
             mt: "auto",
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[200]
-                : theme.palette.grey[800],
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
           }}
         >
           <Container maxWidth="sm">
@@ -63,6 +48,6 @@ export default function StickyFooter() {
           </Container>
         </Box>
       </Box>
-    </ThemeProvider>
+    </>
   );
 }

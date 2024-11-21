@@ -1,4 +1,5 @@
 # Flask application
+import json
 from flask import Flask, request, jsonify
 import torch
 import time
@@ -6,6 +7,10 @@ from src import report
 from src import stats
 from src import classifier
 from src import models
+from src import pdf_parse
+import base64
+import fitz 
+from io import BytesIO
 
 # Start the Flask application
 app = Flask(__name__)
@@ -31,8 +36,6 @@ print("Models loadeded")
 
 @app.route('/process-url', methods=['POST'])
 def process_text():
-    print("Request received")
-
     data = request.json['data']
     text = data['text']
     url = data['url']
@@ -101,9 +104,6 @@ def generate_report():
     return jsonify({
         "success":True, 
         "original_document": text, 
-        # "general_summary": general_summary, 
-        # "section_summary": section_summary,
-        # "risk_assessment": risk_assessment,
         "general_summary": rep["general_summary"], 
         "section_summary": rep["section_summary"],
         "risk_assessment": rep["risk_assessment"],
@@ -116,7 +116,8 @@ def generate_sections():
 
     text = data['text']
     sections = data['sections']
-
+    sections = json.loads(sections)
+    
     start_time = time.time()
 
     sections = report.sections_summary(sections, bart_model, bart_tokenizer, legal_bert_model, legal_bert_tokenizer, device)
@@ -163,13 +164,20 @@ def getPDFInfo():
 def generate_reportByPDF():
     print("NLP Request received for generate-reportByPDF")
     data = request.json
+    pdf = data.get('pdf')
+    
+    if not pdf:
+        print("Error: PDF data is missing in the request.")
+        return jsonify({"success": False, "message": "PDF data missing"}), 400
+    
+    
     text = data.get('text')
     summary_length = data['userSettings']['summaryLength']
     num_sections = data['userSettings']['numberOfSections']
     report_speed = data['userSettings']['reportSpeed']
-
-    transformers_summary = report.transformers_summary(text, legal_bert_model, legal_bert_tokenizer, device)
     
+    transformers_summary = report.transformers_summary(text, legal_bert_model, legal_bert_tokenizer, device)
+
     if report.tokens_count(transformers_summary) > 20000:
         return jsonify({
         "success":False, 
@@ -180,23 +188,25 @@ def generate_reportByPDF():
         "sections": None
         })
 
-    general_summary = report.general_summary(transformers_summary, summary_length)
+    start = time.time()
+    response = report.consolidated_report(transformers_summary, summary_length, num_sections)
+    rep = report.parse_response(response)    
+    print("Took: ", time.time() - start)
+    
+    spams = pdf_parse.extract_text(pdf)
+    tags = pdf_parse.extract_tags(spams)
+    sections = pdf_parse.extract_sections(tags)
+    sections = report.sections_summary(sections, bart_model, bart_tokenizer, legal_bert_model, legal_bert_tokenizer, device)
 
-    section_summary = report.section_summary(transformers_summary, num_sections)
-
-    risk_assessment = report.risk_assessment(transformers_summary)
 
     print("NLP Done with generate reportByPDF")
-    print("general_summary: ", general_summary)
-    print("section_summary: ", section_summary)
-    print("risk_assessment: ", risk_assessment)
     return jsonify({
         "success":True, 
-        "original_document": text, 
-        "general_summary": general_summary, 
-        "section_summary": section_summary,
-        "risk_assessment": risk_assessment,
-        "sections": None
+        "original_document": tags, 
+        "general_summary": rep["general_summary"], 
+        "section_summary": rep["section_summary"],
+        "risk_assessment": rep["risk_assessment"],
+        "sections": sections
         })
 
 if __name__ == '__main__':

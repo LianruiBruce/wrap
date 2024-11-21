@@ -1,5 +1,5 @@
 let isProcessing = false;
-// this is rule IDs for non-essential cookies, still need to be tested -- Lianrui
+// This is rule IDs for non-essential cookies -- Lianrui
 
 const keepAlive = ((i) => (state) => {
   if (state && !i) {
@@ -10,6 +10,7 @@ const keepAlive = ((i) => (state) => {
     i = 0;
   }
 })();
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "sendToProxy",
@@ -23,7 +24,7 @@ chrome.runtime.onInstalled.addListener(() => {
       detectLegalDoc: true,
       generateReport: true,
       showNotification: true,
-      safeMode: true,
+      // safeMode: true,
       termsConditions: true,
       privacyPolicy: true,
       contractAgreement: true,
@@ -34,10 +35,13 @@ chrome.runtime.onInstalled.addListener(() => {
     }
   );
 
-  chrome.storage.local.remove(["token", "reportInfo", "riskInfo"], () => {
-    chrome.action.setIcon({ path: "icons/Wrap_Red.png" });
-    console.log("Token and report data removed from storage");
-  });
+  chrome.storage.local.remove(
+    ["token", "reportInfo", "riskInfo", "riskStatus"],
+    () => {
+      chrome.action.setIcon({ path: "icons/Wrap_Red.png" });
+      console.log("Token and report data removed from storage");
+    }
+  );
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
@@ -64,9 +68,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (tab.url && tab.url.startsWith("wrapcapstone.com")) {
-    console.log("Skipping legal document detection for wrapcapstone.com");
-    return; // Don't execute further if the URL matches wrapcapstone.com
+  if (tab.url && tab.url.startsWith("http://localhost:3000")) {
+    console.log("Skipping legal document detection for localhost:3000");
+    return; // Don't execute further if the URL matches localhost:3000
   }
 
   chrome.storage.local.get("token", (result) => {
@@ -127,7 +131,7 @@ chrome.runtime.onMessage.addListener(async function (
   }
 
   if (message.type === "extracted-data") {
-    if (message.data.url == "wrapcapstone.com/mainpage") {
+    if (message.data.url == "http://localhost:3000/mainpage") {
       chrome.action.setPopup({ popup: "extension_frontend/wrap.html" });
       return true;
     }
@@ -141,6 +145,7 @@ chrome.runtime.onMessage.addListener(async function (
     let isLegalDoc = (
       await isLegalDocument(
         message.data.headers,
+        message.data.headers2,
         message.data.title,
         message.data.url
       )
@@ -148,9 +153,12 @@ chrome.runtime.onMessage.addListener(async function (
     console.log("Is legal document: ", isLegalDoc);
 
     if (isLegalDoc) {
-      chrome.storage.local.remove(["reportInfo", "riskInfo"], () => {
-        console.log("Token and report data removed from storage");
-      });
+      chrome.storage.local.remove(
+        ["reportInfo", "riskInfo", "riskStatus", "documentID"],
+        () => {
+          console.log("Token and report data removed from storage");
+        }
+      );
 
       chrome.action.setIcon({ path: "icons/Wrap_Yellow.png" });
 
@@ -231,7 +239,7 @@ chrome.runtime.onMessage.addListener(async function (
               iconUrl: "icons/error.png",
               title: "Error to Get Report",
               message:
-                "A legal document have detected, but have error to show report!",
+                "A legal document has been detected, but there was an error showing the report!",
               priority: 1,
             });
           }
@@ -258,26 +266,39 @@ chrome.runtime.onMessage.addListener(async function (
   }
 
   if (message.type === "USER_LOGIN") {
-    const token = message.token;
-    console.log("Token received:", token);
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const currentTab = tabs[0];
+      const validURL = "http://localhost:3000";
 
-    chrome.storage.local.set({ token }, () => {
-      chrome.action.setIcon({ path: "icons/Wrap.png" });
-      console.log("Token stored in chrome.storage.local");
-      getCurrentSettings(async (settings) => {
-        if (settings.showNotification) {
-          chrome.notifications.create("Login", {
-            type: "basic",
-            iconUrl: "icons/notification.png",
-            title: "Login Successfully",
-            message: "You have Login extension successfully!",
-            priority: 1,
+      if (currentTab && currentTab.url && currentTab.url.startsWith(validURL)) {
+        const token = message.token;
+        console.log("Token received:", token);
+
+        chrome.storage.local.set({ token }, () => {
+          chrome.action.setIcon({ path: "icons/Wrap.png" });
+          console.log("Token stored in chrome.storage.local");
+          getCurrentSettings(async (settings) => {
+            if (settings.showNotification) {
+              chrome.notifications.create("Login", {
+                type: "basic",
+                iconUrl: "icons/notification.png",
+                title: "Login Successfully",
+                message: "You have logged into the extension successfully!",
+                priority: 1,
+              });
+            }
           });
-        }
-      });
-    });
+        });
 
-    sendResponse({ success: true });
+        sendResponse({ success: true });
+      } else {
+        console.error(
+          "Login attempt from unauthorized source:",
+          currentTab?.url
+        );
+        sendResponse({ success: false, error: "Unauthorized source" });
+      }
+    });
 
     return true;
   }
@@ -292,12 +313,13 @@ chrome.runtime.onMessage.addListener(async function (
             type: "basic",
             iconUrl: "icons/notification.png",
             title: "Logout Successfully",
-            message: "You have Logout extension successfully!",
+            message: "You have logged out of the extension successfully!",
             priority: 1,
           });
         }
       });
     });
+
     sendResponse({ success: true });
 
     return true;
@@ -311,22 +333,24 @@ chrome.runtime.onMessage.addListener(async function (
 
       if (!token) {
         console.error("Token not found. User might not be logged in.");
-        if (settings.showNotification) {
-          chrome.notifications.create("userLogin", {
-            type: "basic",
-            iconUrl: "icons/error.png",
-            title: "Error to Generate Report",
-            message: "User is not logged in. Please log in.",
-            priority: 1,
-          });
-        }
+        getCurrentSettings(async (settings) => {
+          if (settings.showNotification) {
+            chrome.notifications.create("userLogin", {
+              type: "basic",
+              iconUrl: "icons/error.png",
+              title: "Error to Generate Report",
+              message: "User is not logged in. Please log in.",
+              priority: 1,
+            });
+          }
+        });
         sendResponse({ success: false, message: "User not logged in." });
         return true;
       }
 
       keepAlive(true);
 
-      fetch(`/getReportByDocumentID`, {
+      fetch(`http://localhost:3000/get-report-by-documentID`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -350,7 +374,7 @@ chrome.runtime.onMessage.addListener(async function (
 
   if (message.type === "Back_Home") {
     chrome.action.setIcon({ path: "icons/Wrap.png" });
-    console.log("Home button click");
+    console.log("Home button clicked");
     sendResponse({ status: "Icon updated" });
     return true;
   }
@@ -377,7 +401,11 @@ function getCurrentSettings(callback) {
       "detectLegalDoc",
       "generateReport",
       "showNotification",
-      "safeMode",
+      // "safeMode",
+      "termsConditions",
+      "privacyPolicy",
+      "contractAgreement",
+      "cookiePolicy",
     ],
     callback
   );
@@ -403,7 +431,7 @@ async function sendDataToServer(data) {
   isProcessing = true;
 
   try {
-    const response = await fetch("https://wrapcapstone.com/process-webpage", {
+    const response = await fetch("http://localhost:3000/process-webpage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -419,7 +447,7 @@ async function sendDataToServer(data) {
     });
     const responseData = await response.json();
     if (responseData.success) {
-      console.log("Process data successfull: ", responseData.data);
+      console.log("Process data successful: ", responseData.data);
       return responseData.data;
     }
 
@@ -458,7 +486,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
         return;
       }
 
-      fetch("https://wrapcapstone.com/generate-report", {
+      fetch("http://localhost:3000/generate-report", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -514,7 +542,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
               });
             }
           });
-          reject(error); // Reject the promise with the error
+          reject(error);
         })
         .finally(() => {
           isProcessing = false;
@@ -593,7 +621,8 @@ async function sendErrorToPopup() {
   });
 }
 
-async function isLegalDocument(header, title, url) {
+async function isLegalDocument(header, headers2, title, url) {
+  console.log(header, headers2);
   const settings = await getDetectSettings();
 
   const documentLabels = {
@@ -605,6 +634,9 @@ async function isLegalDocument(header, title, url) {
           "terms of service",
           "user agreement",
           "other conditions",
+          "services agreement",
+          "agreement of service",
+          "user conditions",
         ]
       : [],
     "privacy policy": settings.privacyPolicy
@@ -630,7 +662,7 @@ async function isLegalDocument(header, title, url) {
       : [],
   };
 
-  const content = [header, title, url]
+  const content = [header, headers2, title, url]
     .map((item) => (item ? item.toLowerCase() : ""))
     .join(" ");
 
@@ -675,197 +707,117 @@ function isDuplicateRequest(tab, changeInfo) {
   return true;
 }
 
-// const nonEssentialCookieRuleIds = [1000, 1001];
+// const MAX_DYNAMIC_RULES = 30000; // Theoretical max for dynamic rules
+// const BATCH_SIZE = 5000; // Adjusted batch size for loading rules
+// let currentBatchIndex = 0;
 
-// chrome.declarativeNetRequest.updateSessionRules(
-//   {
-//     removeRuleIds: nonEssentialCookieRuleIds,
-//     addRules: [
-//       {
-//         id: nonEssentialCookieRuleIds[0],
-//         priority: 1,
-//         action: {
-//           type: "modifyHeaders",
-//           requestHeaders: [{ header: "Cookie", operation: "remove" }],
-//         },
-//         condition: {
-//           resourceTypes: ["main_frame", "xmlhttprequest"],
-//           domains: ["*"], // for all domains, need to be tested -- Lianrui
-//         },
-//       },
-//       {
-//         id: nonEssentialCookieRuleIds[1],
-//         priority: 1,
-//         action: {
-//           type: "modifyHeaders",
-//           responseHeaders: [{ header: "Set-Cookie", operation: "remove" }],
-//         },
-//         condition: {
-//           resourceTypes: ["main_frame", "xmlhttprequest"],
-//           domains: ["*"],
-//         },
-//       },
-//     ],
-//   },
-//   () => {
-//     if (chrome.runtime.lastError) {
-//       console.error(
-//         "Error updating declarativeNetRequest rules:",
-//         chrome.runtime.lastError
-//       );
-//     } else {
-//       console.log("Non-essential cookie blocking rules updated.");
-//     }
+// // Function to update settings based on Safe Mode
+// function updateSettingsBasedOnSafeMode(safeMode) {
+//   const ruleFilePath = chrome.runtime.getURL("rules/ad_block_rules.json");
+
+//   if (safeMode) {
+//     // Clear all existing dynamic rules before loading new ones
+//     clearAllDynamicRules().then(() => {
+//       fetch(ruleFilePath)
+//         .then((response) => response.json())
+//         .then((rules) => {
+//           const limitedRules = rules.slice(0, MAX_DYNAMIC_RULES);
+//           currentBatchIndex = 0;
+//           loadRulesInBatches(limitedRules);
+//         })
+//         .catch((error) => console.error("Failed to load rules from JSON:", error));
+//     });
+//   } else {
+//     clearAllDynamicRules().then(() => {
+//       console.log("All dynamic rules cleared upon exiting Safe Mode.");
+//       reloadActiveTab();
+//     });
 //   }
+// }
+
+// // Helper function to load rules in batches
+// function loadRulesInBatches(rules) {
+//   const totalBatches = Math.ceil(rules.length / BATCH_SIZE);
+
+//   const batchInterval = setInterval(() => {
+//     if (currentBatchIndex >= totalBatches) {
+//       clearInterval(batchInterval);
+//       console.log("All batches loaded successfully.");
+//       return;
+//     }
+
+//     const start = currentBatchIndex * BATCH_SIZE;
+//     const batch = rules.slice(start, start + BATCH_SIZE);
+
+//     chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
+//       const currentRuleCount = existingRules.length;
+//       const remainingCapacity = MAX_DYNAMIC_RULES - currentRuleCount;
+
+//       if (remainingCapacity <= 0) {
+//         console.warn("Cannot add more rules, dynamic rule limit reached.");
+//         clearInterval(batchInterval);
+//         return;
+//       }
+
+//       const adjustedBatch = batch.slice(0, remainingCapacity);
+
+//       chrome.declarativeNetRequest.updateDynamicRules(
+//         {
+//           removeRuleIds: [],
+//           addRules: adjustedBatch,
+//         },
+//         () => {
+//           if (chrome.runtime.lastError) {
+//             console.error("Error adding dynamic rules:", chrome.runtime.lastError);
+//             clearInterval(batchInterval); // Stop if an error occurs
+//           } else {
+//             console.log(`Batch ${currentBatchIndex + 1} added with ${adjustedBatch.length} rules.`);
+//             currentBatchIndex++;
+//           }
+//         }
+//       );
+//     });
+//   }, 1000); // Adjust interval time if necessary
+// }
+
+// // Clear all dynamic rules
+// function clearAllDynamicRules() {
+//   return new Promise((resolve) => {
+//     chrome.declarativeNetRequest.getDynamicRules((rules) => {
+//       const ruleIds = rules.map((rule) => rule.id);
+//       chrome.declarativeNetRequest.updateDynamicRules(
+//         { removeRuleIds: ruleIds },
+//         () => {
+//           if (chrome.runtime.lastError) {
+//             console.error("Error clearing dynamic rules:", chrome.runtime.lastError);
+//           } else {
+//             console.log("All dynamic rules cleared.");
+//           }
+//           resolve();
+//         }
+//       );
+//     });
+//   });
+// }
+
+// // Helper function to reload the active tab
+// function reloadActiveTab() {
+//   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+//     if (tabs.length > 0) {
+//       chrome.tabs.reload(tabs[0].id);
+//     }
+//   });
+// }
+
+// // Initialize settings based on Safe Mode
+// getCurrentSettings((settings) =>
+//   updateSettingsBasedOnSafeMode(settings.safeMode)
 // );
 
-// // Use webRequest listeners to log request and response headers
-// chrome.webRequest.onBeforeSendHeaders.addListener(
-//   function (details) {
-//     console.log(
-//       "Blocked outgoing request with headers:",
-//       details.requestHeaders
-//     );
-//     return { requestHeaders: details.requestHeaders };
-//   },
-//   { urls: ["<all_urls>"] }, // Match all URLs
-//   ["requestHeaders"]
-// );
-
-// chrome.webRequest.onHeadersReceived.addListener(
-//   function (details) {
-//     console.log(
-//       "Blocked incoming response with headers:",
-//       details.responseHeaders
-//     );
-//     return { responseHeaders: details.responseHeaders };
-//   },
-//   { urls: ["<all_urls>"] },
-//   ["responseHeaders"]
-// );
-
-function updateSettingsBasedOnSafeMode(safeMode) {
-  const nonEssentialCookieRuleIds = [1000, 1001];
-  if (safeMode) {
-    // Update cookie blocking rules to block third-party cookies only
-    chrome.declarativeNetRequest.updateSessionRules(
-      {
-        removeRuleIds: nonEssentialCookieRuleIds,
-        addRules: [
-          {
-            id: nonEssentialCookieRuleIds[0],
-            priority: 1,
-            action: {
-              type: "modifyHeaders",
-              requestHeaders: [{ header: "Cookie", operation: "remove" }],
-            },
-            condition: {
-              resourceTypes: [
-                "xmlhttprequest",
-                "sub_frame",
-                "image",
-                "script",
-                "stylesheet",
-                "object",
-                "media",
-                "font",
-                "other",
-              ],
-              // Apply to third-party domains only
-              domainType: "thirdParty",
-            },
-          },
-          {
-            id: nonEssentialCookieRuleIds[1],
-            priority: 1,
-            action: {
-              type: "modifyHeaders",
-              responseHeaders: [{ header: "Set-Cookie", operation: "remove" }],
-            },
-            condition: {
-              resourceTypes: [
-                "xmlhttprequest",
-                "sub_frame",
-                "image",
-                "script",
-                "stylesheet",
-                "object",
-                "media",
-                "font",
-                "other",
-              ],
-              // Apply to third-party domains only
-              domainType: "thirdParty",
-            },
-          },
-        ],
-      },
-      () => {
-        if (chrome.runtime.lastError) {
-          console.error(
-            "Error updating declarativeNetRequest rules:",
-            chrome.runtime.lastError
-          );
-        } else {
-          console.log("Non-essential cookie blocking rules updated.");
-        }
-      }
-    );
-
-    // Use webRequest listeners to log request and response headers
-    chrome.webRequest.onBeforeSendHeaders.addListener(
-      logRequestHeaders,
-      { urls: ["<all_urls>"] },
-      ["requestHeaders"]
-    );
-    chrome.webRequest.onHeadersReceived.addListener(
-      logResponseHeaders,
-      { urls: ["<all_urls>"] },
-      ["responseHeaders"]
-    );
-  } else {
-    // remove listeners
-    chrome.declarativeNetRequest.updateSessionRules(
-      { removeRuleIds: nonEssentialCookieRuleIds },
-      () => {
-        console.log("Non-essential cookie blocking rules removed.");
-      }
-    );
-    chrome.webRequest.onBeforeSendHeaders.removeListener(logRequestHeaders);
-    chrome.webRequest.onHeadersReceived.removeListener(logResponseHeaders);
-  }
-}
-
-function logRequestHeaders(details) {
-  console.log(
-    "Outgoing request to:",
-    details.url,
-    "with headers:",
-    details.requestHeaders
-  );
-  return { requestHeaders: details.requestHeaders };
-}
-
-function logResponseHeaders(details) {
-  console.log(
-    "Incoming response from:",
-    details.url,
-    "with headers:",
-    details.responseHeaders
-  );
-  return { responseHeaders: details.responseHeaders };
-}
-
-getCurrentSettings((settings) =>
-  updateSettingsBasedOnSafeMode(settings.safeMode)
-);
-
-// Listen for storage changes
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "sync" && changes.safeMode) {
-    console.log("Save Mode is changed to " + changes.safeMode.newValue);
-    getCurrentSettings((settings) =>
-      updateSettingsBasedOnSafeMode(settings.safeMode.newValue)
-    );
-  }
-});
+// // Listen for storage changes
+// chrome.storage.onChanged.addListener((changes, area) => {
+//   if (area === "sync" && changes.safeMode) {
+//     console.log("Safe Mode is changed to " + changes.safeMode.newValue);
+//     updateSettingsBasedOnSafeMode(changes.safeMode.newValue);
+//   }
+// });

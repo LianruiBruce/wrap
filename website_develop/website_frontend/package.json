@@ -1,7 +1,7 @@
 {
   "name": "website_frontend",
   "version": "0.1.0",
-  "proxy": "https://wrapcapstone.com",
+  "proxy": "http://localhost:3001",
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.x",
@@ -21,13 +21,16 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "react-scripts": "^5.0.1",
-    "recharts": "^2.13.0",
+    "recharts": "^2.13.3",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "frontend-build": "react-scripts build"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

@@ -1,16 +1,12 @@
-import DeleteIcon from "@mui/icons-material/Delete";
-import DescriptionIcon from "@mui/icons-material/Description";
-import DownloadIcon from "@mui/icons-material/Download";
-import FlagIcon from "@mui/icons-material/Flag";
-import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Box,
   CircularProgress,
   Grid,
   IconButton,
   Typography,
+  useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Bar,
@@ -25,11 +21,23 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  CartesianGrid,
 } from "recharts";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DescriptionIcon from "@mui/icons-material/Description";
+import DownloadIcon from "@mui/icons-material/Download";
+import FlagIcon from "@mui/icons-material/Flag";
+import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+import AddIcon from "@mui/icons-material/Add";
 import Header from "../Components/LibraryHeader";
 import LibraryNavigator from "../Components/LibraryNavigator";
+import { ThemeContext } from "../colorTheme/ThemeContext";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 function ReportLibrary() {
+  const { mode } = useContext(ThemeContext);
+  const theme = useTheme();
+
   const [documents, setDocuments] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
   const [collapsed, setCollapsed] = useState(true);
@@ -37,13 +45,79 @@ function ReportLibrary() {
   const [chartData, setChartData] = useState([]);
   const [riskScoreData, setRiskScoreData] = useState([]);
   const [riskLevelData, setRiskLevelData] = useState([]);
+  const [displayLimit, setDisplayLimit] = useState(4);
   const navigate = useNavigate();
+  const [documentTypeData, setDocumentTypeData] = useState([]);
+
+  const [sortBy, setSortBy] = useState("None");
+  const [sortOrder, setSortOrder] = useState("high to low");
+  const [readabilityData, setReadabilityData] = useState([]);
+  const [riskTrends, setRiskTrends] = useState([]);
+
+  const chartThemeColors = {
+    textColor: mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
+    gridColor:
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : theme.palette.divider,
+    backgroundColor:
+      mode === "dark" ? "#2D2D2D" : theme.palette.background.paper,
+    tooltipBackgroundColor:
+      mode === "dark" ? "#424242" : theme.palette.background.paper,
+    tooltipTextColor: mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
+  };
+
+  const [displayedDocuments, setDisplayedDocuments] = useState([]);
+
+  useEffect(() => {
+    let docs = [...filteredDocuments];
+
+    if (sortBy === "risk score") {
+      docs.sort((a, b) => {
+        if (sortOrder === "high to low") {
+          return b.overallScore - a.overallScore;
+        } else {
+          return a.overallScore - b.overallScore;
+        }
+      });
+    }
+
+    setDisplayedDocuments(docs);
+  }, [filteredDocuments, sortBy, sortOrder]);
+
+  const computeRiskTrends = (documents) => {
+    const monthlyRiskScores = {};
+
+    documents.forEach((doc) => {
+      const reportDate = new Date(doc.reportDate);
+      const month = reportDate.toLocaleString("default", {
+        month: "short",
+        year: "numeric",
+      });
+
+      const overallRiskScore = parseFloat(doc.overallScore) || 0;
+
+      if (!monthlyRiskScores[month]) {
+        monthlyRiskScores[month] = { totalRisk: 0, count: 0 };
+      }
+
+      monthlyRiskScores[month].totalRisk += overallRiskScore;
+      monthlyRiskScores[month].count += 1;
+    });
+
+    // Generate the final trend data
+    return Object.keys(monthlyRiskScores)
+      .map((month) => ({
+        month,
+        averageRisk:
+          monthlyRiskScores[month].totalRisk / monthlyRiskScores[month].count,
+      }))
+      .sort((a, b) => new Date(a.month) - new Date(b.month));
+  };
 
   const handleDocumentClick = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
       navigate("/mainpage");
-      const response = await fetch("/response-docID", {
+      const response = await fetch("http://localhost:3000/response-docID", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -64,29 +138,66 @@ function ReportLibrary() {
     }
   };
 
-  const getColor = (score) => {
-    if (score <= 2) return "green";
-    if (score <= 3.5) return "orange";
-    return "red";
+  const handleShowMore = () => {
+    setDisplayLimit((prevLimit) => prevLimit + 4);
   };
 
+  const getColor = (score) => {
+    if (mode === "dark") {
+      if (score <= 2) return "#4CAF50"; // Brighter green for dark mode
+      if (score <= 3.5) return "#FFA726"; // Brighter orange for dark mode
+      return "#EF5350"; // Brighter red for dark mode
+    } else {
+      if (score <= 2) return theme.palette.success.main;
+      if (score <= 3.5) return theme.palette.warning.main;
+      return theme.palette.error.main;
+    }
+  };
+
+  const getColorForDocumentType = (documentType) => {
+    // Define a color palette
+    const colors = {
+      Contract: "#4CAF50",
+      Agreement: "#2196F3",
+      Invoice: "#FFC107",
+      Proposal: "#9C27B0",
+      Report: "#FF5722",
+      // Add other document types as needed
+    };
+
+    // Return the color for the document type, or a default color
+    return colors[documentType] || theme.palette.primary.light;
+  };
   const getColorForRiskLevel = (riskLevel) => {
-    switch (riskLevel) {
-      case "Low":
-        return "green";
-      case "Medium":
-        return "orange";
-      case "High":
-        return "red";
-      default:
-        return "#8884d8";
+    if (mode === "dark") {
+      switch (riskLevel) {
+        case "Low":
+          return "#4CAF50"; // Brighter green
+        case "Moderate":
+          return "#FFA726"; // Brighter orange
+        case "High":
+          return "#FF7043"; // Brighter deep orange
+        default:
+          return "#90CAF9"; // Brighter blue
+      }
+    } else {
+      switch (riskLevel) {
+        case "Low":
+          return theme.palette.success.main;
+        case "Moderate":
+          return theme.palette.warning.light;
+        case "High":
+          return theme.palette.warning.main;
+        default:
+          return theme.palette.primary.main;
+      }
     }
   };
 
   const toggleFlag = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("/toggleFlagOfDoc", {
+      const response = await fetch("http://localhost:3000/toggleFlagOfDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -127,7 +238,7 @@ function ReportLibrary() {
     console.log("Downloading document with ID:", documentID);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("/download-pdf", {
+      const response = await fetch("http://localhost:3000/download-pdf", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -145,7 +256,6 @@ function ReportLibrary() {
       a.download = `document-${documentID}.pdf`;
       document.body.appendChild(a);
       a.click();
-
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -155,14 +265,12 @@ function ReportLibrary() {
 
   const toggleFlaggedFilter = () => {
     if (showFlaggedOnly) {
-      // Show all documents
       setFilteredDocuments(documents);
     } else {
-      // Filter only flagged documents
       const flaggedDocs = documents.filter((doc) => doc.flagStatus);
       setFilteredDocuments(flaggedDocs);
     }
-    setShowFlaggedOnly((prev) => !prev); // Toggle the state
+    setShowFlaggedOnly((prev) => !prev);
   };
 
   const handleFilterChange = (filteredDocs) => {
@@ -181,7 +289,7 @@ function ReportLibrary() {
       }
 
       const token = localStorage.getItem("token");
-      const response = await fetch("/delete-doc", {
+      const response = await fetch("http://localhost:3000/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -205,15 +313,11 @@ function ReportLibrary() {
     }
   };
 
-  const toggleSidebar = () => {
-    setCollapsed((prev) => !prev);
-  };
-
   useEffect(() => {
     async function fetchDocuments() {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("/user-documents", {
+        const response = await fetch("http://localhost:3000/user-documents", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -229,16 +333,20 @@ function ReportLibrary() {
         const riskCategories = ["Legal", "Financial", "Data"];
         const totalRiskScores = { Legal: 0, Financial: 0, Data: 0 };
         let documentCount = 0;
-        const riskLevelCounts = { Low: 0, Medium: 0, High: 0 };
+        const riskLevelCounts = {
+          Low: 0,
+          Moderate: 0,
+          High: 0,
+        };
 
         const documentsWithRisk = await Promise.all(
           data.map(async (doc) => {
-            let overallRiskLevel = "Low"; // Default to Low
+            let overallRiskLevel = "Low";
             let overallScore = 0;
 
             if (typeof doc.risky === "string") {
               try {
-                doc.risky = JSON.parse(doc.risky); // Parse string into JSON array
+                doc.risky = JSON.parse(doc.risky);
               } catch (e) {
                 console.error("Error parsing risky field:", e);
               }
@@ -254,27 +362,25 @@ function ReportLibrary() {
                   overallScore = score;
                 }
               });
-
-              if (overallScore <= 2) {
-                overallRiskLevel = "Low";
-              } else if (overallScore <= 3.5) {
-                overallRiskLevel = "Medium";
-              } else {
-                overallRiskLevel = "High";
-              }
+              if (overallScore > 4) overallRiskLevel = "Critical";
+              else if (overallScore > 3) overallRiskLevel = "High";
+              else if (overallScore > 2) overallRiskLevel = "Moderate";
+              else overallRiskLevel = "Low";
             }
 
             riskLevelCounts[overallRiskLevel] += 1;
 
-            // Fetch the flag status for each document
-            const flagResponse = await fetch("/getFlagOfDoc", {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ docID: doc.DocumentID }),
-            });
+            const flagResponse = await fetch(
+              "http://localhost:3000/getFlagOfDoc",
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ docID: doc.DocumentID }),
+              }
+            );
 
             const flagData = await flagResponse.json();
             const flagStatus = flagData.success ? flagData.flag : false;
@@ -288,7 +394,81 @@ function ReportLibrary() {
         setDocuments(documentsWithRisk);
         setFilteredDocuments(documentsWithRisk);
 
-        // Process data for the chart
+        const documentTypeCounts = {};
+
+        documentsWithRisk.forEach((doc) => {
+          const type = doc.documentType || "Unknown";
+
+          if (documentTypeCounts[type]) {
+            documentTypeCounts[type] += 1;
+          } else {
+            documentTypeCounts[type] = 1;
+          }
+        });
+
+        // Convert counts to an array suitable for the chart
+        const documentTypeDataArray = Object.keys(documentTypeCounts).map(
+          (type) => ({
+            documentType: type,
+            count: documentTypeCounts[type],
+          })
+        );
+
+        // Save the data to state
+        setDocumentTypeData(documentTypeDataArray);
+
+        const readabilityCounts = {};
+
+        documentsWithRisk.forEach((doc) => {
+          const readability = doc.readability || "Unknown";
+
+          if (readabilityCounts[readability]) {
+            readabilityCounts[readability] += 1;
+          } else {
+            readabilityCounts[readability] = 1;
+          }
+        });
+
+        // Convert counts to an array suitable for the chart
+        const readabilityDataArray = documentsWithRisk.map((doc) => ({
+          companyName: doc.companyName || "Unnamed Report",
+          readability: parseFloat(doc.readability) || 0, // Default to 0 if readability is missing
+        }));
+
+        setReadabilityData(readabilityDataArray);
+
+        const documentsWithRisks = await Promise.all(
+          data.map(async (doc) => {
+            let overallScore = 0;
+
+            if (typeof doc.risky === "string") {
+              try {
+                doc.risky = JSON.parse(doc.risky);
+              } catch (e) {
+                console.error("Error parsing risky field:", e);
+              }
+            }
+
+            if (doc.risky && Array.isArray(doc.risky)) {
+              doc.risky.forEach((risk) => {
+                const category = Object.keys(risk)[0];
+                const score = parseFloat(risk[category].Score);
+                if (category === "Overall") {
+                  overallScore = score;
+                }
+              });
+            }
+
+            return { ...doc, overallScore };
+          })
+        );
+
+        setDocuments(documentsWithRisks);
+
+        // Compute risk trends directly
+        const trends = computeRiskTrends(documentsWithRisks);
+        setRiskTrends(trends);
+
         const reportsPerMonth = {};
 
         documentsWithRisk.forEach((doc) => {
@@ -305,14 +485,12 @@ function ReportLibrary() {
           }
         });
 
-        // Convert to array for Recharts
         const chartDataArray = Object.keys(reportsPerMonth)
           .map((month) => ({
             month,
             reports: reportsPerMonth[month],
           }))
           .sort((a, b) => {
-            // Sort the months chronologically
             const dateA = new Date(a.month);
             const dateB = new Date(b.month);
             return dateA - dateB;
@@ -320,7 +498,6 @@ function ReportLibrary() {
 
         setChartData(chartDataArray);
 
-        // Prepare data for the risk score chart
         const averageRiskScores = riskCategories.map((category) => ({
           category,
           averageScore:
@@ -329,7 +506,6 @@ function ReportLibrary() {
 
         setRiskScoreData(averageRiskScores);
 
-        // Prepare data for the risk level distribution chart
         const riskLevelDataArray = Object.keys(riskLevelCounts).map(
           (level) => ({
             name: level,
@@ -349,38 +525,40 @@ function ReportLibrary() {
   return (
     <Box
       sx={{
-        backgroundColor: "#f5f5f5",
+        backgroundColor:
+          mode === "dark" ? "#1A1A1A" : theme.palette.background.default,
         minHeight: "100vh",
         padding: "20px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        color: theme.palette.text.primary,
       }}
     >
-      {/* Header Section */}
       <Header
         documents={documents}
         onFilterChange={handleFilterChange}
         onToggleFlaggedFilter={toggleFlaggedFilter}
         showFlaggedOnly={showFlaggedOnly}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
       />
+      
 
-      {/* Main Content */}
       <Grid container spacing={3} sx={{ maxWidth: "1200px", width: "100%" }}>
-        {/* Sidebar navigator */}
         <Grid item xs={collapsed ? 1 : 2}>
           <LibraryNavigator collapsed={collapsed} />
         </Grid>
 
-        {/* Content and Charts */}
         <Grid item xs={collapsed ? 11 : 10}>
           <Grid container spacing={3}>
-            {/* Documents List */}
-            <Grid item xs={8}>
-              {filteredDocuments.length === 0 ? (
+            <Grid item xs={12} md={8}>
+              {displayedDocuments.slice(0, displayLimit).length === 0 ? (
                 <Typography>No documents found.</Typography>
               ) : (
-                filteredDocuments.map((doc) => (
+                displayedDocuments.slice(0, displayLimit).map((doc) => (
                   <Box
                     key={doc.DocumentID}
                     onClick={() => handleDocumentClick(doc.DocumentID)}
@@ -388,17 +566,30 @@ function ReportLibrary() {
                       marginBottom: "15px",
                       padding: "19px",
                       borderRadius: "10px",
-                      backgroundColor: "#fff",
-                      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                      backgroundColor:
+                        mode === "dark"
+                          ? "#2D2D2D"
+                          : theme.palette.background.paper,
+                      boxShadow:
+                        mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
                       minHeight: "120px",
                       margin: "15px auto",
                       cursor: "pointer",
+                      color:
+                        mode === "dark"
+                          ? "#E0E0E0"
+                          : theme.palette.text.primary,
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow:
+                          mode === "dark" ? "0 6px 16px rgba(0, 0, 0, 0.7)" : 4,
+                      },
                     }}
                   >
-                    {/* Document Info */}
                     <Box
                       sx={{ display: "flex", alignItems: "center", flex: 1 }}
                     >
@@ -406,18 +597,33 @@ function ReportLibrary() {
                         sx={{
                           fontSize: "4rem",
                           marginRight: "20px",
-                          color: "#3b3b3b",
+                          color:
+                            mode === "dark"
+                              ? "#90CAF9"
+                              : theme.palette.primary.main,
                         }}
                       />
                       <Box sx={{ flex: 1 }}>
                         <Typography
                           variant="h5"
-                          sx={{ fontSize: "1.5rem", fontWeight: "bold" }}
+                          sx={{
+                            fontSize: "1.5rem",
+                            fontWeight: "bold",
+                            color: mode === "dark" ? "#FFFFFF" : "inherit",
+                          }}
                         >
                           {doc.companyName}
                         </Typography>
-                        <Typography variant="body1" color="textSecondary">
-                          {`Contract of ${doc.documentType}; ${new Date(
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            color:
+                              mode === "dark"
+                                ? "#B0B0B0"
+                                : theme.palette.text.secondary,
+                          }}
+                        >
+                          {`${doc.documentType}; ${new Date(
                             doc.reportDate
                           ).toLocaleDateString()}`}
                         </Typography>
@@ -436,12 +642,16 @@ function ReportLibrary() {
                             sx={{
                               color: getColor(doc.overallScore),
                               marginRight: "10px",
+                              "& .MuiCircularProgress-circle": {
+                                strokeLinecap: "round",
+                              },
                             }}
                           />
                           <Typography
                             sx={{
                               fontWeight: 600,
                               fontSize: "1rem",
+                              color: mode === "dark" ? "#E0E0E0" : "inherit",
                             }}
                           >
                             {doc.overallRiskLevel}
@@ -451,15 +661,35 @@ function ReportLibrary() {
                               e.stopPropagation();
                               toggleFlag(doc.DocumentID);
                             }}
-                            sx={{ marginLeft: "20px" }}
+                            sx={{
+                              marginLeft: "20px",
+                              "&:hover": {
+                                backgroundColor:
+                                  mode === "dark"
+                                    ? "rgba(255, 255, 255, 0.1)"
+                                    : "rgba(0, 0, 0, 0.04)",
+                              },
+                            }}
                           >
                             {doc.flagStatus ? (
                               <FlagIcon
-                                sx={{ color: "#f44336", fontSize: "2rem" }}
+                                sx={{
+                                  color:
+                                    mode === "dark"
+                                      ? "#FF5252"
+                                      : theme.palette.error.main,
+                                  fontSize: "2rem",
+                                }}
                               />
                             ) : (
                               <FlagOutlinedIcon
-                                sx={{ color: "#7a7a7a", fontSize: "2rem" }}
+                                sx={{
+                                  color:
+                                    mode === "dark"
+                                      ? "#B0B0B0"
+                                      : theme.palette.text.secondary,
+                                  fontSize: "2rem",
+                                }}
                               />
                             )}
                           </IconButton>
@@ -467,7 +697,6 @@ function ReportLibrary() {
                       </Box>
                     </Box>
 
-                    {/* Actions */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <IconButton
                         onClick={(e) => {
@@ -475,8 +704,20 @@ function ReportLibrary() {
                           handleDocumentDownload(doc.DocumentID);
                         }}
                         sx={{
-                          color: "#7a7a7a",
-                          "&:hover": { color: "#3b3b3b" },
+                          color:
+                            mode === "dark"
+                              ? "#B0B0B0"
+                              : theme.palette.text.secondary,
+                          "&:hover": {
+                            color:
+                              mode === "dark"
+                                ? "#FFFFFF"
+                                : theme.palette.text.primary,
+                            backgroundColor:
+                              mode === "dark"
+                                ? "rgba(255, 255, 255, 0.1)"
+                                : "rgba(0, 0, 0, 0.04)",
+                          },
                         }}
                       >
                         <DownloadIcon sx={{ fontSize: "2rem" }} />
@@ -487,8 +728,20 @@ function ReportLibrary() {
                           handleDeleteDocument(doc.DocumentID, doc.flagStatus);
                         }}
                         sx={{
-                          color: "#e57373",
-                          "&:hover": { color: "#d32f2f" },
+                          color:
+                            mode === "dark"
+                              ? "#FF5252"
+                              : theme.palette.error.light,
+                          "&:hover": {
+                            color:
+                              mode === "dark"
+                                ? "#FF8A80"
+                                : theme.palette.error.dark,
+                            backgroundColor:
+                              mode === "dark"
+                                ? "rgba(255, 82, 82, 0.1)"
+                                : "rgba(244, 67, 54, 0.04)",
+                          },
                         }}
                       >
                         <DeleteIcon sx={{ fontSize: "2rem" }} />
@@ -497,59 +750,160 @@ function ReportLibrary() {
                   </Box>
                 ))
               )}
+              {displayLimit < filteredDocuments.length && (
+                <Box display="flex" justifyContent="center" marginTop="20px">
+                  <IconButton
+                    onClick={handleShowMore}
+                    sx={{
+                      color:
+                        mode === "dark"
+                          ? "#90CAF9"
+                          : theme.palette.primary.main,
+                      "&:hover": {
+                        backgroundColor:
+                          mode === "dark"
+                            ? "rgba(144, 202, 249, 0.1)"
+                            : "rgba(33, 150, 243, 0.04)",
+                      },
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
+              )}
             </Grid>
 
-            {/* Charts Section */}
-            <Grid item xs={4}>
-              {/* Modified Line Chart */}
+            <Grid item xs={12} md={4}>
+              {/*  Reports Generated Per Month*/}
               <Box
                 sx={{
-                  backgroundColor: "#fff",
+                  backgroundColor:
+                    mode === "dark"
+                      ? "#2D2D2D"
+                      : theme.palette.background.paper,
                   padding: "20px",
                   borderRadius: "10px",
-                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                  boxShadow:
+                    mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
                   marginBottom: "20px",
+                  color:
+                    mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
                 }}
               >
-                <Typography variant="h6" sx={{ marginBottom: "20px" }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginBottom: "20px",
+                    color: mode === "dark" ? "#FFFFFF" : "inherit",
+                    fontWeight: 600,
+                  }}
+                >
                   Reports Generated Per Month
                 </Typography>
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={chartData}>
-                    <XAxis dataKey="month" />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
+                  <LineChart
+                    data={chartData}
+                    style={{
+                      backgroundColor: chartThemeColors.backgroundColor,
+                    }}
+                  >
+                    <CartesianGrid stroke={chartThemeColors.gridColor} />
+                    <XAxis
+                      dataKey="month"
+                      stroke={chartThemeColors.textColor}
+                    />
+                    <YAxis
+                      allowDecimals={false}
+                      stroke={chartThemeColors.textColor}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor:
+                          chartThemeColors.tooltipBackgroundColor,
+                        color: chartThemeColors.tooltipTextColor,
+                        border: "none",
+                        borderRadius: "4px",
+                        boxShadow:
+                          mode === "dark"
+                            ? "0 4px 12px rgba(0, 0, 0, 0.5)"
+                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
                     <Line
                       type="monotone"
                       dataKey="reports"
-                      stroke="#8884d8"
+                      stroke={
+                        mode === "dark" ? "#90CAF9" : theme.palette.primary.main
+                      }
                       strokeWidth={2}
-                      dot={{ r: 3 }}
+                      dot={{
+                        r: 3,
+                        fill:
+                          mode === "dark"
+                            ? "#90CAF9"
+                            : theme.palette.primary.main,
+                      }}
                       activeDot={{ r: 6 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               </Box>
-
-              {/* Risk Scores Chart */}
+              {/* Average Risk Scores by Category */}
               <Box
                 sx={{
-                  backgroundColor: "#fff",
+                  backgroundColor:
+                    mode === "dark"
+                      ? "#2D2D2D"
+                      : theme.palette.background.paper,
                   padding: "20px",
                   borderRadius: "10px",
-                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                  boxShadow:
+                    mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
                   marginBottom: "20px",
+                  color:
+                    mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
                 }}
               >
-                <Typography variant="h6" sx={{ marginBottom: "20px" }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginBottom: "20px",
+                    color: mode === "dark" ? "#FFFFFF" : "inherit",
+                    fontWeight: 600,
+                  }}
+                >
                   Average Risk Scores by Category
                 </Typography>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={riskScoreData}>
-                    <XAxis dataKey="category" />
-                    <YAxis domain={[0, 5]} />
-                    <Tooltip />
-                    <Bar dataKey="averageScore" fill="#82ca9d">
+                  <BarChart
+                    data={riskScoreData}
+                    style={{
+                      backgroundColor: chartThemeColors.backgroundColor,
+                    }}
+                  >
+                    <CartesianGrid stroke={chartThemeColors.gridColor} />
+                    <XAxis
+                      dataKey="category"
+                      stroke={chartThemeColors.textColor}
+                    />
+                    <YAxis
+                      domain={[0, 5]}
+                      stroke={chartThemeColors.textColor}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor:
+                          chartThemeColors.tooltipBackgroundColor,
+                        color: chartThemeColors.tooltipTextColor,
+                        border: "none",
+                        borderRadius: "4px",
+                        boxShadow:
+                          mode === "dark"
+                            ? "0 4px 12px rgba(0, 0, 0, 0.5)"
+                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
+                    <Bar dataKey="averageScore">
                       {riskScoreData.map((entry, index) => (
                         <Cell
                           key={`cell-${index}`}
@@ -560,40 +914,321 @@ function ReportLibrary() {
                   </BarChart>
                 </ResponsiveContainer>
               </Box>
-
-              {/* Risk Level Distribution Pie Chart */}
+              {/* Risk Level Distribution */}
               <Box
                 sx={{
-                  backgroundColor: "#fff",
+                  backgroundColor:
+                    mode === "dark"
+                      ? "#2D2D2D"
+                      : theme.palette.background.paper,
                   padding: "20px",
                   borderRadius: "10px",
-                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                  boxShadow:
+                    mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
+                  color:
+                    mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
                 }}
               >
-                <Typography variant="h6" sx={{ marginBottom: "20px" }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginBottom: "20px",
+                    color: mode === "dark" ? "#FFFFFF" : "inherit",
+                    fontWeight: 600,
+                  }}
+                >
                   Risk Level Distribution
                 </Typography>
                 <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
+                  <PieChart style={{ backgroundColor: "transparent" }}>
                     <Pie
                       data={riskLevelData}
                       dataKey="value"
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      outerRadius={80}
-                      label
+                      outerRadius={70}
+                      label={({ name, percent }) => `${name}`}
+                      labelLine={false}
+                      stroke={mode === "dark" ? "#2D2D2D" : "#ffffff"}
+                      strokeWidth={2}
                     >
-                      {riskLevelData.map((entry, index) => (
+                      {riskLevelData.map((entry, index) => {
+                        // Enhanced color palette for better visibility
+                        const colors = {
+                          Low: "#81C784", // Light green
+                          Moderate: "#FFA726", // Orange
+                          High: "#FF7043", // Deep orange
+                        };
+                        return (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={colors[entry.name]}
+                            style={{
+                              filter:
+                                mode === "dark" ? "brightness(1.2)" : "none",
+                              opacity: 0.9,
+                            }}
+                          />
+                        );
+                      })}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor:
+                          mode === "dark" ? "#424242" : "#ffffff",
+                        color: mode === "dark" ? "#E0E0E0" : "#000000",
+                        border: "none",
+                        borderRadius: "4px",
+                        boxShadow:
+                          mode === "dark"
+                            ? "0 4px 12px rgba(0, 0, 0, 0.5)"
+                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      }}
+                      formatter={(value, name) => {
+                        const documentText =
+                          value === 1 ? "document" : "documents";
+                        return [`${value} ${documentText}`, name];
+                      }}
+                    />
+                    <Legend
+                      verticalAlign="bottom"
+                      align="center"
+                      layout="horizontal"
+                      wrapperStyle={{
+                        color: mode === "dark" ? "#E0E0E0" : "inherit",
+                        padding: "10px 0",
+                      }}
+                      iconType="circle"
+                      iconSize={10}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+              {/*  Document Types Distribution */}
+              <Box
+                sx={{
+                  backgroundColor:
+                    mode === "dark"
+                      ? "#2D2D2D"
+                      : theme.palette.background.paper,
+                  padding: "20px",
+                  borderRadius: "10px",
+                  boxShadow:
+                    mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
+                  marginBottom: "20px",
+                  marginTop: "20px",
+                  color:
+                    mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginBottom: "20px",
+                    color: mode === "dark" ? "#FFFFFF" : "inherit",
+                    fontWeight: 600,
+                  }}
+                >
+                  Document Types
+                </Typography>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart
+                    data={documentTypeData}
+                    style={{
+                      backgroundColor: chartThemeColors.backgroundColor,
+                    }}
+                  >
+                    <CartesianGrid stroke={chartThemeColors.gridColor} />
+                    <XAxis
+                      dataKey="documentType"
+                      stroke={chartThemeColors.textColor}
+                      interval={0}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis
+                      allowDecimals={false}
+                      stroke={chartThemeColors.textColor}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor:
+                          chartThemeColors.tooltipBackgroundColor,
+                        color: chartThemeColors.tooltipTextColor,
+                        border: "none",
+                        borderRadius: "4px",
+                        boxShadow:
+                          mode === "dark"
+                            ? "0 4px 12px rgba(0, 0, 0, 0.5)"
+                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      }}
+                      formatter={(value, name) => {
+                        const documentText =
+                          value === 1 ? "document" : "documents";
+                        return [`${value} ${documentText}`, "Count"];
+                      }}
+                    />
+                    <Bar dataKey="count">
+                      {documentTypeData.map((entry, index) => (
                         <Cell
                           key={`cell-${index}`}
-                          fill={getColorForRiskLevel(entry.name)}
+                          fill={getColorForDocumentType(entry.documentType)}
                         />
                       ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
+              {/* readability */}
+              <Box
+                sx={{
+                  backgroundColor:
+                    mode === "dark"
+                      ? "#2D2D2D"
+                      : theme.palette.background.paper,
+                  padding: "20px",
+                  borderRadius: "10px",
+                  boxShadow:
+                    mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
+                  marginBottom: "20px",
+                  color:
+                    mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginBottom: "20px",
+                    color: mode === "dark" ? "#FFFFFF" : "inherit",
+                    fontWeight: 600,
+                  }}
+                >
+                  Readability Score
+                </Typography>
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart
+                    data={readabilityData}
+                    style={{
+                      backgroundColor: chartThemeColors.backgroundColor,
+                    }}
+                    margin={{ top: 20, right: 20, left: 10, bottom: 60 }}
+                  >
+                    <CartesianGrid stroke={chartThemeColors.gridColor} />
+                    <XAxis
+                      dataKey="companyName" // X-axis will now display report names
+                      stroke={chartThemeColors.textColor}
+                      interval={0}
+                      tick={{ fontSize: 12, angle: -30, textAnchor: "end" }}
+                      tickFormatter={(name) =>
+                        name.length > 15 ? `${name.slice(0, 25)}...` : name
+                      }
+                    />
+                    <YAxis
+                      domain={[0, 20]} // Y-axis adjusts to the max readability score
+                      //stroke={chartThemeColors.textColor}
+                      // label={{
+                      //   value: "Readability Score",
+                      //   angle: -90,
+                      //   position: "insideLeft",
+                      //   fill: chartThemeColors.textColor,
+                      // }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor:
+                          chartThemeColors.tooltipBackgroundColor,
+                        color: chartThemeColors.tooltipTextColor,
+                        border: "none",
+                        borderRadius: "4px",
+                        boxShadow:
+                          mode === "dark"
+                            ? "0 4px 12px rgba(0, 0, 0, 0.5)"
+                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      }}
+                      formatter={(value, name) => [`${value}`, "Readability"]}
+                    />
+                    <Bar dataKey="readability">
+                      {readabilityData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill="#4CAF50" />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
+              <Box
+                sx={{
+                  backgroundColor:
+                    mode === "dark"
+                      ? "#2D2D2D"
+                      : theme.palette.background.paper,
+                  padding: "20px",
+                  borderRadius: "10px",
+                  boxShadow:
+                    mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
+                  marginBottom: "20px",
+                  color:
+                    mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginBottom: "20px",
+                    color: mode === "dark" ? "#FFFFFF" : "inherit",
+                    fontWeight: 600,
+                  }}
+                >
+                  Document Risk Trends
+                </Typography>
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart
+                    data={riskTrends}
+                    style={{
+                      backgroundColor: chartThemeColors.backgroundColor,
+                    }}
+                    margin={{ top: 20, right: 20, left: 10, bottom: 40 }}
+                  >
+                    <CartesianGrid stroke={chartThemeColors.gridColor} />
+                    <XAxis
+                      dataKey="month"
+                      stroke={chartThemeColors.textColor}
+                      tick={{ fontSize: 12 }}
+                      interval={0}
+                    />
+                    <YAxis
+                      domain={[0, 5]} // Assuming risk scores range from 0 to 5
+                      stroke={chartThemeColors.textColor}
+                      label={{
+                        value: "Average Risk",
+                        angle: -90,
+                        position: "insideLeft",
+                        fill: chartThemeColors.textColor,
+                      }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor:
+                          chartThemeColors.tooltipBackgroundColor,
+                        color: chartThemeColors.tooltipTextColor,
+                        border: "none",
+                        borderRadius: "4px",
+                        boxShadow:
+                          mode === "dark"
+                            ? "0 4px 12px rgba(0, 0, 0, 0.5)"
+                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="averageRisk"
+                      stroke={
+                        mode === "dark" ? "#90CAF9" : theme.palette.primary.main
+                      }
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
                 </ResponsiveContainer>
               </Box>
             </Grid>
