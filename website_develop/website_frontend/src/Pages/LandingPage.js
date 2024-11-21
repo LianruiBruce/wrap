@@ -1019,7 +1019,45 @@ function LandingPage() {
             </Box>
           </StyledContainer>
         </PageSection>
+        <Footer />
       </Box>
+    </Box>
+  );
+}
+
+// Define the Footer component
+function Footer() {
+  return (
+    <Box sx={{ bgcolor: "rgba(0, 0, 0, 0.8)", color: "white", py: 4 }}>
+      <StyledContainer maxWidth="lg">
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Typography variant="body2">
+              &copy; {new Date().getFullYear()} Wrap. All rights reserved.
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Link
+                component={RouterLink}
+                to="/terms-and-conditions"
+                color="inherit"
+                underline="hover"
+              >
+                Terms and Conditions
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/privacy-policy"
+                color="inherit"
+                underline="hover"
+              >
+                Privacy Policy
+              </Link>
+            </Box>
+          </Grid>
+        </Grid>
+      </StyledContainer>
     </Box>
   );
 }
