@@ -478,20 +478,27 @@ function LandingPage() {
               >
                 View Demo
               </StyledButton>
-              <StyledButton
-                variant="outlined"
-                size="large"
-                startIcon={<DownloadIcon />}
-                sx={{
-                  color: "white",
-                  borderColor: "rgba(255, 255, 255, 0.3)",
-                  "&:hover": {
-                    borderColor: "white",
-                  },
-                }}
+              <a
+                href="https://drive.google.com/file/d/1HcU6J3xXaRsxXgUa6oHf1iB3TB1C52dh/view?usp=drive_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none" }}
               >
-                Download Extension
-              </StyledButton>
+                <StyledButton
+                  variant="outlined"
+                  size="large"
+                  startIcon={<DownloadIcon />}
+                  sx={{
+                    color: "white",
+                    borderColor: "rgba(255, 255, 255, 0.3)",
+                    "&:hover": {
+                      borderColor: "white",
+                    },
+                  }}
+                >
+                  Download Extension
+                </StyledButton>
+              </a>
             </Box>
           </StyledContainer>
         </PageSection>
