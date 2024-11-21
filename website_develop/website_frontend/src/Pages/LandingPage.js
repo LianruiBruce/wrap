@@ -479,7 +479,7 @@ function LandingPage() {
               </StyledButton>
 
               <a
-                href="https://drive.google.com/file/d/1HcU6J3xXaRsxXgUa6oHf1iB3TB1C52dh/view?usp=drive_link"
+                href="https://drive.google.com/file/d/1HcU6J3xXaRsxXgUa6oHf1iB3TB1C52dh/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ textDecoration: "none" }}
