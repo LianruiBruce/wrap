@@ -52,7 +52,7 @@ const TermsAndConditions = () => (
     <h2>7. Privacy Policy</h2>
     <p>
       Your use of our service is also subject to our{' '}
-      <a href="#privacy-policy">Privacy Policy</a>, which explains how we collect, use, and protect
+      <a href="/privacy-policy">Privacy Policy</a>, which explains how we collect, use, and protect
       your personal information.
     </p>
 
