@@ -1024,7 +1024,6 @@ function LandingPage() {
     </Box>
   );
 }
-
 // Define the Footer component
 function Footer() {
   return (
@@ -1038,16 +1037,22 @@ function Footer() {
           </Grid>
           <Grid item>
             <Box sx={{ display: "flex", gap: 2 }}>
-              <href
+              <Link
+                component={RouterLink}
                 to="/terms-and-conditions"
                 color="inherit"
                 underline="hover"
               >
                 Terms and Conditions
-              </href>
-              <href to="/privacy-policy" color="inherit" underline="hover">
+              </Link>
+              <Link
+                component={RouterLink}
+                to="/privacy-policy"
+                color="inherit"
+                underline="hover"
+              >
                 Privacy Policy
-              </href>
+              </Link>
             </Box>
           </Grid>
         </Grid>
