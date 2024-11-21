@@ -1038,22 +1038,16 @@ function Footer() {
           </Grid>
           <Grid item>
             <Box sx={{ display: "flex", gap: 2 }}>
-              <Link
-                component={RouterLink}
+              <href
                 to="/terms-and-conditions"
                 color="inherit"
                 underline="hover"
               >
                 Terms and Conditions
-              </Link>
-              <Link
-                component={RouterLink}
-                to="/privacy-policy"
-                color="inherit"
-                underline="hover"
-              >
+              </href>
+              <href to="/privacy-policy" color="inherit" underline="hover">
                 Privacy Policy
-              </Link>
+              </href>
             </Box>
           </Grid>
         </Grid>
