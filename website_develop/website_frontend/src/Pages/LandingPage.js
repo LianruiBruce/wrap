@@ -465,6 +465,10 @@ function LandingPage() {
                 Get Started Free
               </StyledButton>
               <StyledButton
+                component="a"
+                href="https://www.youtube.com/watch?v=lXnljtYhXJ0"
+                target="_blank"
+                rel="noopener noreferrer"
                 variant="outlined"
                 size="large"
                 startIcon={<PlayArrowIcon />}
@@ -478,6 +482,7 @@ function LandingPage() {
               >
                 View Demo
               </StyledButton>
+
               <a
                 href="https://drive.google.com/file/d/1HcU6J3xXaRsxXgUa6oHf1iB3TB1C52dh/view?usp=drive_link"
                 target="_blank"
