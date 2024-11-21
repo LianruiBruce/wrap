@@ -117,7 +117,7 @@ function ReportLibrary() {
     try {
       const token = localStorage.getItem("token");
       navigate("/mainpage");
-      const response = await fetch("http://localhost:3000/response-docID", {
+      const response = await fetch("https://wrapcapstone.com/response-docID", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -197,7 +197,7 @@ function ReportLibrary() {
   const toggleFlag = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/toggleFlagOfDoc", {
+      const response = await fetch("https://wrapcapstone.com/toggleFlagOfDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -238,7 +238,7 @@ function ReportLibrary() {
     console.log("Downloading document with ID:", documentID);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/download-pdf", {
+      const response = await fetch("https://wrapcapstone.com/download-pdf", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -289,7 +289,7 @@ function ReportLibrary() {
       }
 
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/delete-doc", {
+      const response = await fetch("https://wrapcapstone.com/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -317,13 +317,16 @@ function ReportLibrary() {
     async function fetchDocuments() {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:3000/user-documents", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          "https://wrapcapstone.com/user-documents",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -371,7 +374,7 @@ function ReportLibrary() {
             riskLevelCounts[overallRiskLevel] += 1;
 
             const flagResponse = await fetch(
-              "http://localhost:3000/getFlagOfDoc",
+              "https://wrapcapstone.com/getFlagOfDoc",
               {
                 method: "POST",
                 headers: {
@@ -545,7 +548,6 @@ function ReportLibrary() {
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
       />
-      
 
       <Grid container spacing={3} sx={{ maxWidth: "1200px", width: "100%" }}>
         <Grid item xs={collapsed ? 1 : 2}>

@@ -672,10 +672,13 @@ app.post("/process-question", async (req, res) => {
       });
     }
 
-    const response = await axios.post("http://localhost:5000/get-QA", {
-      text: original_document,
-      question: question,
-    });
+    const response = await axios.post(
+      "https://implicitly-sacred-moose.ngrok-free.app/get-QA",
+      {
+        text: original_document,
+        question: question,
+      }
+    );
 
     if (response.data.success) {
       return res.json({ success: true, answer: response.data.answer });
@@ -807,9 +810,13 @@ app.post("/api/verification-code", async (req, res) => {
       .toString()
       .padStart(6, "0");
 
-      const token = jwt.sign({ email, code: verificationCode }, process.env.JWT_SECRET, {
+    const token = jwt.sign(
+      { email, code: verificationCode },
+      process.env.JWT_SECRET,
+      {
         expiresIn: "5m",
-      });
+      }
+    );
 
     const emailData = {
       sender: { name: "Wrap", email: "wrapcapstone01@gmail.com" },
@@ -847,9 +854,7 @@ app.post("/api/verification-code", async (req, res) => {
     });
 
     console.log("Email sent to:", email);
-    return res
-      .status(200)
-      .json({ message: "Verification code sent.", token });
+    return res.status(200).json({ message: "Verification code sent.", token });
   } catch (error) {
     console.error(
       "Error sending email:",
@@ -893,7 +898,7 @@ app.post("/api/reset-password-with-code", async (req, res) => {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       user.password = hashedPassword;
-  
+
       await user.save();
 
       res.status(200).json({ message: "Verification successful" });

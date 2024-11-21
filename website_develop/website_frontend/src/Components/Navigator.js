@@ -60,7 +60,7 @@ function Navigator(props) {
       setCategories(transformDocuments(cachedDocuments));
       setIsLoading(false);
 
-      const socket = io.connect("http://localhost:3000", {
+      const socket = io.connect("https://wrapcapstone.com", {
         query: { token: token },
       });
       socket.on("reportList", (documents) => {
@@ -76,7 +76,7 @@ function Navigator(props) {
       return () => socket.disconnect();
     } else {
       console.log("Fetching fresh documents from the server");
-      const socket = io.connect("http://localhost:3000", {
+      const socket = io.connect("https://wrapcapstone.com", {
         query: { token: token },
       });
 
@@ -97,7 +97,7 @@ function Navigator(props) {
   const handleDocumentDelete = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/delete-doc", {
+      const response = await fetch("https://wrapcapstone.com/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -121,7 +121,7 @@ function Navigator(props) {
 
   const handleDocumentSelect = async (documentID) => {
     try {
-      const response = await fetch("http://localhost:3000/response-docID", {
+      const response = await fetch("https://wrapcapstone.com/response-docID", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -144,7 +144,7 @@ function Navigator(props) {
       const token = localStorage.getItem("token");
       try {
         setIsUploading(true); // Start showing the uploading animation
-        const response = await fetch("http://localhost:3000/upload-pdf", {
+        const response = await fetch("https://wrapcapstone.com/upload-pdf", {
           method: "POST",
           body: formData,
           headers: {
@@ -316,23 +316,18 @@ function Navigator(props) {
         <Divider sx={styles.thickDivider} />
         {/* Fixed section for Upload and Exit */}
         <List>
-        <ListItemButton
+          <ListItemButton
             sx={{
               ...styles.listItem,
               pointerEvents: isUploading ? "none" : "auto",
               opacity: isUploading ? 0.5 : 1,
             }}
             onClick={triggerFileUpload}
-            disabled={isUploading} 
-           >
-            {isUploading ? (
-              <CircularProgress size={24} /> 
-            ) : (
-              <UploadIcon />
-            )}
+            disabled={isUploading}
+          >
+            {isUploading ? <CircularProgress size={24} /> : <UploadIcon />}
             <ListItemText primary={isUploading ? "Processing" : "Upload"} />
           </ListItemButton>
-
 
           <ListItemButton sx={styles.listItem} onClick={handleExit}>
             <ListItemIcon>

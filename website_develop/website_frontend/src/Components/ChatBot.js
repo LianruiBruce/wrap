@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./ChatBot.css"; // 你可以将原来的样式放入这个文件
-import botIcon from '../Images/bot_icon.png';
-import userIcon from '../Images/user.png';
+import botIcon from "../Images/bot_icon.png";
+import userIcon from "../Images/user.png";
 
 export default function ChatBot({ onClose, documentID }) {
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hi there! I’m your smart assistant. I can help extract key information and facts from your legal documents. Just send me the text or ask what you need to find within it!" },
+    {
+      from: "bot",
+      text: "Hi there! I’m your smart assistant. I can help extract key information and facts from your legal documents. Just send me the text or ask what you need to find within it!",
+    },
   ]);
   const [botTyping, setBotTyping] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -24,14 +27,17 @@ export default function ChatBot({ onClose, documentID }) {
 
   const fetchAnswerFromServer = async (question) => {
     try {
-      const response = await fetch("http://localhost:3000/process-question", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ question: question, documentID: documentID }), // 发送问题和文档ID
-      });
-  
+      const response = await fetch(
+        "https://wrapcapstone.com/process-question",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ question: question, documentID: documentID }), // 发送问题和文档ID
+        }
+      );
+
       const data = await response.json();
       if (data.success) {
         return data.answer;
@@ -43,7 +49,6 @@ export default function ChatBot({ onClose, documentID }) {
       return "Sorry, something went wrong.";
     }
   };
-  
 
   const handleSend = async () => {
     const wordCount = inputValue.trim().split(/\s+/).length;

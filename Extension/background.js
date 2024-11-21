@@ -68,9 +68,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (tab.url && tab.url.startsWith("http://localhost:3000")) {
-    console.log("Skipping legal document detection for localhost:3000");
-    return; // Don't execute further if the URL matches localhost:3000
+  if (tab.url && tab.url.startsWith("https://wrapcapstone.com")) {
+    console.log(
+      "Skipping legal document detection for https://wrapcapstone.com"
+    );
+    return; // Don't execute further if the URL matches https://wrapcapstone.com
   }
 
   chrome.storage.local.get("token", (result) => {
@@ -131,7 +133,7 @@ chrome.runtime.onMessage.addListener(async function (
   }
 
   if (message.type === "extracted-data") {
-    if (message.data.url == "http://localhost:3000/mainpage") {
+    if (message.data.url == "https://wrapcapstone.com/mainpage") {
       chrome.action.setPopup({ popup: "extension_frontend/wrap.html" });
       return true;
     }
@@ -268,7 +270,7 @@ chrome.runtime.onMessage.addListener(async function (
   if (message.type === "USER_LOGIN") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const currentTab = tabs[0];
-      const validURL = "http://localhost:3000";
+      const validURL = "https://wrapcapstone.com";
 
       if (currentTab && currentTab.url && currentTab.url.startsWith(validURL)) {
         const token = message.token;
@@ -350,7 +352,7 @@ chrome.runtime.onMessage.addListener(async function (
 
       keepAlive(true);
 
-      fetch(`http://localhost:3000/get-report-by-documentID`, {
+      fetch(`https://wrapcapstone.com/get-report-by-documentID`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -431,7 +433,7 @@ async function sendDataToServer(data) {
   isProcessing = true;
 
   try {
-    const response = await fetch("http://localhost:3000/process-webpage", {
+    const response = await fetch("https://wrapcapstone.com/process-webpage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -486,7 +488,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
         return;
       }
 
-      fetch("http://localhost:3000/generate-report", {
+      fetch("https://wrapcapstone.com/generate-report", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

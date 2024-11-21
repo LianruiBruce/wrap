@@ -440,7 +440,7 @@ export default function Content({ isDocumentSettingsClicked }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("http://localhost:3000/", {
+    const socket = io.connect("https://wrapcapstone.com/", {
       query: { token: token },
     });
 
