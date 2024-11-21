@@ -980,8 +980,7 @@ function LandingPage() {
               Ready to Simplify Legal Documents?
             </Typography>
             <Typography sx={{ mb: 6, color: "rgba(255, 255, 255, 0.7)" }}>
-              Join thousands of users who are already using Wrap to understand
-              their legal documents better.
+              Join us to use Wrap to understand your legal documents better.
             </Typography>
             <Box
               sx={{
