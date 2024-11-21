@@ -1041,7 +1041,7 @@ function Footer() {
             <Box sx={{ display: "flex", gap: 2 }}>
               <Link
                 component={RouterLink}
-                to="/terms-and-conditions"
+                href="/terms-and-conditions"
                 color="inherit"
                 underline="hover"
               >
@@ -1049,7 +1049,7 @@ function Footer() {
               </Link>
               <Link
                 component={RouterLink}
-                to="/privacy-policy"
+                href="/privacy-policy"
                 color="inherit"
                 underline="hover"
               >
