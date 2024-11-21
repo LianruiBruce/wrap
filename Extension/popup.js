@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document
       .getElementById("report-btn")
       .addEventListener("click", function () {
-        chrome.tabs.create({ url: "https://wrapcapstone.com/" });
+        chrome.tabs.create({ url: "https://wrapcapstone.com/login" });
         chrome.storage.local.get("documentID", (result) => {
           const documentID = result.documentID;
 
@@ -512,7 +512,7 @@ function updatePopupContent(receivedData) {
         document
           .getElementById("report-btn")
           .addEventListener("click", function () {
-            chrome.tabs.create({ url: "https://wrapcapstone.com/" });
+            chrome.tabs.create({ url: "https://wrapcapstone.com/login" });
 
             chrome.storage.local.get("documentID", (result) => {
               const documentID = result.documentID;
