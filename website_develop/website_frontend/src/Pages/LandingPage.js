@@ -10,8 +10,10 @@ import {
   Card,
   Box,
   Chip,
+  Link,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { Link as RouterLink } from "react-router-dom";
 
 // Import all required icons
 import ExtensionIcon from "@mui/icons-material/Extension";
