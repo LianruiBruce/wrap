@@ -270,7 +270,7 @@ chrome.runtime.onMessage.addListener(async function (
   if (message.type === "USER_LOGIN") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const currentTab = tabs[0];
-      const validURL = "https://wrapcapstone.com";
+      const validURL = "https://wrapcapstone.com/login";
 
       if (currentTab && currentTab.url && currentTab.url.startsWith(validURL)) {
         const token = message.token;
