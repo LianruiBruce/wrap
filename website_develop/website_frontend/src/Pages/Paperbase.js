@@ -249,7 +249,7 @@ export default function Paperbase() {
           >
             {"Copyright © "}
             <Link
-              href="https://mui.com/"
+              href="/privacy-policy"
               sx={{
                 color: mode === "dark" ? "#90CAF9" : theme.palette.primary.main,
                 textDecoration: "none",
