@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   //upload button
   document.getElementById("upload-btn").addEventListener("click", function () {
-    chrome.tabs.create({ url: "https://wrapcapstone.com/" });
+    chrome.tabs.create({ url: "https://wrapcapstone.com/login" });
   });
 
   //report error button
