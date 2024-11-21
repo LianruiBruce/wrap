@@ -999,6 +999,10 @@ function LandingPage() {
                 Get Started Now
               </StyledButton>
               <StyledButton
+                component="a"
+                href="https://drive.google.com/file/d/1HcU6J3xXaRsxXgUa6oHf1iB3TB1C52dh/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
                 variant="outlined"
                 size="large"
                 startIcon={<DownloadIcon />}
