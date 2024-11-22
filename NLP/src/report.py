@@ -2,9 +2,10 @@ from src import summarize
 import re
 import json
 import anthropic
+import os
 
 def make_request(model, system, content):
-    client = anthropic.Anthropic(api_key="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")
+    client = anthropic.Anthropic(api_key = os.environ.get("ANTHROPIC_API_KEY"))
 
     message = client.messages.create(
         model= model,
