@@ -1,7 +1,7 @@
 // SettingPage.js
 import React, { useEffect, useState, useContext } from "react";
-import ShortNavigator from "../Components/ShortNavigator"; // import the ShortNavigator component
-import { Switch, FormControlLabel } from "@mui/material"; // import for colorMode switch
+import ShortNavigator from "../Components/ShortNavigator";
+import { Switch, FormControlLabel } from "@mui/material";
 
 import {
   Box,
@@ -14,7 +14,7 @@ import {
   Slider,
   Typography,
 } from "@mui/material";
-import { ThemeContext } from "../colorTheme/ThemeContext"; // Import ThemeContext`
+import { ThemeContext } from "../colorTheme/ThemeContext";
 
 export default function SettingPage() {
   // Initialize state from localStorage or provide default values
@@ -28,10 +28,10 @@ export default function SettingPage() {
     JSON.parse(localStorage.getItem("reportSpeed")) || 4
   );
   const [fontSize, setFontSize] = useState(
-    JSON.parse(localStorage.getItem("fontSize")) || 16 // Default to 16px
-  ); // New state for font size
+    JSON.parse(localStorage.getItem("fontSize")) || 16
+  );
 
-  const { mode, setMode } = useContext(ThemeContext); // Get mode and setMode from context
+  const { mode, setMode } = useContext(ThemeContext);
 
   // State to track unsaved changes
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -43,7 +43,7 @@ export default function SettingPage() {
       summaryLength,
       reportSpeed,
       fontSize,
-      colorMode: mode, // Save color mode from context
+      colorMode: mode,
     };
 
     // Save settings to localStorage
