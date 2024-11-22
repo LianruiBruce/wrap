@@ -10,6 +10,7 @@ import {
   Card,
   Box,
   Chip,
+  Link,
 } from "@mui/material";
 import { styled } from "@mui/system";
 
@@ -1021,6 +1022,54 @@ function LandingPage() {
             </Box>
           </StyledContainer>
         </PageSection>
+
+        {/* Footer */}
+        <Box
+          sx={{
+            backgroundColor: "#000000",
+            py: 4,
+            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
+          <Container maxWidth="lg">
+            <Typography
+              variant="body2"
+              align="center"
+              sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+            >
+              &copy; {new Date().getFullYear()} Wrap. All rights reserved.
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                mt: 2,
+                gap: 4,
+              }}
+            >
+              <Button
+                color="inherit"
+                onClick={() => navigate("/privacy-policy")}
+                sx={{
+                  textTransform: "none",
+                  color: "rgba(255, 255, 255, 0.7)",
+                }}
+              >
+                Privacy Policy
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => navigate("/terms-of-service")}
+                sx={{
+                  textTransform: "none",
+                  color: "rgba(255, 255, 255, 0.7)",
+                }}
+              >
+                Terms of Service
+              </Button>
+            </Box>
+          </Container>
+        </Box>
       </Box>
     </Box>
   );
