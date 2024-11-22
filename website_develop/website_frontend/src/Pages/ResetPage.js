@@ -401,7 +401,7 @@ export default function ResetPassword() {
         <Box sx={{ mt: 5 }}>
           <Typography variant="body2" color="text.secondary" align="center">
             {"© "}
-            <Link color="inherit" href="#">
+            <Link color="inherit" href="/privacy-policy">
               Wrap
             </Link>{" "}
             {new Date().getFullYear()}
