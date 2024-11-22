@@ -724,9 +724,7 @@ export default function Content({ isDocumentSettingsClicked }) {
                   variant="body1"
                   sx={{
                     fontWeight: "bold",
-                    fontSize: `${
-                      fontSize * (1.1 - parseInt(title.tag[1], 10) * 0.1)
-                    }px`,
+                    fontSize: `${ fontSize }px`,
                   }}
                 >
                   {title.content}
