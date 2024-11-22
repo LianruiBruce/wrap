@@ -18,8 +18,8 @@ import SettingPage from "./Pages/SettingPage";
 import SignUpPage from "./Pages/SignUpPage";
 import VerificationCode from "./Pages/VerificationCodePage";
 import LandingPage from "./Pages/LandingPage";
-import PrivacyPolicy from "./Components/PrivacyPolicy";
-import TermsOfService from "./Components/TermsOfService";
+import PrivacyPolicy from "./Components/PrivacyPolicy.jsx";
+import TermsOfService from "./Components/TermsOfService.jsx";
 
 function App() {
   return (
