@@ -19,7 +19,7 @@ import SignUpPage from "./Pages/SignUpPage";
 import VerificationCode from "./Pages/VerificationCodePage";
 import LandingPage from "./Pages/LandingPage";
 import PrivacyPolicy from "./Components/PrivacyPolicy.jsx";
-import TermsOfService from "./Components/TermsOfService.jsx";
+import TermsOfService from "../src/Components/TermsCondition.jsx";
 
 function App() {
   return (
