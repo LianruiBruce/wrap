@@ -71,7 +71,9 @@ npm install
 ```env
 MONGODB_URI=your_mongodb_uri
 JWT_SECRET=your_jwt_secret
-PORT=3001
+BREVO_API_KEY = ...
+ANTHROPIC_API_KEY = ...
+
 ```
 
 5. Start the development servers
