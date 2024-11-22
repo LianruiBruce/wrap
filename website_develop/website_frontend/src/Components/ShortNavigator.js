@@ -14,7 +14,7 @@ export default function ShortNavigator() {
     localStorage.removeItem("token");
     sessionStorage.removeItem("token");
 
-    window.postMessage({ type: "USER_LOGOUT"}, "*");
+    window.postMessage({ type: "USER_LOGOUT" }, "*");
 
     // Redirect to the login page
     navigate("/login", { replace: true });

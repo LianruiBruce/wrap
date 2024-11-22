@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children }) {
     if (decodedToken.exp <= currentTime) {
       localStorage.removeItem("token");
 
-      window.postMessage({ type: "USER_LOGOUT"}, "*");
+      window.postMessage({ type: "USER_LOGOUT" }, "*");
 
       return <Navigate to="/login" replace />;
     }

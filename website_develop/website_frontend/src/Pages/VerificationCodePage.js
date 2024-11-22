@@ -31,10 +31,16 @@ export default function VerificationCode() {
   // Send Verification Code
   const sendVerificationCode = async () => {
     try {
-      const response = await axios.post("/api/verification-code", { email, name });
+      const response = await axios.post("/api/verification-code", {
+        email,
+        name,
+      });
       setToken(response.data.token);
     } catch (error) {
-      console.error("Error sending verification code:", error.response?.data || error.message);
+      console.error(
+        "Error sending verification code:",
+        error.response?.data || error.message
+      );
       setErrorMessage("Failed to send verification code. Please try again.");
     }
   };
@@ -57,23 +63,33 @@ export default function VerificationCode() {
 
   const handleVerify = async () => {
     try {
-      const response = await axios.post("/api/verify-code", { token, enteredCode });
+      const response = await axios.post("/api/verify-code", {
+        token,
+        enteredCode,
+      });
       if (response.status === 200) {
         axios
-        .post("/api/signup", user)
-        .then((response) => {
-          console.log(response.data);
-          navigate("/login"); // Redirect to login on success
-        })
-        .catch((error) => {
-          console.error("Signup error", error);
-          window.alert(error.response?.data.message || "Signup failed. Please try again.");
-          navigate("/signup");
-        });
+          .post("/api/signup", user)
+          .then((response) => {
+            console.log(response.data);
+            navigate("/login"); // Redirect to login on success
+          })
+          .catch((error) => {
+            console.error("Signup error", error);
+            window.alert(
+              error.response?.data.message || "Signup failed. Please try again."
+            );
+            navigate("/signup");
+          });
       }
     } catch (error) {
-      console.error("Verification error:", error.response?.data || error.message);
-      setErrorMessage(error.response?.data.message || "Verification failed. Please try again.");
+      console.error(
+        "Verification error:",
+        error.response?.data || error.message
+      );
+      setErrorMessage(
+        error.response?.data.message || "Verification failed. Please try again."
+      );
     }
   };
 
@@ -120,11 +136,11 @@ export default function VerificationCode() {
                   variant="contained"
                   disabled={resendDisabled}
                 >
-                  {resendDisabled ? (
-                    `Wait ${Math.floor(timer / 60)}:${String(timer % 60).padStart(2, "0")}`
-                  ) : (
-                    "Resend"
-                  )}
+                  {resendDisabled
+                    ? `Wait ${Math.floor(timer / 60)}:${String(
+                        timer % 60
+                      ).padStart(2, "0")}`
+                    : "Resend"}
                 </Button>
               </Grid>
             </Grid>

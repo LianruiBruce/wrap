@@ -43,13 +43,16 @@ export default function SignInSide() {
         email: data.get("email"),
         password: data.get("password"),
         rememberMe: rememberMe, // Pass the rememberMe state to the server
-        documentID: documentID
+        documentID: documentID,
       })
       .then((response) => {
         // Store the received token in localStorage
         localStorage.setItem("token", response.data.token);
 
-        window.postMessage({ type: "USER_LOGIN", token: response.data.token }, "*");
+        window.postMessage(
+          { type: "USER_LOGIN", token: response.data.token },
+          "*"
+        );
 
         // Navigate to the main page, using replace to prevent going back to the login page
         navigate("/mainpage", { replace: true });
