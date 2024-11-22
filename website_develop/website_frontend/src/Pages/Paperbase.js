@@ -40,7 +40,7 @@ export default function Paperbase() {
   };
 
   const darkModeSecondary = {
-    backgroundColor: "#2D2D2D", // Darker background for secondary elements
+    backgroundColor: "#1A1A1A", // Darker background for secondary elements
     borderRight: "1px solid rgba(255, 255, 255, 0.05)",
   };
 
