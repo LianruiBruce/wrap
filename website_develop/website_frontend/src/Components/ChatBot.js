@@ -139,7 +139,7 @@ export default function ChatBot({ onClose, documentID }) {
       <div className="chatbox-input-container">
         <textarea
           className="chatbox-input"
-          placeholder="Say something... (max 5 words)"
+          placeholder="Say something..."
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={(e) => {
