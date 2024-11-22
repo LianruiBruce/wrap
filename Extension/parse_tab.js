@@ -77,18 +77,18 @@ function hasTooMuchClickableContent(node) {
     
     let clickableTextLength = 0;
     const clickableElements = node.querySelectorAll(
-        'a, button, [onclick], [role="button"], input[type="button"], input[type="submit"], .cursor-pointer'
+        'a, button, [onclick], [role="button"], input[type="button"], input[type="submit"], .cursor-pointer, div, span, p'
     );
 
     clickableElements.forEach(clickable => {
         const style = window.getComputedStyle(clickable);
-        if (!shouldSkipDueToStyle(clickable, style)) {
+        if (!shouldSkipDueToStyle(clickable, style) && (style.cursor === 'pointer' || clickable.closest('.cursor-pointer'))) {
             clickableTextLength += getVisibleTextLength(clickable);
         }
     });
-
     return clickableTextLength / totalText > 0.25;
 }
+
 
 function getVisibleTextLength(node) {
     let visibleTextLength = 0;
