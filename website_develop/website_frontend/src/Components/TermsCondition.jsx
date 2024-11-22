@@ -10,7 +10,7 @@ function TermsAndConditions() {
           <Typography variant="h3" sx={{ color: "#0056b3", mb: 2 }}>
             Terms and Conditions
           </Typography>
-          <Typography variant="subtitle1">Last Updated: [Insert Date]</Typography>
+          <Typography variant="subtitle1">Effective Date: November 20th, 2024</Typography>
         </Box>
 
         {/* Content Section */}
@@ -176,7 +176,7 @@ function TermsAndConditions() {
             16. Contact Information
           </Typography>
           <Typography paragraph>
-            If you have any questions about these Terms, please contact us at [Insert Contact Information].
+            If you have any questions about these Terms, please contact us at wrapcapstone01@gmail.com.
           </Typography>
         </Box>
 
