@@ -440,7 +440,7 @@ export default function Content({ isDocumentSettingsClicked }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("http://localhost:3000/", {
+    const socket = io.connect("https://wrapcapstone.com/", {
       query: { token: token },
     });
 
@@ -657,7 +657,7 @@ export default function Content({ isDocumentSettingsClicked }) {
       const getFontSizeForHeader = (tag) => {
         switch (tag) {
           case "h1":
-            return `${fontSize * 2.5}px`; 
+            return `${fontSize * 2.5}px`;
           case "h2":
             return `${fontSize * 2}px`;
           case "h3":
@@ -671,15 +671,15 @@ export default function Content({ isDocumentSettingsClicked }) {
           default:
             return `${fontSize}px`;
         }
-      };      
-      
+      };
+
       const titleList = parsedContent
-      .filter((element) => element.tag.match(/^h[1-6]$/))
-      .map((element) => ({
-        tag: element.tag,
-        content: element.content,
-        idx: element.idx,
-      }));
+        .filter((element) => element.tag.match(/^h[1-6]$/))
+        .map((element) => ({
+          tag: element.tag,
+          content: element.content,
+          idx: element.idx,
+        }));
 
       const scrollToTitle = (idx) => {
         const targetElement = document.getElementById(`sentence-${idx}`);
@@ -720,7 +720,9 @@ export default function Content({ isDocumentSettingsClicked }) {
                   variant="body1"
                   sx={{
                     fontWeight: "bold",
-                    fontSize: `${fontSize * (1.1 - parseInt(title.tag[1], 10) * 0.1)}px`,
+                    fontSize: `${
+                      fontSize * (1.1 - parseInt(title.tag[1], 10) * 0.1)
+                    }px`,
                   }}
                 >
                   {title.content}
@@ -768,7 +770,7 @@ export default function Content({ isDocumentSettingsClicked }) {
                         backgroundColor: theme.palette.action.hover,
                       }),
                       ...(element.tag.match(/^h[1-6]$/) && {
-                        fontWeight: "bold", 
+                        fontWeight: "bold",
                       }),
                     },
                   };
@@ -929,16 +931,16 @@ export default function Content({ isDocumentSettingsClicked }) {
       // Main rendering function
       return (
         <>
-        {renderDirectory()}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "3fr 1fr",
-            gap: "20px",
-          }}
-        >
-          {renderElementsWithExplanations(parsedContent)}
-        </div>
+          {renderDirectory()}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "3fr 1fr",
+              gap: "20px",
+            }}
+          >
+            {renderElementsWithExplanations(parsedContent)}
+          </div>
         </>
       );
     } catch (error) {
@@ -1062,21 +1064,21 @@ export default function Content({ isDocumentSettingsClicked }) {
             xs={12}
             spacing={2}
             sx={{
-              height: "60vh", 
-              display: "flex", 
-              flexDirection: "row", 
-              alignItems: "stretch", 
+              height: "60vh",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "stretch",
             }}
           >
             {/* General Summary */}
             <Grid
               item
               xs={12}
-              md={6} 
+              md={6}
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                height: "100%", 
+                height: "100%",
               }}
             >
               <Paper sx={{ ...paperStyle, flexGrow: 1, height: "100%" }}>

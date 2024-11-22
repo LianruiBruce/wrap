@@ -77,7 +77,7 @@ To get a copy of the project up and running on your local machine, follow these 
    npm start
    ```
 
-   The development server usually runs on `http://localhost:3000`.
+   The development server usually runs on `https://wrapcapstone.com`.
 
 
 ### Useful Commands

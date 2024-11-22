@@ -1,12 +1,12 @@
 // Header.js
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import BackupTableIcon from '@mui/icons-material/BackupTable';
+import BackupTableIcon from "@mui/icons-material/BackupTable";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import MenuBookIcon from '@mui/icons-material/MenuBook';
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import SettingsIcon from "@mui/icons-material/Settings";
-import StorageIcon from '@mui/icons-material/Storage';
+import StorageIcon from "@mui/icons-material/Storage";
 import {
   AppBar,
   Box,
@@ -60,7 +60,7 @@ function Header({
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("http://localhost:3000", {
+    const socket = io.connect("https://wrapcapstone.com", {
       query: { token: token },
     });
 
