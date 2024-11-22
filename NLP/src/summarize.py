@@ -1,5 +1,4 @@
 import torch
-import json
 import re
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -13,10 +12,10 @@ def custom_sentence_tokenize(text):
     ]
     return sentences
 
-def summarize_with_legalprobert(text, model, tokenizer, device, summary_ratio=0.2, score_threshold=0.3):
+def summarize_with_legalprobert(text, model, tokenizer, device, summary_ratio=0.5):
     sentences = custom_sentence_tokenize(text)
 
-    batch_size = 12 
+    batch_size = 12
     embeddings = []
 
     with torch.no_grad():
@@ -24,31 +23,26 @@ def summarize_with_legalprobert(text, model, tokenizer, device, summary_ratio=0.
             batch_sentences = sentences[i:i + batch_size]
             
             inputs = tokenizer(batch_sentences, return_tensors="pt", padding=True, truncation=True, max_length=512).to(device)
-            
+                
             with torch.amp.autocast(device_type='cuda'):
                 outputs = model(**inputs)
-            
+                                
             sentence_embeddings = outputs.last_hidden_state.mean(dim=1).cpu().numpy()
             embeddings.append(sentence_embeddings)
 
     embeddings = np.vstack(embeddings)
-
-    similarity_matrix = cosine_similarity(embeddings, embeddings)
-    scores = similarity_matrix.mean(axis=1)
+    document_embedding = np.mean(embeddings, axis=0)
+    similarity_scores = cosine_similarity([document_embedding], embeddings)[0]
+    ranked_indices = np.argsort(similarity_scores)[::-1]
 
     target_length = int(len(sentences) * summary_ratio)
-    if target_length < 1:
-        target_length = 1  # Ensure at least one sentence is selected
+    target_length = max(1, target_length)  # Ensure at least one sentence is selected
 
-    high_score_indices = np.where(scores > score_threshold * scores.max())[0]
+    # Select top N sentences based on the similarity scores
+    selected_sentences = [sentences[i] for i in ranked_indices[:target_length]]
 
-    if len(high_score_indices) < target_length:
-        high_score_indices = np.argsort(scores)[-target_length:]
-
-    selected_indices = sorted(high_score_indices[:target_length])
-    summary_sentences = [sentences[idx] for idx in selected_indices]
-
-    summary = ' '.join(summary_sentences)
+    # Join selected sentences into a coherent summary
+    summary = ' '.join(selected_sentences)
 
     return summary
 
@@ -57,7 +51,7 @@ def transformers_summary(text, model, tokenizer, device):
     combined_summary=""
     
     for chunk in chunks:
-        combined_summary += summarize_with_legalprobert(chunk, model, tokenizer, device, summary_ratio=0.5, score_threshold=0.5)
+        combined_summary += summarize_with_legalprobert(chunk, model, tokenizer, device, summary_ratio=0.5)
 
     return combined_summary
 
@@ -71,13 +65,20 @@ def select_most_relevant_sentences(text, tokenizer, model, device, max_tokens=51
         for i in range(0, len(sentences), 12):  # Process in batches of 12
             batch = sentences[i:i + 12]
             inputs = tokenizer(batch, return_tensors="pt", padding=True, truncation=True, max_length=512).to(device)
-            outputs = model(**inputs)
+            with torch.amp.autocast(device_type='cuda'):
+                outputs = model(**inputs)
             embeddings.append(outputs.last_hidden_state.mean(dim=1).cpu().numpy())
 
     embeddings = np.vstack(embeddings)
-    similarity_matrix = cosine_similarity(embeddings, embeddings)
-    scores = similarity_matrix.mean(axis=1)  # Compute relevance scores
-    sorted_indices = np.argsort(-scores)  # Sort by relevance in descending order
+
+    # Generate document-level embedding by averaging all sentence embeddings
+    document_embedding = np.mean(embeddings, axis=0)
+
+    # Calculate cosine similarity between each sentence and the document embedding
+    similarity_scores = cosine_similarity([document_embedding], embeddings)[0]
+
+    # Sort sentences by their similarity to the document embedding (relevance)
+    sorted_indices = np.argsort(-similarity_scores)  # Sort by relevance in descending order
 
     selected_sentences = []
     total_tokens = 0

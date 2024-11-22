@@ -8,9 +8,7 @@ from src import stats
 from src import classifier
 from src import models
 from src import pdf_parse
-import base64
-import fitz 
-from io import BytesIO
+
 
 # Start the Flask application
 app = Flask(__name__)
@@ -138,7 +136,7 @@ def getQA():
     question = data['question']
 
     start_qa = time.time()
-    answer, score = classifier.document_QA(text, question, QA_tokenizer, QA_model, device)
+    answer = classifier.document_QA(text, question, QA_tokenizer, QA_model, device)
     print("Qa time: ", time.time()-start_qa)
 
     return jsonify({

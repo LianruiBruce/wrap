@@ -6,10 +6,10 @@ import os
 
 def make_request(model, system, content):
     client = anthropic.Anthropic(api_key = os.environ.get("ANTHROPIC_API_KEY"))
-
+    
     message = client.messages.create(
         model= model,
-        max_tokens=1000,
+        max_tokens=2000,
         temperature=0.0,
         system=system,
         messages=[
@@ -157,13 +157,15 @@ def consolidated_report(input, num_words=150, num_sections=3):
         "claude-3-5-sonnet-20240620",
         "Provide concise, clear, and legally accurate responses.",
         f"""
-        Please comprehensively analyze the following legal document to simplify it for a user, focusing on essential and non-trivial information. Provide the following outputs with precise formatting:
+        Please, analyze the following legal document to generate a report for a user, focusing on essential information from the end-user's perspective. 
+        Provide the following outputs with the precise formatting as requested.
 
         1. **General Summary**:
-        - Capture the main themes and important legal, data, financial, policy, and practical points.
-        - Avoid unnecessary technical language but keep the legal meaning intact.
-        - Make sure the summary highlights any obligations, risks, or critical information.
-        - Keep the summary length at around {num_words} words and use bullet points.
+        - Summarize the overall purpose, themes, and key points of the document.
+        - Include critical information about user obligations, financial terms, privacy policies, and risks.
+        - Use bullet points for clarity and limit the summary to approximately {num_words} words.
+        - Avoid unnecessary technical language while preserving legal accuracy.
+       
         - Strict response format:
           <<GENERAL_SUMMARY>>
           {{
@@ -172,7 +174,13 @@ def consolidated_report(input, num_words=150, num_sections=3):
           <<END_GENERAL_SUMMARY>>
 
         2. **Section Summary**:
-        - Select the main points in this legal document, focusing specifically on key dates, deadlines, data usage, financial and payments, and significant legal details. Provide a short description of each point that highlights these crucial aspects for user comprehension.
+        - Extract and summarize the document’s main sections/clauses, focusing on:
+            - Key Dates and Deadlines
+            - Data Usage and Privacy
+            - Financial Terms, Payments and Penalties Details
+            - Significant Legal Clauses
+        - Use clear, user-friendly descriptions for each point to ensure comprehension.
+     
         - Strict response format (ensure proper JSON formatting):
           <<SECTION_SUMMARY>>
           [
@@ -193,9 +201,12 @@ def consolidated_report(input, num_words=150, num_sections=3):
           <<END_SECTION_SUMMARY>>
 
         3. **Risk Assessment**:
-        - Evaluate the document's risks in three categories: Legal, Financial, and Data.
-        - Use a scale from 0 to 5 (where 0 means no risk, and 5 means high risk).
-        - Provide a complete explanation for each score.
+        - Assess the document's risks in the following categories:
+            - Legal Risk
+            - Financial Risk
+            - Data Risk
+        - Use a scale from 0 to 5 for each category (0 = no risk, 5 = high risk) and provide a clear, accurate explanation for each score.
+        
         - Strict response format (ensure proper JSON formatting):
           <<RISK_ASSESSMENT>>
           [

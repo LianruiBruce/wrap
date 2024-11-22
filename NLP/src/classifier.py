@@ -2,7 +2,8 @@ import json
 from src import stats
 import torch
 from datetime import datetime
-from transformers import pipeline
+from src import parseDocument
+import torch.nn.functional as F
 
 def is_legal_document(title, headers, tokenizer, model, device):
     labels = ["a Terms and Conditions", "a Privacy Policy", "a Contract Agreement", "a Cookie Policy", "not a Legal Document"]
@@ -54,43 +55,65 @@ def validate_company_name(name):
 
 def get_company_from_webpage(content, title, footer, tokenizer, model, device):
     try:
-        footer = stats.process_footer(footer)
-        question = "What Company is this document referred to?"
-
+        footer = stats.process_footer(footer)  # Assuming stats.process_footer exists
+        question = "What is the company this document referred to?"
         valid_answer = False
-
-        # Tokenize the text to get tokens
-        tokens = tokenizer.tokenize(content)
-        token_chunks = [tokens[i:i + 256] for i in range(0, len(tokens), 256)]
-
-        for token_chunk in token_chunks:
-            # Decode the chunk back to string format
-            text_chunk = tokenizer.convert_tokens_to_string(token_chunk)
+        final_answer = None
+        
+        # Tokenize the content into manageable chunks
+        chunks = parseDocument.chunk_text(content, tokenizer, 256)
+        
+        for chunk in chunks:
+            # Convert token chunk back to string
             if title and footer:
-                context = f"Title: {title}\nFooter: {footer}\nContent: {text_chunk}"
+                context = f"{title}\n{footer}\n{chunk}"
             elif title:
-                context = f"Title: {title}\nContent: {text_chunk}"
+                context = f"{title}\n{chunk}"
             elif footer:
-                context = f"Footer: {footer}\nContent: {text_chunk}"
+                context = f"{footer}\n{chunk}"
             else:
-                context = f"{text_chunk}"
-
-            nlp = pipeline('question-answering', model=model, tokenizer=tokenizer, device=device)
-            QA_input = {
-                'question': question,
-                'context': f"{context}"
-            }
-            res = nlp(QA_input)
-            answer = res['answer']
+                context = chunk
             
-            if validate_company_name(answer):
+            # Construct the prompt
+            prompt = f"""### Analyze the following document and answer: {question}\n\n### Document:\n{context}\n\n"""
+            
+            # Prepare the inputs for the model
+            inputs = tokenizer(prompt, return_tensors="pt").to(device)
+            
+            # Generate the output
+            outputs = model.generate(
+                inputs["input_ids"], 
+                return_dict_in_generate=True, 
+                output_scores=True
+            )
+            
+            # Decode the generated output
+            decoded_output = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
+            
+            # Calculate confidence scores for the output
+            scores = outputs.scores
+            token_probs = [F.softmax(score, dim=-1) for score in scores]
+            output_tokens = outputs.sequences[0]
+            
+            confidences = []
+            for i, token in enumerate(output_tokens[1:]):  # Skip the initial <pad> token
+                token_id = token.item()
+                confidence = token_probs[i][0, token_id].item()
+                confidences.append(confidence)
+            
+            # Average confidence
+            avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
+            
+            # Validate the answer
+            if validate_company_name(decoded_output) and avg_confidence > 0.7:  # Threshold for confidence
+                final_answer = decoded_output.title().strip()
                 valid_answer = True
-                break
+                break  # Stop once we have a valid answer
         
         if not valid_answer:
             return None
-
-        return answer.title().strip()
+        
+        return final_answer
     
     except Exception as e:
         print(f"Error occurred in get_company_from_webpage: {e}")
@@ -138,30 +161,68 @@ def chunk_text(text, tokenizer, max_seq_len=512, doc_stride=256):
     
     return chunks
 
-def document_QA(text, question, tokenizer, model, device, threshold=0.1):
-    text = json.loads(text)
-    content_list = [t['content'] for t in text]
-    text = '\n'.join(content_list)
-
-    pipe = pipeline("question-answering", model=model, tokenizer=tokenizer, device=device)
-
-    chunks = chunk_text(text, tokenizer)
-
-    best_answer = None
-    best_score = 0
-    
-    for chunk in chunks:
-        c = tokenizer.decode(chunk['input_ids'], skip_special_tokens=True)
+def document_QA(text, question, tokenizer, model, device, threshold=0.7, batch_size=1):
+    try:
+        # Parse and combine the text content
+        text = json.loads(text)
+        content_list = [t['content'] for t in text]
+        full_text = '\n'.join(content_list)
         
-        result = pipe(question=question, context=c)
+        # Split the text into chunks manageable by the model
+        chunks = parseDocument.chunk_text(full_text, tokenizer, 512)
         
-        # print(f"{result['answer']}: {result["score"]}")
-              
-        if result['score'] > best_score and result['score'] > threshold and result['answer']:
-            best_answer = result['answer']
-            best_score = result['score']
+        best_answer = "None"
+        best_confidence = 0
+        
+        # Batch processing
+        for i in range(0, len(chunks), batch_size):
+            batch = chunks[i:i + batch_size]
+            
+            # Prepare the batch of prompts
+            prompts = [
+                f"""### Analyze the document and answer: \n\n {question}, if no answer found return "None". \n\n### Document:\n{chunk}\n\n"""
+                for chunk in batch
+            ]
+            
+            # Tokenize the batch of prompts
+            inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True).to(device)
+            
+            # Generate outputs for the batch
+            outputs = model.generate(
+                inputs["input_ids"], 
+                return_dict_in_generate=True, 
+                output_scores=True
+            )
+            
+            # Process each output in the batch
+            for idx, sequence in enumerate(outputs.sequences):
+                # Decode the generated answer
+                decoded_output = tokenizer.decode(sequence, skip_special_tokens=True)
+                
+                # Calculate confidence scores
+                scores = outputs.scores
+                token_probs = [F.softmax(score, dim=-1) for score in scores]
+                output_tokens = sequence
+                
+                confidences = []
+                for i, token_id in enumerate(output_tokens[1:]):  # Skip the initial <pad> token
+                    if i < len(scores):  # Ensure alignment
+                        confidence = token_probs[i][0, token_id].item()
+                        confidences.append(confidence)
+                
+                avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
+                
+                # Update the best answer if confidence is higher and meets the threshold
+                if avg_confidence > best_confidence and avg_confidence >= threshold and decoded_output.strip() and "None" not in decoded_output:
+                    best_answer = decoded_output.strip()
+                    best_confidence = avg_confidence
+        
+        # If no valid answer was found, return "No Answer Found"
+        if best_answer == "None":
+            return "No Answer Found"
+        
+        return best_answer
 
-    if best_answer:
-        return best_answer, best_score
-    else:
-        return "No answer found", 0
+    except Exception as e:
+        print(f"Error in document_QA: {e}")
+        return "No Answer Found"

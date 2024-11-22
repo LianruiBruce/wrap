@@ -1,4 +1,4 @@
-from transformers import AutoModelForQuestionAnswering, BartForConditionalGeneration, AutoModelForSequenceClassification
+from transformers import AutoModelForSeq2SeqLM, BartForConditionalGeneration, AutoModelForSequenceClassification
 from transformers import AutoModel, AutoTokenizer
 
 def load_classification_model(device):
@@ -10,8 +10,8 @@ def load_classification_model(device):
     return bart_tokenizer, bart_model
 
 def load_QA_model(device):
-    tokenizer = AutoTokenizer.from_pretrained("deepset/roberta-base-squad2")
-    model = AutoModelForQuestionAnswering.from_pretrained("deepset/roberta-base-squad2")
+    tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-large")
+    model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-large")
     model.eval()
     model.to(device)
 
