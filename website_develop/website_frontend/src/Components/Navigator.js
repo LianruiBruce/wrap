@@ -182,7 +182,6 @@ function Navigator(props) {
     category.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // bgcolor: "#171717",
   const styles = {
     drawer: {
       width: "100%",
@@ -195,7 +194,7 @@ function Navigator(props) {
         height: "100%",
         boxSizing: "border-box",
         bgcolor: "#171717",
-        color: rgb(24, 27, 27),
+        color: "#ffffff",
         fontFamily: "Quicksand",
       },
     },
