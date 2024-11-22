@@ -14,7 +14,6 @@ export default function ChatBot({ onClose, documentID }) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
-  const [wordLimitExceeded, setWordLimitExceeded] = useState(false);
   const wordLimit = 5;
 
   const scrollToBottom = () => {
@@ -52,10 +51,6 @@ export default function ChatBot({ onClose, documentID }) {
 
   const handleSend = async () => {
     const wordCount = inputValue.trim().split(/\s+/).length;
-    if (wordCount > wordLimit) {
-      setWordLimitExceeded(true);
-      return;
-    }
 
     if (inputValue.trim()) {
       setMessages((prevMessages) => [
@@ -83,12 +78,6 @@ export default function ChatBot({ onClose, documentID }) {
     const wordCount = value.trim().split(/\s+/).length;
 
     setInputValue(value);
-
-    if (wordCount > wordLimit) {
-      setWordLimitExceeded(true);
-    } else {
-      setWordLimitExceeded(false);
-    }
 
     event.target.style.height = "auto";
     event.target.style.height = event.target.scrollHeight + "px";
@@ -165,12 +154,6 @@ export default function ChatBot({ onClose, documentID }) {
           Send
         </button>
       </div>
-
-      {wordLimitExceeded && (
-        <div className="word-limit-warning">
-          You have exceeded the 5-word limit!
-        </div>
-      )}
     </div>
   );
 }
