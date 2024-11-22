@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useRef,useState, useContext } from "react";
 import {
   Box,
   CircularProgress,
@@ -6,6 +6,7 @@ import {
   IconButton,
   Typography,
   useTheme,
+  Button,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
@@ -23,6 +24,9 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -32,7 +36,10 @@ import AddIcon from "@mui/icons-material/Add";
 import Header from "../Components/LibraryHeader";
 import LibraryNavigator from "../Components/LibraryNavigator";
 import { ThemeContext } from "../colorTheme/ThemeContext";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import pdfIcon from '../Images/PDF.png';
+import emailIcon from '../Images/Email.png'; 
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf"; 
+import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
 
 function ReportLibrary() {
   const { mode } = useContext(ThemeContext);
@@ -48,9 +55,9 @@ function ReportLibrary() {
   const [displayLimit, setDisplayLimit] = useState(4);
   const navigate = useNavigate();
   const [documentTypeData, setDocumentTypeData] = useState([]);
-
-  const [sortBy, setSortBy] = useState("None");
-  const [sortOrder, setSortOrder] = useState("high to low");
+  const [userInfo, setUserInfo] = useState(null);
+  const [sortBy, setSortBy] = useState("date"); // Default is "date"
+  const [sortOrder, setSortOrder] = useState("newest to oldest"); 
   const [readabilityData, setReadabilityData] = useState([]);
   const [riskTrends, setRiskTrends] = useState([]);
 
@@ -67,9 +74,49 @@ function ReportLibrary() {
 
   const [displayedDocuments, setDisplayedDocuments] = useState([]);
 
+  const chartRefs = {
+    reportsPerMonth: useRef(),
+    riskScores: useRef(),
+    riskLevelDistribution: useRef(),
+    documentTypes: useRef(),
+    readabilityScore: useRef(),
+    documentRiskTrends: useRef(),
+  };
+
+
+  const exportChartsToPDF = async () => {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const chartKeys = Object.keys(chartRefs);
+    
+    for (let i = 0; i < chartKeys.length; i++) {
+      const key = chartKeys[i];
+      const ref = chartRefs[key];
+      const chartElement = ref.current;
+  
+      if (chartElement) {
+        const canvas = await html2canvas(chartElement, { scale: 2 });
+        const imgData = canvas.toDataURL('image/png');
+  
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  
+        if (i > 0) {
+          pdf.addPage();
+        }
+  
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      }
+    }
+  
+    pdf.save('charts.pdf');
+  };
+
+  
+
   useEffect(() => {
     let docs = [...filteredDocuments];
-
+  
     if (sortBy === "risk score") {
       docs.sort((a, b) => {
         if (sortOrder === "high to low") {
@@ -78,10 +125,22 @@ function ReportLibrary() {
           return a.overallScore - b.overallScore;
         }
       });
+    } else if (sortBy === "date") {
+      docs.sort((a, b) => {
+        const dateA = new Date(a.reportDate || 0); // Use reportDate and handle missing dates
+        const dateB = new Date(b.reportDate || 0);
+  
+        if (sortOrder === "newest to oldest") {
+          return dateB - dateA; // Descending order
+        } else {
+          return dateA - dateB; // Ascending order
+        }
+      });
     }
-
-    setDisplayedDocuments(docs);
+  
+    setDisplayedDocuments(docs); // Update the displayed documents
   }, [filteredDocuments, sortBy, sortOrder]);
+  
 
   const computeRiskTrends = (documents) => {
     const monthlyRiskScores = {};
@@ -117,7 +176,7 @@ function ReportLibrary() {
     try {
       const token = localStorage.getItem("token");
       navigate("/mainpage");
-      const response = await fetch("https://wrapcapstone.com/response-docID", {
+      const response = await fetch("http://localhost:3000/response-docID", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -141,6 +200,99 @@ function ReportLibrary() {
   const handleShowMore = () => {
     setDisplayLimit((prevLimit) => prevLimit + 4);
   };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+  
+  async function fetchUserInfo() {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3000/getUserInfo', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch user information');
+      }
+  
+      const { userInfo } = await response.json();
+      setUserInfo(userInfo);
+    } catch (error) {
+      console.error('Error fetching user information:', error);
+    }
+  }
+
+async function emailChartsToUser() {
+  if (!userInfo) {
+    console.error('User info not available');
+    return;
+  }
+
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const chartKeys = Object.keys(chartRefs);
+
+  for (let i = 0; i < chartKeys.length; i++) {
+    const key = chartKeys[i];
+    const ref = chartRefs[key];
+    const chartElement = ref.current;
+
+    if (chartElement) {
+      // Wait a moment to ensure rendering is complete
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const canvas = await html2canvas(chartElement, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    } else {
+      console.warn(`Chart element for ${key} is not available.`);
+    }
+  }
+
+  // Get the PDF as a data URI and extract the base64 string
+  const pdfDataUri = pdf.output('datauristring');
+  const base64Pdf = pdfDataUri.split(',')[1];
+
+  // Send the PDF to the server
+  try {
+    const response = await fetch('/api/send-graphs-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: userInfo.email,
+        name: userInfo.firstName + " " + userInfo.lastName,
+        pdfData: base64Pdf,
+      }),
+    });
+
+    if (response.ok) {
+      console.log('Email sent successfully');
+      alert('Email sent successfully');
+    } else {
+      const errorData = await response.json();
+      console.error('Error sending email:', errorData.message);
+      alert('Error sending email: ' + errorData.message);
+    }
+  } catch (error) {
+    console.error('Error sending email:', error);
+    alert('Error sending email: ' + error.message);
+  }
+}
 
   const getColor = (score) => {
     if (mode === "dark") {
@@ -197,7 +349,7 @@ function ReportLibrary() {
   const toggleFlag = async (documentID) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("https://wrapcapstone.com/toggleFlagOfDoc", {
+      const response = await fetch("http://localhost:3000/toggleFlagOfDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -238,7 +390,7 @@ function ReportLibrary() {
     console.log("Downloading document with ID:", documentID);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("https://wrapcapstone.com/download-pdf", {
+      const response = await fetch("http://localhost:3000/download-pdf", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -289,7 +441,7 @@ function ReportLibrary() {
       }
 
       const token = localStorage.getItem("token");
-      const response = await fetch("https://wrapcapstone.com/delete-doc", {
+      const response = await fetch("http://localhost:3000/delete-doc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -317,16 +469,13 @@ function ReportLibrary() {
     async function fetchDocuments() {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          "https://wrapcapstone.com/user-documents",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch("http://localhost:3000/user-documents", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -374,7 +523,7 @@ function ReportLibrary() {
             riskLevelCounts[overallRiskLevel] += 1;
 
             const flagResponse = await fetch(
-              "https://wrapcapstone.com/getFlagOfDoc",
+              "http://localhost:3000/getFlagOfDoc",
               {
                 method: "POST",
                 headers: {
@@ -548,6 +697,7 @@ function ReportLibrary() {
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
       />
+      
 
       <Grid container spacing={3} sx={{ maxWidth: "1200px", width: "100%" }}>
         <Grid item xs={collapsed ? 1 : 2}>
@@ -775,83 +925,126 @@ function ReportLibrary() {
               )}
             </Grid>
 
+
+              {/* Reports Generated Per Month */}
             <Grid item xs={12} md={4}>
-              {/*  Reports Generated Per Month*/}
-              <Box
-                sx={{
-                  backgroundColor:
-                    mode === "dark"
-                      ? "#2D2D2D"
-                      : theme.palette.background.paper,
-                  padding: "20px",
-                  borderRadius: "10px",
-                  boxShadow:
-                    mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
-                  marginBottom: "20px",
-                  color:
-                    mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
-                }}
-              >
-                <Typography
-                  variant="h6"
+           {/* Export to PDF Button */}
+           <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end", 
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "16px", 
+        }}
+      >
+        {/* PDF Download Button */}
+        <IconButton
+          onClick={exportChartsToPDF}
+          aria-label="Export Charts to PDF"
+          sx={{
+            color: "primary.main",
+            "&:hover": {
+              color: "primary.dark", 
+            },
+          }}
+        >
+          <PictureAsPdfIcon  fontSize="large" />
+        </IconButton>
+
+        {/* Email Forward Button */}
+        <IconButton
+          onClick={emailChartsToUser}
+          aria-label="Email Charts"
+          sx={{
+            color: "primary.main", 
+            "&:hover": {
+              color: "primary.dark", 
+            },
+          }}
+        >
+          <ForwardToInboxIcon fontSize="large" />
+        </IconButton>
+      </Box>
+                <Box
+                  ref={chartRefs.reportsPerMonth}
                   sx={{
+                    backgroundColor:
+                      mode === "dark"
+                        ? "#2D2D2D"
+                        : theme.palette.background.paper,
+                    padding: "20px",
+                    borderRadius: "10px",
+                    boxShadow:
+                      mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
                     marginBottom: "20px",
-                    color: mode === "dark" ? "#FFFFFF" : "inherit",
-                    fontWeight: 600,
+                    color:
+                      mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
                   }}
-                >
-                  Reports Generated Per Month
-                </Typography>
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart
-                    data={chartData}
-                    style={{
-                      backgroundColor: chartThemeColors.backgroundColor,
+                 >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      marginBottom: "20px",
+                      color: mode === "dark" ? "#FFFFFF" : "inherit",
+                      fontWeight: 600,
                     }}
                   >
-                    <CartesianGrid stroke={chartThemeColors.gridColor} />
-                    <XAxis
-                      dataKey="month"
-                      stroke={chartThemeColors.textColor}
-                    />
-                    <YAxis
-                      allowDecimals={false}
-                      stroke={chartThemeColors.textColor}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor:
-                          chartThemeColors.tooltipBackgroundColor,
-                        color: chartThemeColors.tooltipTextColor,
-                        border: "none",
-                        borderRadius: "4px",
-                        boxShadow:
-                          mode === "dark"
-                            ? "0 4px 12px rgba(0, 0, 0, 0.5)"
-                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    Reports Generated Per Month
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart
+                      data={chartData}
+                      style={{
+                        backgroundColor: chartThemeColors.backgroundColor,
                       }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="reports"
-                      stroke={
-                        mode === "dark" ? "#90CAF9" : theme.palette.primary.main
-                      }
-                      strokeWidth={2}
-                      dot={{
-                        r: 3,
-                        fill:
+                    >
+                      <CartesianGrid stroke={chartThemeColors.gridColor} />
+                      <XAxis
+                        dataKey="month"
+                        stroke={chartThemeColors.textColor}
+                      />
+                      <YAxis
+                        allowDecimals={false}
+                        stroke={chartThemeColors.textColor}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor:
+                            chartThemeColors.tooltipBackgroundColor,
+                          color: chartThemeColors.tooltipTextColor,
+                          border: "none",
+                          borderRadius: "4px",
+                          boxShadow:
+                            mode === "dark"
+                              ? "0 4px 12px rgba(0, 0, 0, 0.5)"
+                              : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="reports"
+                        stroke={
                           mode === "dark"
                             ? "#90CAF9"
-                            : theme.palette.primary.main,
-                      }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Box>
+                            : theme.palette.primary.main
+                        }
+                        strokeWidth={2}
+                        dot={{
+                          r: 3,
+                          fill:
+                            mode === "dark"
+                              ? "#90CAF9"
+                              : theme.palette.primary.main,
+                        }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </Box>
               {/* Average Risk Scores by Category */}
               <Box
+               ref={chartRefs.riskScores}
                 sx={{
                   backgroundColor:
                     mode === "dark"
@@ -918,6 +1111,7 @@ function ReportLibrary() {
               </Box>
               {/* Risk Level Distribution */}
               <Box
+               ref={chartRefs.riskLevelDistribution}
                 sx={{
                   backgroundColor:
                     mode === "dark"
@@ -1009,6 +1203,7 @@ function ReportLibrary() {
               </Box>
               {/*  Document Types Distribution */}
               <Box
+               ref={chartRefs.documentTypes}
                 sx={{
                   backgroundColor:
                     mode === "dark"
@@ -1083,6 +1278,7 @@ function ReportLibrary() {
               </Box>
               {/* readability */}
               <Box
+               ref={chartRefs.readabilityScore}
                 sx={{
                   backgroundColor:
                     mode === "dark"
@@ -1157,7 +1353,9 @@ function ReportLibrary() {
                   </BarChart>
                 </ResponsiveContainer>
               </Box>
+              {/* Risk Trends */}
               <Box
+              ref={chartRefs.documentRiskTrends}
                 sx={{
                   backgroundColor:
                     mode === "dark"

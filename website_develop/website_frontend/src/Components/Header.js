@@ -1,22 +1,23 @@
 // Header.js
 
-import React, { useEffect, useState, useContext } from "react";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import BackupTableIcon from '@mui/icons-material/BackupTable';
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import SettingsIcon from "@mui/icons-material/Settings";
+import StorageIcon from '@mui/icons-material/Storage';
 import {
   AppBar,
-  Avatar,
   Box,
   IconButton,
   Toolbar,
   Tooltip,
   Typography,
-  useTheme,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import HistoryIcon from "@mui/icons-material/History";
-import SettingsIcon from "@mui/icons-material/Settings";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import { ThemeContext } from "../colorTheme/ThemeContext";
@@ -59,7 +60,7 @@ function Header({
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("https://wrapcapstone.com", {
+    const socket = io.connect("http://localhost:3000", {
       query: { token: token },
     });
 
@@ -239,7 +240,12 @@ function Header({
               onClick={handleDocumentSettingsClick}
               sx={headerStyle.iconButton}
             >
-              <VisibilityIcon sx={headerStyle.icon} />
+              {isDocumentSettingsClicked && (
+                <BackupTableIcon sx={headerStyle.icon} />
+              )}
+              {!isDocumentSettingsClicked && (
+                <MenuBookIcon sx={headerStyle.icon} />
+              )}
             </IconButton>
           </Tooltip>
 
@@ -261,7 +267,7 @@ function Header({
                   onClick={handleHistoryClick}
                   sx={headerStyle.iconButton}
                 >
-                  <HistoryIcon sx={headerStyle.icon} />
+                  <StorageIcon sx={headerStyle.icon} />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Profile">
@@ -270,7 +276,7 @@ function Header({
                   onClick={handleProfileClick}
                   sx={headerStyle.iconButton}
                 >
-                  <Avatar sx={headerStyle.avatar}>M</Avatar>
+                  <AccountCircleIcon sx={headerStyle.icon} />
                 </IconButton>
               </Tooltip>
             </>

@@ -170,34 +170,49 @@ function Header({
             )}
           </IconButton>
           <Box sx={{ display: "flex", gap: 2 }}>
-            <FormControl sx={{ minWidth: 120 }}>
-              <InputLabel id="sort-by-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-by-label"
-                value={sortBy}
-                label="Sort By"
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <MenuItem value="None">None</MenuItem>
-                <MenuItem value="risk score">Risk Score</MenuItem>
-              </Select>
-            </FormControl>
+      <FormControl sx={{ minWidth: 120 }}>
+        <InputLabel id="sort-by-label">Sort By</InputLabel>
+        <Select 
+          labelId="sort-by-label"
+          value={sortBy}
+          label="Sort By"
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <MenuItem value="date">Date</MenuItem>
+          <MenuItem value="risk score">Risk Score</MenuItem>
+        </Select>
+      </FormControl>
 
-            {sortBy === "risk score" && (
-              <FormControl sx={{ minWidth: 150 }}>
-                <InputLabel id="sort-order-label">Sort Order</InputLabel>
-                <Select
-                  labelId="sort-order-label"
-                  value={sortOrder}
-                  label="Sort Order"
-                  onChange={(e) => setSortOrder(e.target.value)}
-                >
-                  <MenuItem value="high to low">High to Low</MenuItem>
-                  <MenuItem value="low to high">Low to High</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-          </Box>
+      {sortBy === "date" && (
+        <FormControl sx={{ minWidth: 150 }}>
+          <InputLabel id="sort-order-label">Sort Order</InputLabel>
+          <Select
+            labelId="sort-order-label"
+            value={sortOrder}
+            label="Sort Order"
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <MenuItem value="newest to oldest">Newest to Oldest</MenuItem>
+            <MenuItem value="oldest to newest">Oldest to Newest</MenuItem>
+          </Select>
+        </FormControl>
+      )}
+
+      {sortBy === "risk score" && (
+        <FormControl sx={{ minWidth: 150 }}>
+          <InputLabel id="sort-order-label">Sort Order</InputLabel>
+          <Select
+            labelId="sort-order-label"
+            value={sortOrder}
+            label="Sort Order"
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <MenuItem value="high to low">High to Low</MenuItem>
+            <MenuItem value="low to high">Low to High</MenuItem>
+          </Select>
+        </FormControl>
+      )}
+    </Box>
         </Box>
 
         {/* Right-aligned icons */}

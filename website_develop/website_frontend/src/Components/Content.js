@@ -1,28 +1,28 @@
 // Content.js
 
-import React, { useEffect, useState, useRef } from "react";
+import ClearIcon from "@mui/icons-material/Clear";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
-  Grid,
-  Paper,
-  Typography,
-  TextField,
-  InputAdornment,
-  IconButton,
-  List,
-  ListItem,
   Button,
-  Tooltip,
   Divider,
   Fab,
+  Grid,
+  IconButton,
+  InputAdornment,
+  List,
+  ListItem,
+  Paper,
+  TextField,
+  Tooltip,
+  Typography,
   useTheme,
 } from "@mui/material";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import SearchIcon from "@mui/icons-material/Search";
-import ClearIcon from "@mui/icons-material/Clear";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import io from "socket.io-client";
 import Fuse from "fuse.js";
+import React, { useEffect, useRef, useState } from "react";
+import io from "socket.io-client";
 import "./Content.css";
 
 export default function Content({ isDocumentSettingsClicked }) {
@@ -440,7 +440,7 @@ export default function Content({ isDocumentSettingsClicked }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("https://wrapcapstone.com/", {
+    const socket = io.connect("http://localhost:3000/", {
       query: { token: token },
     });
 
@@ -448,7 +448,6 @@ export default function Content({ isDocumentSettingsClicked }) {
 
     socket.on("connect", () => {
       console.log("Connected to WebSocket server");
-      // socket.emit("requestLatestReport");
     });
 
     socket.on("reportGenerated", (report) => {
@@ -658,21 +657,79 @@ export default function Content({ isDocumentSettingsClicked }) {
       const getFontSizeForHeader = (tag) => {
         switch (tag) {
           case "h1":
-            return `${fontSize * 2}px`;
+            return `${fontSize * 2.5}px`; 
           case "h2":
-            return `${fontSize * 1.8}px`;
+            return `${fontSize * 2}px`;
           case "h3":
-            return `${fontSize * 1.6}px`;
+            return `${fontSize * 1.75}px`;
           case "h4":
-            return `${fontSize * 1.4}px`;
+            return `${fontSize * 1.5}px`;
           case "h5":
-            return `${fontSize * 1.2}px`;
+            return `${fontSize * 1.25}px`;
           case "h6":
-            return `${fontSize * 1.1}px`;
+            return `${fontSize}px`;
           default:
             return `${fontSize}px`;
         }
+      };      
+      
+      const titleList = parsedContent
+      .filter((element) => element.tag.match(/^h[1-6]$/))
+      .map((element) => ({
+        tag: element.tag,
+        content: element.content,
+        idx: element.idx,
+      }));
+
+      const scrollToTitle = (idx) => {
+        const targetElement = document.getElementById(`sentence-${idx}`);
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
       };
+
+      const renderDirectory = () => (
+        <Box
+          sx={{
+            padding: 2,
+            marginBottom: 3,
+            backgroundColor: theme.palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`,
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="h6" sx={{ marginBottom: 2, fontWeight: "bold" }}>
+            Table of Contents
+          </Typography>
+          <List>
+            {titleList.map((title, index) => (
+              <ListItem
+                button
+                key={index}
+                onClick={() => scrollToTitle(title.idx)}
+                sx={{
+                  padding: 1,
+                  paddingLeft: `${(parseInt(title.tag[1], 10) - 1) * 16}px`,
+                  cursor: "pointer",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: `${fontSize * (1.1 - parseInt(title.tag[1], 10) * 0.1)}px`,
+                  }}
+                >
+                  {title.content}
+                </Typography>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      );
 
       const renderElementsWithExplanations = (elements) => {
         const contentSections = [];
@@ -706,9 +763,12 @@ export default function Content({ isDocumentSettingsClicked }) {
                     key: idx,
                     id: `sentence-${idx}`,
                     style: {
-                      fontSize: `${fontSize}px`,
+                      fontSize: getFontSizeForHeader(element.tag),
                       ...(isHighlightedSentence && {
                         backgroundColor: theme.palette.action.hover,
+                      }),
+                      ...(element.tag.match(/^h[1-6]$/) && {
+                        fontWeight: "bold", 
                       }),
                     },
                   };
@@ -868,6 +928,8 @@ export default function Content({ isDocumentSettingsClicked }) {
 
       // Main rendering function
       return (
+        <>
+        {renderDirectory()}
         <div
           style={{
             display: "grid",
@@ -877,6 +939,7 @@ export default function Content({ isDocumentSettingsClicked }) {
         >
           {renderElementsWithExplanations(parsedContent)}
         </div>
+        </>
       );
     } catch (error) {
       console.error("Error parsing JSON:", error);
@@ -956,11 +1019,6 @@ export default function Content({ isDocumentSettingsClicked }) {
                   <Typography variant="h6" gutterBottom sx={titleStyle}>
                     Original Document
                   </Typography>
-                  <Tooltip title="Document Info">
-                    <IconButton color="inherit" sx={helpIconStyle}>
-                      <HelpOutlineIcon sx={{ fontSize: "1.2rem" }} />
-                    </IconButton>
-                  </Tooltip>
                 </Box>
                 {/* Scrollable Content */}
                 <Box
@@ -1002,13 +1060,26 @@ export default function Content({ isDocumentSettingsClicked }) {
             container
             item
             xs={12}
-            sx={{ flexGrow: 1 }}
             spacing={2}
-            direction="row"
+            sx={{
+              height: "60vh", 
+              display: "flex", 
+              flexDirection: "row", 
+              alignItems: "stretch", 
+            }}
           >
             {/* General Summary */}
-            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
-              <Paper sx={{ ...paperStyle, flexGrow: 1 }}>
+            <Grid
+              item
+              xs={12}
+              md={6} 
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%", 
+              }}
+            >
+              <Paper sx={{ ...paperStyle, flexGrow: 1, height: "100%" }}>
                 {/* Header */}
                 <Box
                   sx={{
@@ -1023,11 +1094,6 @@ export default function Content({ isDocumentSettingsClicked }) {
                   <Typography variant="h6" sx={titleStyle}>
                     General Summary
                   </Typography>
-                  <Tooltip title="Report Info">
-                    <IconButton color="inherit" sx={helpIconStyle}>
-                      <HelpOutlineIcon />
-                    </IconButton>
-                  </Tooltip>
                 </Box>
                 {/* Content */}
                 <Box sx={{ p: 2, overflowY: "auto", flexGrow: 1 }}>
@@ -1046,8 +1112,17 @@ export default function Content({ isDocumentSettingsClicked }) {
             </Grid>
 
             {/* Section Summary */}
-            <Grid item xs={12} md={6} sx={{ display: "flex" }}>
-              <Paper sx={{ ...paperStyle, flexGrow: 1 }}>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <Paper sx={{ ...paperStyle, flexGrow: 1, height: "100%" }}>
                 {/* Header */}
                 <Box
                   sx={{
@@ -1062,25 +1137,17 @@ export default function Content({ isDocumentSettingsClicked }) {
                   <Typography variant="h6" sx={titleStyle}>
                     Section Summary
                   </Typography>
-                  <Tooltip title="File Info">
-                    <IconButton color="inherit" sx={helpIconStyle}>
-                      <HelpOutlineIcon />
-                    </IconButton>
-                  </Tooltip>
                 </Box>
                 {/* Content */}
                 <Box sx={{ p: 2, overflowY: "auto", flexGrow: 1 }}>
-                  {(categoryLabelsData && Array.isArray(categoryLabelsData)
-                    ? categoryLabelsData
-                    : []
-                  ).map((item, index) => (
+                  {(categoryLabelsData || []).map((item, index) => (
                     <div key={index} style={{ marginBottom: "16px" }}>
                       <Typography
                         variant="body1"
                         component="span"
                         style={{
                           fontWeight: "bold",
-                          fontSize: `${fontSize * 1.2}px`, // Increased font size for section titles
+                          fontSize: `${fontSize * 1.2}px`,
                         }}
                       >
                         {item.key}
@@ -1148,18 +1215,25 @@ export default function Content({ isDocumentSettingsClicked }) {
                           <>
                             {/* Label and explanation when explanation is present */}
                             <div
-                              className="category-label"
-                              style={{ fontSize: `${fontSize * 1.2}px` }} // Increased font size
+                              style={{
+                                marginLeft: "15px",
+                                marginRight: "15px",
+                              }}
                             >
-                              {item.label}
+                              <div
+                                className="category-label"
+                                style={{ fontSize: `${fontSize * 1.2}px` }} // Increased font size
+                              >
+                                {item.label}
+                              </div>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                style={{ fontSize: `${fontSize}px` }}
+                              >
+                                {item.explanation}
+                              </Typography>
                             </div>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              style={{ fontSize: `${fontSize}px` }}
-                            >
-                              {item.explanation}
-                            </Typography>
                           </>
                         ) : (
                           <>

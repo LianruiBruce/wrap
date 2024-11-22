@@ -10,10 +10,8 @@ import {
   Card,
   Box,
   Chip,
-  Link,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { Link as RouterLink } from "react-router-dom";
 
 // Import all required icons
 import ExtensionIcon from "@mui/icons-material/Extension";
@@ -199,7 +197,7 @@ function LandingPage() {
       icon: <ExtensionIcon />,
       details: [
         "Quick installation process",
-        "Supports major browsers",
+        "Supports all major browsers",
         "Automatic updates",
         "Lightweight and fast",
       ],
@@ -264,7 +262,7 @@ function LandingPage() {
       gradient: "linear-gradient(135deg, #4DB33D20 0%, #2E7D3220 100%)",
       details: [
         "One-click analysis",
-        "Works on most websites",
+        "Works on any website",
         "Real-time processing",
         "Secure connection",
       ],
@@ -288,7 +286,12 @@ function LandingPage() {
         "Your documents are processed with enterprise-grade security and privacy.",
       icon: <SecurityIcon sx={{ fontSize: 40, color: "#FF6B6B" }} />,
       gradient: "linear-gradient(135deg, #FF6B6B20 0%, #CC4B4B20 100%)",
-      details: ["Password encryption", "Data privacy", "Secure processing"],
+      details: [
+        "End-to-end encryption",
+        "Data privacy",
+        "Secure processing",
+        "No data storage",
+      ],
     },
   ];
 
@@ -462,10 +465,6 @@ function LandingPage() {
                 Get Started Free
               </StyledButton>
               <StyledButton
-                component="a"
-                href="https://www.youtube.com/watch?v=lXnljtYhXJ0"
-                target="_blank"
-                rel="noopener noreferrer"
                 variant="outlined"
                 size="large"
                 startIcon={<PlayArrowIcon />}
@@ -479,28 +478,20 @@ function LandingPage() {
               >
                 View Demo
               </StyledButton>
-
-              <a
-                href="https://drive.google.com/file/d/1HcU6J3xXaRsxXgUa6oHf1iB3TB1C52dh/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: "none" }}
+              <StyledButton
+                variant="outlined"
+                size="large"
+                startIcon={<DownloadIcon />}
+                sx={{
+                  color: "white",
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                  "&:hover": {
+                    borderColor: "white",
+                  },
+                }}
               >
-                <StyledButton
-                  variant="outlined"
-                  size="large"
-                  startIcon={<DownloadIcon />}
-                  sx={{
-                    color: "white",
-                    borderColor: "rgba(255, 255, 255, 0.3)",
-                    "&:hover": {
-                      borderColor: "white",
-                    },
-                  }}
-                >
-                  Download Extension
-                </StyledButton>
-              </a>
+                Download Extension
+              </StyledButton>
             </Box>
           </StyledContainer>
         </PageSection>
@@ -982,7 +973,8 @@ function LandingPage() {
               Ready to Simplify Legal Documents?
             </Typography>
             <Typography sx={{ mb: 6, color: "rgba(255, 255, 255, 0.7)" }}>
-              Join us to use Wrap to understand your legal documents better.
+              Join thousands of users who are already using Wrap to understand
+              their legal documents better.
             </Typography>
             <Box
               sx={{
@@ -1001,10 +993,6 @@ function LandingPage() {
                 Get Started Now
               </StyledButton>
               <StyledButton
-                component="a"
-                href="https://drive.google.com/file/d/1HcU6J3xXaRsxXgUa6oHf1iB3TB1C52dh/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
                 variant="outlined"
                 size="large"
                 startIcon={<DownloadIcon />}
@@ -1021,44 +1009,7 @@ function LandingPage() {
             </Box>
           </StyledContainer>
         </PageSection>
-        <Footer />
       </Box>
-    </Box>
-  );
-}
-// Define the Footer component
-function Footer() {
-  return (
-    <Box sx={{ bgcolor: "rgba(0, 0, 0, 0.8)", color: "white", py: 4 }}>
-      <StyledContainer maxWidth="lg">
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="body2">
-              &copy; {new Date().getFullYear()} Wrap. All rights reserved.
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Link
-                component={RouterLink}
-                to="/terms-and-conditions"
-                color="inherit"
-                underline="hover"
-              >
-                Terms and Conditions
-              </Link>
-              <Link
-                component={RouterLink}
-                to="/privacy-policy"
-                color="inherit"
-                underline="hover"
-              >
-                Privacy Policy
-              </Link>
-            </Box>
-          </Grid>
-        </Grid>
-      </StyledContainer>
     </Box>
   );
 }

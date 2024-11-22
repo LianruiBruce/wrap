@@ -30,7 +30,6 @@ const {
 const {
   processData,
   convertPdfToText,
-  // saveReport,
   generateReport,
   generateSections,
   generateReportByPDF,
@@ -115,8 +114,6 @@ io.on("connection", (socket) => {
     });
   });
 });
-
-// let savedReport = "";
 
 const jwt = require("jsonwebtoken");
 
@@ -630,7 +627,6 @@ app.post("/submit-issue", upload.single("issue-image"), (req, res) => {
       `,
     };
 
-    // 发送请求
     axios
       .post("https://api.brevo.com/v3/smtp/email", emailData, {
         headers: {
@@ -672,13 +668,10 @@ app.post("/process-question", async (req, res) => {
       });
     }
 
-    const response = await axios.post(
-      "https://implicitly-sacred-moose.ngrok-free.app/get-QA",
-      {
-        text: original_document,
-        question: question,
-      }
-    );
+    const response = await axios.post("http://localhost:5000/get-QA", {
+      text: original_document,
+      question: question,
+    });
 
     if (response.data.success) {
       return res.json({ success: true, answer: response.data.answer });
@@ -810,13 +803,9 @@ app.post("/api/verification-code", async (req, res) => {
       .toString()
       .padStart(6, "0");
 
-    const token = jwt.sign(
-      { email, code: verificationCode },
-      process.env.JWT_SECRET,
-      {
+      const token = jwt.sign({ email, code: verificationCode }, process.env.JWT_SECRET, {
         expiresIn: "5m",
-      }
-    );
+      });
 
     const emailData = {
       sender: { name: "Wrap", email: "wrapcapstone01@gmail.com" },
@@ -854,7 +843,9 @@ app.post("/api/verification-code", async (req, res) => {
     });
 
     console.log("Email sent to:", email);
-    return res.status(200).json({ message: "Verification code sent.", token });
+    return res
+      .status(200)
+      .json({ message: "Verification code sent.", token });
   } catch (error) {
     console.error(
       "Error sending email:",
@@ -863,6 +854,56 @@ app.post("/api/verification-code", async (req, res) => {
     return res
       .status(500)
       .json({ message: "Failed to send verification code." });
+  }
+});
+
+app.post('/api/send-graphs-email', async (req, res) => {
+  const { email, name, pdfData } = req.body;
+  console.log('Received request to send email with PDF data:', { email, name });
+  if (!email || !pdfData) {
+    return res.status(400).json({ message: 'Email and PDF data are required.' });
+  }
+
+  try {
+    const emailData = {
+      sender: { name: 'Wrap', email: 'wrapcapstone01@gmail.com' },
+      to: [{ email: email, name: name || 'User' }],
+      subject: 'Wrap Monthly Graph Report',
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <a href="http://localhost:${port}" style="text-decoration: none;" target="_blank">
+              <div style="border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; border: 2px solid #333; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 36px; font-weight: bold; color: #333;">W</span>
+              </div>
+            </a>
+          </div>
+          <p>Hello ${name || 'User'},</p>
+          <p>Please find attached the PDF containing your monthly report.</p>
+          <p>Best regards,<br/>Wrap Team</p>
+        </div>
+      `,
+      attachment: [
+        {
+          content: pdfData, // base64 encoded content
+          name: 'charts.pdf',
+        },
+      ],
+    };
+
+    await axios.post('https://api.brevo.com/v3/smtp/email', emailData, {
+      headers: {
+        accept: 'application/json',
+        'api-key': BREVO_API_KEY,
+        'content-type': 'application/json',
+      },
+    });
+
+    console.log('Email sent to:', email);
+    res.status(200).json({ message: 'Email sent successfully.' });
+  } catch (error) {
+    console.error('Error sending email:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Error sending email.' });
   }
 });
 
@@ -898,7 +939,7 @@ app.post("/api/reset-password-with-code", async (req, res) => {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       user.password = hashedPassword;
-
+  
       await user.save();
 
       res.status(200).json({ message: "Verification successful" });

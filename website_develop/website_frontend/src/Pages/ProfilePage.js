@@ -39,7 +39,7 @@ export default function Profile() {
       console.log(
         "sending request to backend to get number of flagged documents"
       );
-      const response = await fetch("https://wrapcapstone.com/num-flags", {
+      const response = await fetch("http://localhost:3000/num-flags", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ export default function Profile() {
     try {
       const token = localStorage.getItem("token");
       console.log("Sending request to backend to get number of user documents");
-      const response = await fetch("https://wrapcapstone.com/getNumOfUserDoc", {
+      const response = await fetch("http://localhost:3000/getNumOfUserDoc", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ export default function Profile() {
       const token = localStorage.getItem("token");
       console.log("Fetching user information...");
 
-      const response = await fetch("https://wrapcapstone.com/getUserInfo", {
+      const response = await fetch("http://localhost:3000/getUserInfo", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -206,6 +206,7 @@ export default function Profile() {
                       <Typography variant="h6">Flagged</Typography>
                       <Typography variant="h5">{userData.flagged}</Typography>
                     </Grid>
+                   
                   </Grid>
                 </Grid>
               </Grid>

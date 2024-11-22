@@ -228,7 +228,7 @@ async function pullUpDocandRepByDocID(docID) {
     const documentCategory = document.get("category");
     const documentDate = document.get("documentDate");
     const documentFile = document.get("documentFile");
-    const formattedDate = documentDate.toLocaleDateString("en-CA");
+    const formattedDate = documentDate ? documentDate.toLocaleDateString("en-CA") : "No Date";
     const header =
       documentName + " - " + documentCategory + " - " + formattedDate;
     const report = document.get("reportFile");
