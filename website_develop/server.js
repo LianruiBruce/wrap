@@ -13,7 +13,15 @@ const fs = require("fs");
 const pdf = require("pdf-parse");
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+
+// Initialize Socket.IO with CORS settings
+const io = socketIo(server, {
+  cors: {
+    origin: "*", // Adjust this to your client's origin if needed
+    methods: ["GET", "POST"],
+  },
+});
+
 const multer = require("multer");
 const crypto = require("crypto");
 
@@ -46,7 +54,7 @@ app.use(express.json({ limit: "25mb" })); // Adjust the limit as needed
 app.use(express.urlencoded({ extended: true, limit: "25mb" })); // For URL-encoded bodies
 
 // Define the port to run the server on
-const port = process.env.PORT || 3000; // Using port 3001 to avoid conflict with React's default port 3000
+const port = process.env.PORT || 3000;
 const upload = multer();
 
 // Middleware setup
@@ -74,6 +82,11 @@ server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
 
+const jwt = require("jsonwebtoken");
+
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+
+// Handle Socket.IO connections
 io.on("connection", (socket) => {
   console.log("A client connected");
 
@@ -95,35 +108,31 @@ io.on("connection", (socket) => {
     }
 
     const userID = decoded.userId;
+    const userRoom = `user_${userID}`; // Unique room for each user
 
-    fetchUserDocuments(userID).then((documents) => {
-      console.log("this is send from io connection");
-      socket.emit("reportList", documents); // Emitting with 'reportList'
-    });
+    // Join the user-specific room
+    socket.join(userRoom);
+    console.log(`Socket ${socket.id} joined room ${userRoom}`);
+
     // Fetch and send the user's documents
     try {
       const documents = await fetchUserDocuments(userID);
-      console.log("This is sent from io connection");
-      socket.emit("reportList", documents); // Emitting with 'reportList'
+      console.log("Sending reportList to room:", userRoom);
+      io.to(userRoom).emit("reportList", documents); // Emit to the specific room
     } catch (error) {
       console.error("Error fetching user documents:", error);
     }
 
     socket.on("disconnect", () => {
-      console.log("A client disconnected");
+      console.log(`Socket ${socket.id} disconnected from room ${userRoom}`);
+      socket.leave(userRoom);
     });
   });
 });
 
-const jwt = require("jsonwebtoken");
-
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
-
 app.post("/getLatestReportAfterDelete", authenticateToken, async (req, res) => {
   try {
-    console.log(
-      "Server received request from content js for getLatestReportAfterDelete"
-    );
+    console.log("Server received request for getLatestReportAfterDelete");
 
     const userID = req.user.userId;
 
@@ -132,7 +141,7 @@ app.post("/getLatestReportAfterDelete", authenticateToken, async (req, res) => {
 
     if (updatedContent) {
       console.log(
-        "Server is sending the latest document to content.js after delete:",
+        "Server is sending the latest document after delete:",
         JSON.stringify(updatedContent)
       );
       res.json({ success: true, information: updatedContent });
@@ -171,7 +180,9 @@ app.post("/getUserInfo", authenticateToken, async (req, res) => {
     res.status(200).json({ userInfo });
   } catch (error) {
     console.error("Error fetching user information:", error);
-    res.status(500).json({ success: false, message: "Error fetching flag" });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching user info" });
   }
 });
 
@@ -207,7 +218,7 @@ app.post("/getNumOfUserDoc", authenticateToken, async (req, res) => {
   console.log("Received request for /getNumOfUserDoc");
   try {
     const userID = req.user.userId;
-    console.log("user is requesting number of  document :", userID);
+    console.log("User is requesting number of documents:", userID);
     const numOfUserDoc = await fetchNumOfUserDoc(userID);
 
     if (numOfUserDoc !== undefined && numOfUserDoc !== null) {
@@ -267,7 +278,7 @@ app.post("/user-documents", authenticateToken, async (req, res) => {
   try {
     const userID = req.user.userId;
     const documents = await fetchUserDocuments(userID);
-    console.log("this is sent from io post user-documents:", documents);
+    console.log("Documents sent from /user-documents:", documents);
     res.status(200).json(documents);
   } catch (error) {
     console.error("Error fetching user documents:", error);
@@ -277,6 +288,7 @@ app.post("/user-documents", authenticateToken, async (req, res) => {
   }
 });
 
+// Update /delete-doc endpoint to emit to user-specific room
 app.post("/delete-doc", authenticateToken, async (req, res) => {
   const { documentID } = req.body;
   const userID = req.user.userId;
@@ -287,10 +299,11 @@ app.post("/delete-doc", authenticateToken, async (req, res) => {
     await deleteUserDocument(userID, documentID);
     const afterDelete = await fetchUserDocuments(userID);
 
-    io.emit("documentDeleted", { documentID });
+    const userRoom = `user_${userID}`;
 
-    //update left side bar in navigator
-    io.emit("reportList", afterDelete);
+    io.to(userRoom).emit("documentDeleted", { documentID });
+    io.to(userRoom).emit("reportList", afterDelete);
+
     res
       .status(200)
       .json({ success: true, message: "Document deleted successfully" });
@@ -304,7 +317,7 @@ app.post("/delete-doc", authenticateToken, async (req, res) => {
   }
 });
 
-// receive url from extension background.js and handles
+// Receive URL from extension background.js and handle it
 app.post("/process-webpage", async (req, res) => {
   const { text, textTags, url, title, headers, footer } = req.body;
 
@@ -335,29 +348,28 @@ app.post("/process-webpage", async (req, res) => {
   }
 });
 
-// generate report, receives a req with 4 fields: url, title, headers and footer
+// Generate report, receives a req with multiple fields
 app.post("/generate-report", authenticateToken, async (req, res) => {
   const userID = req.user.userId;
 
   if (!userID) {
-    console.error("Failed to generate report:", error);
+    console.error("Failed to generate report: User not authenticated");
     res.status(401).json({
       success: false,
-      message: "Please Login Before Generate Report",
-      error: error.message,
+      message: "Please login before generating a report",
     });
     return;
   }
 
   const {
-    text: text,
-    sections: sections,
-    company: company,
-    date: date,
-    category: category,
-    readability: readability,
-    textTags: textTags,
-    saveToDatabase: saveToDatabase,
+    text,
+    sections,
+    company,
+    date,
+    category,
+    readability,
+    textTags,
+    saveToDatabase,
   } = req.body;
 
   console.log("Received request for /generate-report");
@@ -452,12 +464,13 @@ app.post("/generate-report", authenticateToken, async (req, res) => {
   }
 });
 
+// Update /getLatestReport endpoint to emit to user-specific room
 app.post("/getLatestReport", authenticateToken, async (req, res) => {
   try {
     const userID = req.user.userId;
     const selectInfo = await getUserLatestDocument(userID);
-    io.emit("selectDocument", selectInfo);
-    // TODO: check bug here
+    const userRoom = `user_${userID}`;
+    io.to(userRoom).emit("selectDocument", selectInfo);
     console.log("Get latest report from getLatestReport");
     res.json({ success: true, information: selectInfo });
   } catch (error) {
@@ -466,16 +479,18 @@ app.post("/getLatestReport", authenticateToken, async (req, res) => {
   }
 });
 
+// Update /response-docID endpoint to emit to user-specific room
 app.post("/response-docID", authenticateToken, async (req, res) => {
   try {
     const { documentID } = req.body;
-    // TODO: check bug here
+    const userID = req.user.userId;
+    const userRoom = `user_${userID}`;
     console.log(
       "Received request for /response-docID with documentID:",
       documentID
     );
     const selectInfo = await pullUpDocandRepByDocID(documentID);
-    io.emit("selectDocument", selectInfo);
+    io.to(userRoom).emit("selectDocument", selectInfo);
     res.json({ success: true, information: selectInfo });
   } catch (error) {
     console.error(error); // Log the error to the server console
@@ -487,10 +502,7 @@ app.post("/download-pdf", async (req, res) => {
   const { documentID } = req.body;
   try {
     console.log("Downloading PDF with documentID:", documentID);
-    //resawait downloadPDF(documentID, res);
-    document = await downloadPDF(documentID, res);
-    //res.status(200).json({ success: true, information: document });
-    //res.json({ success: true, message: 'PDF downloaded successfully' });
+    await downloadPDF(documentID, res);
   } catch (error) {
     console.error("Error in download route:", error.message);
     res.status(500).json({
@@ -524,8 +536,6 @@ app.post("/api/signup", async (req, res) => {
       10
     );
 
-    // await verificationCode(email.toLowerCase(), firstName + ' ' + lastName);
-
     addUser(
       email.toLowerCase(),
       hashedPassword,
@@ -551,9 +561,10 @@ app.post(
     if (req.file && req.file.buffer) {
       try {
         const userID = req.user.userId;
-        console.log("uploading PDF from app.post(/upload-pdf)");
+        const userRoom = `user_${userID}`;
+        console.log("Uploading PDF from /upload-pdf");
         const text = await convertPdfToText(req.file.buffer);
-        // TODO: fetch python process pdf
+        // Ensure generateReportByPDF emits to user-specific room
         await generateReportByPDF(
           req.file.buffer,
           text,
@@ -574,6 +585,7 @@ app.post(
     }
   }
 );
+
 // Declare a variable to store user settings (default settings can be placed here)
 let userSettings = {
   numberOfSections: 3,
@@ -658,7 +670,7 @@ app.post("/process-question", async (req, res) => {
   const { question, documentID } = req.body;
 
   try {
-    const document = await Document.findOne({ _id: documentID }); // 通过 documentID 查找文档
+    const document = await Document.findOne({ _id: documentID });
     const original_document = document ? document.documentFile : null;
 
     if (!original_document) {
@@ -693,6 +705,7 @@ app.post("/process-question", async (req, res) => {
   }
 });
 
+// Update /get-report-by-documentID endpoint to emit to user-specific room
 app.post("/get-report-by-documentID", authenticateToken, async (req, res) => {
   const { documentID } = req.body;
 
@@ -700,15 +713,13 @@ app.post("/get-report-by-documentID", authenticateToken, async (req, res) => {
     const documentData = await pullUpDocandRepByDocID(documentID);
 
     console.log(
-      "The current document infomation is: " + JSON.stringify(documentData)
+      "The current document information is: " + JSON.stringify(documentData)
     );
 
     if (documentData) {
-      io.on("connection", (socket) => {
-        console.log("Sending document data to client:", socket.id);
-        socket.emit("selectDocument", documentData); // Send the data to the connected client
-      });
-      // io.emit("selectDocument", documentData);
+      const userID = req.user.userId;
+      const userRoom = `user_${userID}`;
+      io.to(userRoom).emit("selectDocument", documentData);
       console.log("Received Document id correctly");
       res.json({ success: true, data: documentData });
     } else {
@@ -833,7 +844,7 @@ app.post("/api/verification-code", async (req, res) => {
           <div style="text-align: center; margin: 20px;">
             <span style="font-size: 24px; font-weight: bold; color: #007BFF;">${verificationCode}</span>
           </div>
-          <p>Please enter this code on the website or app to complete your verification. This code is valid for 10 minutes.</p>
+          <p>Please enter this code on the website or app to complete your verification. This code is valid for 5 minutes.</p>
           <p>If you did not request this code, please ignore this email or contact our support team.</p>
           <p>Best regards,</p>
           <p><strong>Wrap Support Team</strong></p>
