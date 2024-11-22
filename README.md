@@ -151,7 +151,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 👥 Contributors
 - [Lianrui Geng](https://github.com/LianruiBruce)
-- [XinyangSally](https://github.com/XinyangSally)
+- [Xinyang Wang](https://github.com/XinyangSally)
 - [Daniel Coimbra](https://github.com/DaniCoimbra)
 - [Joey Cai](https://github.com/Joeic)
 
