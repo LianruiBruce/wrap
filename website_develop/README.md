@@ -94,7 +94,6 @@ npm start
 ### Backend
 - `npm start` - Builds frontend and starts the server
 - `npm run build` - Builds the frontend application
-- `npm test` - Runs backend tests
 
 ### Frontend
 See the [Frontend README](./website_frontend/README.md) for frontend-specific scripts.
