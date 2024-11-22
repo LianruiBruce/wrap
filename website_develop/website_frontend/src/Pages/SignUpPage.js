@@ -77,13 +77,13 @@ export default function SignUp() {
     };
 
     if (validateForm(user)) {
-        navigate("/verification-code", { 
-            state: { 
-              // email: user.email, 
-              // name: `${user.firstName} ${user.lastName}` 
-              user: user
-            } 
-          });
+      navigate("/verification-code", {
+        state: {
+          // email: user.email,
+          // name: `${user.firstName} ${user.lastName}`
+          user: user,
+        },
+      });
       // axios
       //   .post("/api/signup", user)
       //   .then((response) => {
@@ -93,14 +93,14 @@ export default function SignUp() {
       //       message: "You have successfully signed up!",
       //     });
 
-      //     navigate("/verification-code", { 
-      //       state: { 
-      //         // email: user.email, 
-      //         // name: `${user.firstName} ${user.lastName}` 
+      //     navigate("/verification-code", {
+      //       state: {
+      //         // email: user.email,
+      //         // name: `${user.firstName} ${user.lastName}`
       //         user: user
-      //       } 
+      //       }
       //     });
-          
+
       //   })
       //   .catch((error) => {
       //     console.error("Signup error", error);
@@ -287,7 +287,7 @@ export default function SignUp() {
         <Box sx={{ mt: 5 }}>
           <Typography variant="body2" color="text.secondary" align="center">
             {"© "}
-            <Link color="inherit" href="#">
+            <Link color="inherit" href="/privacy-policy">
               Wrap
             </Link>{" "}
             {new Date().getFullYear()}
