@@ -450,6 +450,10 @@ export default function Content({ isDocumentSettingsClicked }) {
       console.log("Connected to WebSocket server");
     });
 
+    socket.on("joinedRoom", (data) => {
+      console.log(`Successfully joined room: ${data.room}`);
+    });
+
     socket.on("reportGenerated", (report) => {
       setOriginalDocument(report.original_document);
       console.log("section  is: ", report.sections);

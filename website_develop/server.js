@@ -114,6 +114,8 @@ io.on("connection", (socket) => {
     socket.join(userRoom);
     console.log(`Socket ${socket.id} joined room ${userRoom}`);
 
+    socket.emit("joinedRoom", { success: true, room: userRoom });
+
     // Fetch and send the user's documents
     try {
       const documents = await fetchUserDocuments(userID);
@@ -717,10 +719,27 @@ app.post("/get-report-by-documentID", authenticateToken, async (req, res) => {
     );
 
     if (documentData) {
-      const userID = req.user.userId;
+      const userID = req.user.userId; 
       const userRoom = `user_${userID}`;
+
+      const waitForConnection = new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error("Connection timed out")), 10000);
+
+        const interval = setInterval(() => {
+          const room = io.sockets.adapter.rooms.get(userRoom);
+          if (room && room.size > 0) {
+            clearTimeout(timeout);
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100);
+      });
+
+      await waitForConnection;
+
       io.to(userRoom).emit("selectDocument", documentData);
-      console.log("Received Document id correctly");
+      console.log(`Document data sent to room: ${userRoom}`);
+
       res.json({ success: true, data: documentData });
     } else {
       res.status(404).json({ success: false, message: "Document not found" });
