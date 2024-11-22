@@ -155,7 +155,7 @@ def pdf_info(input):
 def consolidated_report(input, num_words=150, num_sections=3):
     response = make_request(
         "claude-3-5-sonnet-20240620",
-        "Provide concise, clear, and legally accurate responses.",
+        "Provide clear and accurate responses.",
         f"""
         Please, analyze the following legal document to generate a report for a user, focusing on essential information from the end-user's perspective. 
         Provide the following outputs with the precise formatting as requested.
@@ -163,8 +163,7 @@ def consolidated_report(input, num_words=150, num_sections=3):
         1. **General Summary**:
         - Summarize the overall purpose, themes, and key points of the document.
         - Include critical information about user obligations, financial terms, privacy policies, and risks.
-        - Use bullet points for clarity and limit the summary to approximately {num_words} words.
-        - Avoid unnecessary technical language while preserving legal accuracy.
+        - Bullet points and limit to approximately {num_words} words.
        
         - Strict response format:
           <<GENERAL_SUMMARY>>
@@ -174,13 +173,12 @@ def consolidated_report(input, num_words=150, num_sections=3):
           <<END_GENERAL_SUMMARY>>
 
         2. **Section Summary**:
-        - Extract and summarize the document’s main sections/clauses, focusing on:
-            - Key Dates and Deadlines
-            - Data Usage and Privacy
-            - Financial Terms, Payments and Penalties Details
-            - Significant Legal Clauses
-        - Use clear, user-friendly descriptions for each point to ensure comprehension.
-     
+        - Extract and describe the document’s main sections/clauses, focusing on:
+            - Key Dates and Deadlines.
+            - Data Usage and Privacy.
+            - Financial Terms, Payments and Penalties Details and Values.
+            - Significant Legal Clauses.
+    
         - Strict response format (ensure proper JSON formatting):
           <<SECTION_SUMMARY>>
           [
