@@ -124,6 +124,7 @@ function Navigator(props) {
       const response = await fetch("https://wrapcapstone.com/response-docID", {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ documentID }),

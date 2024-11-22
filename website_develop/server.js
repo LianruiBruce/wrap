@@ -466,7 +466,7 @@ app.post("/getLatestReport", authenticateToken, async (req, res) => {
   }
 });
 
-app.post("/response-docID", async (req, res) => {
+app.post("/response-docID", authenticateToken, async (req, res) => {
   try {
     const { documentID } = req.body;
     // TODO: check bug here
