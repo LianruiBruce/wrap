@@ -1,103 +1,145 @@
+# WRAP (Web-based Resource for Analyzing Papers)
 
-# Wrap - Node.js and React Setup
+<div align="center">
 
-This project is a full-stack web application built with Node.js for the backend and React for the frontend. The project is organized into separate folders to maintain a clear structure and improve manageability.
+![GitHub contributors](https://img.shields.io/github/contributors/LianruiBruce/wrap)
+![GitHub stars](https://img.shields.io/github/stars/LianruiBruce/wrap)
+![GitHub forks](https://img.shields.io/github/forks/LianruiBruce/wrap)
+![GitHub issues](https://img.shields.io/github/issues/LianruiBruce/wrap)
+![MIT License](https://img.shields.io/badge/license-MIT-blue)
 
-## Getting Started
+</div>
+
+## 🎯 About The Project
+
+WRAP is our capstone project developed at the University of Utah in fall semester, 2024. It utilizes NLP and AI APIs to help users understand legal documents on websites.
+
+### 🌟 Key Features
+
+- Natural Language Processing for document analysis
+- Real-time document processing
+- Interactive user interface
+- PDF generation and handling
+- Socket-based real-time updates
+- Secure authentication system
+
+## 🏗️ Technology Stack
+
+### Backend
+- Node.js & Express
+- MongoDB with Mongoose
+- Socket.IO for real-time communication
+- JWT for authentication
+- PDF processing tools (pdf-parse, pdfkit)
+- Multer for file uploads
+
+### Frontend
+- React.js
+- Material-UI
+- Chart.js & Recharts for visualizations
+- Socket.IO Client
+- Axios for API calls
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-Before you begin, ensure you have the following installed:
-
-- **Node.js**: v20.x or later
-- **npm**: v10.x or later (comes with Node.js)
-- **MongoDB**: A running MongoDB instance. This setup is currently using MongoDB - Lianrui Geng's instance.
+- Node.js (Latest LTS version)
+- MongoDB
+- npm or yarn package manager
 
 ### Installation
 
-To get a copy of the project up and running on your local machine, follow these steps:
+1. Clone the repository
+```bash
+git clone https://github.com/LianruiBruce/wrap.git
+cd wrap
+```
 
-1. **Clone the repository:**
+2. Install backend dependencies
+```bash
+npm install
+```
 
-   ```bash
-   git clone <repository-url>
-   ```
+3. Install frontend dependencies
+```bash
+cd website_frontend
+npm install
+```
 
-2. **Navigate to the project directory:**
+4. Create a `.env` file in the root directory and add your environment variables
+```env
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+PORT=3001
+```
 
-   ```bash
-   cd <project-directory>
-   ```
+5. Start the development servers
 
-3. **Install the necessary dependencies:**
+For backend:
+```bash
+npm start
+```
 
-   ```bash
-   npm install
-   ```
+For frontend (in a new terminal):
+```bash
+cd website_frontend
+npm start
+```
 
-### Running the Application
+## 📝 Available Scripts
 
-#### Backend (Node.js)
+### Backend
+- `npm start` - Builds frontend and starts the server
+- `npm run build` - Builds the frontend application
+- `npm test` - Runs backend tests
 
-1. **Build the frontend:**
+### Frontend
+See the [Frontend README](./website_frontend/README.md) for frontend-specific scripts.
 
-   Before starting the server, ensure that the frontend has been built. Navigate to the frontend directory (usually `client` or `website_frontend`) and run:
+## 📦 Dependencies
 
-   ```bash
-   npm run build
-   ```
+### Backend Dependencies
+- express - Web framework
+- mongoose - MongoDB ODM
+- socket.io - Real-time communication
+- jsonwebtoken - Authentication
+- bcryptjs - Password hashing
+- multer - File uploads
+- pdf-parse & pdfkit - PDF processing
+- axios - HTTP client
+- cors - Cross-origin resource sharing
 
-2. **Start the Node.js server:**
+## 🔐 Security
 
-   In the root of your project, start the backend server:
+- JWT-based authentication
+- Password hashing with bcryptjs
+- CORS configuration
+- Secure file upload handling
 
-   ```bash
-   npm start
-   ```
+## 🤝 Contributing
 
-   Or, alternatively, you can directly run the server file:
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-   ```bash
-   node server.js
-   ```
+## 📄 License
 
-#### Frontend (React)
+Distributed under the MIT License. See `LICENSE` for more information.
 
-1. **If in development mode:**
+## 👥 Contributors
 
-   Navigate to the frontend directory:
+- [Lianrui Geng](https://github.com/LianruiBruce)
+- [XinyangSally](https://github.com/XinyangSally)
 
-   ```bash
-   cd client
-   ```
+## 📞 Contact
 
-2. **Start the React development server:**
+Project Link: [https://wrapcapstone.com](https://wrapcapstone.com)
 
-   ```bash
-   npm start
-   ```
+## 🙏 Acknowledgments
 
-   The development server usually runs on `https://wrapcapstone.com`.
-
-
-### Useful Commands
-
-- **Start the backend server**:
-
-  ```bash
-  npm start
-  ```
-
-- **Build the frontend for production**:
-
-  ```bash
-  npm run build
-  ```
-
-### Troubleshooting
-
-If you encounter issues, ensure that:
-
-- All dependencies are installed (`npm install`).
-- MongoDB is running and accessible with the configured URI.
-- Environment variables are correctly set in your `.env` file.
+- University of Utah
+- Our project advisors and mentors
+- All contributors who helped with the project

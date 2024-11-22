@@ -1,70 +1,95 @@
-# Getting Started with Create React App
+# WRAP Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the frontend application for the WRAP (Web-based Resource for Analyzing Papers) project, built with React and Material-UI.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- Interactive UI for document analysis
+- Real-time updates using Socket.IO
+- PDF generation and handling
+- Data visualization with Chart.js and Recharts
+- Responsive Material-UI design
+- Fuzzy search functionality
 
-### `npm start`
+## 🛠️ Technologies
 
-Runs the app in the development mode.\
-Open [https://wrapcapstone.com](https://wrapcapstone.com) to view it in your browser.
+- React 18.2.0
+- Material-UI (MUI) 5.15.15
+- Chart.js & React-Chartjs-2
+- Socket.IO Client
+- Axios for API calls
+- JSPdf & HTML2Canvas for PDF operations
+- Fuse.js for fuzzy searching
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🏃‍♂️ Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js (Latest LTS version recommended)
+- npm or yarn package manager
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository
+2. Navigate to the frontend directory:
+```bash
+cd website_frontend
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Install dependencies:
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. Start the development server:
+```bash
+npm start
+```
 
-### `npm run eject`
+The application will be available at `http://localhost:3000`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 📝 Available Scripts
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `npm start` - Runs the app in development mode
+- `npm test` - Launches the test runner
+- `npm run build` - Builds the app for production
+- `npm run eject` - Ejects from Create React App
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🔗 Proxy Configuration
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The frontend is configured to proxy requests to `http://localhost:3001` for development.
 
-## Learn More
+## 📦 Dependencies
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Main Dependencies
+- @mui/material & @mui/icons-material - Material UI components
+- @fontsource/quicksand - Custom font
+- react-router-dom - Routing
+- socket.io-client - Real-time communication
+- chart.js & react-chartjs-2 - Data visualization
+- axios - HTTP client
+- fuse.js - Fuzzy search
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Development Dependencies
+- @testing-library/react
+- @testing-library/jest-dom
+- @testing-library/user-event
 
-### Code Splitting
+## 🎨 Styling
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The project uses Material-UI's styling solution along with the Quicksand font family for a modern, clean look.
 
-### Analyzing the Bundle Size
+## 🔧 Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+The project includes configurations for:
+- ESLint
+- Browserslist
+- Proxy settings
+- Environment variables
 
-### Making a Progressive Web App
+## 📚 Learn More
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+For more information about the tools and libraries used:
+- [React Documentation](https://reactjs.org/)
+- [Material-UI Documentation](https://mui.com/)
+- [Create React App Documentation](https://create-react-app.dev/)
