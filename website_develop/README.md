@@ -1,4 +1,4 @@
-# WRAP (Web-based Resource for Analyzing Papers)
+# WRAP (Web-based Resource for Analyzing Legal Documents)
 
 <div align="center">
 
@@ -142,4 +142,3 @@ Project Link: [https://wrapcapstone.com](https://wrapcapstone.com)
 
 - University of Utah
 - Our project advisors and mentors
-- All contributors who helped with the project
