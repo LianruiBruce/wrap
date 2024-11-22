@@ -68,7 +68,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (tab.url && tab.url.startsWith("https://wrapcapstone.com/")) {
+  if (tab.url && tab.url.startsWith("https://wrapcapstone.com")) {
     console.log("Skipping legal document detection for localhost:3000");
     return; // Don't execute further if the URL matches localhost:3000
   }
@@ -131,7 +131,7 @@ chrome.runtime.onMessage.addListener(async function (
   }
 
   if (message.type === "extracted-data") {
-    if (message.data.url == "https://wrapcapstone.com//mainpage") {
+    if (message.data.url == "https://wrapcapstone.com/mainpage") {
       chrome.action.setPopup({ popup: "extension_frontend/wrap.html" });
       return true;
     }
@@ -359,7 +359,7 @@ chrome.runtime.onMessage.addListener(async function (
 
       keepAlive(true);
 
-      fetch(`https://wrapcapstone.com//get-report-by-documentID`, {
+      fetch(`https://wrapcapstone.com/get-report-by-documentID`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -440,7 +440,7 @@ async function sendDataToServer(data) {
   isProcessing = true;
 
   try {
-    const response = await fetch("https://wrapcapstone.com//process-webpage", {
+    const response = await fetch("https://wrapcapstone.com/process-webpage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -495,7 +495,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
         return;
       }
 
-      fetch("https://wrapcapstone.com//generate-report", {
+      fetch("https://wrapcapstone.com/generate-report", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

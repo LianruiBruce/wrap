@@ -18,6 +18,8 @@ import SettingPage from "./Pages/SettingPage";
 import SignUpPage from "./Pages/SignUpPage";
 import VerificationCode from "./Pages/VerificationCodePage";
 import LandingPage from "./Pages/LandingPage";
+import PrivacyPolicy from "./Components/PrivacyPolicy";
+import TermsOfService from "./Components/TermsOfService";
 
 function App() {
   return (
@@ -194,6 +196,8 @@ function AppContent() {
           <Route path="/pagenotfound" element={<PageNotFound />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
 
           {/* Protected routes */}
           <Route
