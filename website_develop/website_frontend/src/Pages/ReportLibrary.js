@@ -1240,8 +1240,8 @@ function ReportLibrary() {
                       interval={0}
                       tick={{
                         fontSize: 10,
-                        angle: -45, 
-                        textAnchor: "end",
+                        angle: 45, 
+                        textAnchor: "start",
                       }}
                       height={70}
                     />
