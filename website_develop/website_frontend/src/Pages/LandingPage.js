@@ -198,7 +198,7 @@ function LandingPage() {
       icon: <ExtensionIcon />,
       details: [
         "Quick installation process",
-        "Supports all major browsers",
+        "Supports most major browsers",
         "Automatic updates",
         "Lightweight and fast",
       ],
@@ -288,10 +288,9 @@ function LandingPage() {
       icon: <SecurityIcon sx={{ fontSize: 40, color: "#FF6B6B" }} />,
       gradient: "linear-gradient(135deg, #FF6B6B20 0%, #CC4B4B20 100%)",
       details: [
-        "End-to-end encryption",
         "Data privacy",
         "Secure processing",
-        "No data storage",
+        "No sensitive data storage",
       ],
     },
   ];
