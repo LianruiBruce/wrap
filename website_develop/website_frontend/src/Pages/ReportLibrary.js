@@ -571,25 +571,24 @@ function ReportLibrary() {
         // Save the data to state
         setDocumentTypeData(documentTypeDataArray);
 
-        const readabilityCounts = {};
-
-        documentsWithRisk.forEach((doc) => {
-          const readability = doc.readability || "Unknown";
-
-          if (readabilityCounts[readability]) {
-            readabilityCounts[readability] += 1;
-          } else {
-            readabilityCounts[readability] = 1;
-          }
+       // Sort documents by readability score in descending order
+        const sortedDocuments = [...documentsWithRisk].sort((a, b) => {
+          const readabilityA = parseFloat(a.readability) || 0;
+          const readabilityB = parseFloat(b.readability) || 0;
+          return readabilityB - readabilityA;
         });
 
+        // Take the first 6 documents after sorting
+        const documentsToProcess = sortedDocuments.slice(0, 6);
+
         // Convert counts to an array suitable for the chart
-        const readabilityDataArray = documentsWithRisk.map((doc) => ({
+        const readabilityDataArray = documentsToProcess.map((doc) => ({
           companyName: doc.companyName || "Unnamed Report",
-          readability: parseFloat(doc.readability) || 0, // Default to 0 if readability is missing
+          readability: parseFloat(doc.readability) || 0,
         }));
 
         setReadabilityData(readabilityDataArray);
+
 
         const documentsWithRisks = await Promise.all(
           data.map(async (doc) => {
@@ -1239,7 +1238,12 @@ function ReportLibrary() {
                       dataKey="documentType"
                       stroke={chartThemeColors.textColor}
                       interval={0}
-                      tick={{ fontSize: 12 }}
+                      tick={{
+                        fontSize: 10,
+                        angle: -45, 
+                        textAnchor: "end",
+                      }}
+                      height={70}
                     />
                     <YAxis
                       allowDecimals={false}
