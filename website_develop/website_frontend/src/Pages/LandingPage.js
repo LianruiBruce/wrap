@@ -317,7 +317,7 @@ function LandingPage() {
       gradient: "linear-gradient(135deg, #4DB33D20 0%, #2E7D3220 100%)",
       details: [
         "One-click analysis",
-        "Works on any website",
+        "Works on most website",
         "Real-time processing",
         "Secure connection",
       ],
@@ -1048,8 +1048,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                 Ready to Simplify Legal Documents?
               </Typography>
               <Typography sx={{ mb: 6, color: theme.palette.text.secondary }}>
-                Join thousands of users who are already using Wrap to understand
-                their legal documents better.
+                Join us by using Wrap to understand your legal documents better.
               </Typography>
               <Box
                 sx={{
