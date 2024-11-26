@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -10,9 +10,12 @@ import {
   Card,
   Box,
   Chip,
-  Link,
+  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 
 // Import all required icons
 import ExtensionIcon from "@mui/icons-material/Extension";
@@ -28,6 +31,49 @@ import ShieldIcon from "@mui/icons-material/Shield";
 import SavingsIcon from "@mui/icons-material/Savings";
 import IntegrationInstructionsIcon from "@mui/icons-material/IntegrationInstructions";
 
+// Define Light and Dark Themes
+const lightTheme = createTheme({
+  palette: {
+    mode: "light",
+    primary: {
+      main: "#61DAFB",
+    },
+    secondary: {
+      main: "#6B4FBB",
+    },
+    background: {
+      default: "#f0f2f5",
+      paper: "#ffffff",
+    },
+    text: {
+      primary: "#000000",
+      secondary: "rgba(0, 0, 0, 0.7)",
+    },
+    divider: "rgba(0, 0, 0, 0.12)",
+  },
+});
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#61DAFB",
+    },
+    secondary: {
+      main: "#6B4FBB",
+    },
+    background: {
+      default: "#000000",
+      paper: "#121212",
+    },
+    text: {
+      primary: "#ffffff",
+      secondary: "rgba(255, 255, 255, 0.7)",
+    },
+    divider: "rgba(255, 255, 255, 0.12)",
+  },
+});
+
 // Styled Components
 const StyledButton = styled(Button)(({ theme, gradient }) => ({
   borderRadius: "8px",
@@ -36,14 +82,15 @@ const StyledButton = styled(Button)(({ theme, gradient }) => ({
   fontSize: "1rem",
   background: gradient || "transparent",
   transition: "all 0.3s ease",
+  color: theme.palette.text.primary,
   "&:hover": {
     transform: "translateY(-2px)",
-    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
+    boxShadow: theme.shadows[4],
   },
 }));
 
-const FeatureCard = styled(Card)({
-  background: "rgba(18, 18, 23, 0.8)",
+const FeatureCard = styled(Card)(({ theme }) => ({
+  background: theme.palette.background.paper,
   backdropFilter: "blur(10px)",
   borderRadius: "16px",
   padding: "24px",
@@ -57,34 +104,38 @@ const FeatureCard = styled(Card)({
       opacity: 1,
     },
   },
-});
+}));
 
-const TechStackCard = styled(Card)({
-  background: "rgba(18, 18, 23, 0.9)",
+const TechStackCard = styled(Card)(({ theme }) => ({
+  background: theme.palette.background.paper,
   backdropFilter: "blur(10px)",
   borderRadius: "16px",
   height: "100%",
   padding: "24px",
   transition: "all 0.3s ease",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
+  border: `1px solid ${theme.palette.divider}`,
   "&:hover": {
     transform: "translateY(-8px)",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
-    boxShadow: "0 8px 32px rgba(31, 38, 135, 0.15)",
+    border: `1px solid ${theme.palette.text.secondary}`,
+    boxShadow: theme.shadows[4],
   },
-});
+}));
 
 const StyledContainer = styled(Container)({
   position: "relative",
   zIndex: 1,
 });
 
-const GradientText = styled(Typography)({
+const GradientText = styled(Typography)(({ theme }) => ({
   background: "linear-gradient(45deg, #61DAFB 10%, #6B4FBB 50%, #68A063 90%)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
-  textShadow: "0 0 40px rgba(97, 218, 251, 0.3)",
-});
+  textShadow: `0 0 40px ${
+    theme.palette.mode === "light"
+      ? "rgba(97, 218, 251, 0.3)"
+      : "rgba(255, 255, 255, 0.3)"
+  }`,
+}));
 
 const PageSection = styled(Box)({
   minHeight: "100vh",
@@ -96,9 +147,12 @@ const PageSection = styled(Box)({
 });
 
 function LandingPage() {
+  const [themeMode, setThemeMode] = useState("light");
+  const theme = themeMode === "light" ? lightTheme : darkTheme;
+
   const navigate = useNavigate();
 
-  // Data arrays remain the same
+  // Data arrays
   const techStack = [
     // Frontend Technologies
     {
@@ -317,34 +371,6 @@ function LandingPage() {
     // },
   ];
 
-  // const benefits = [
-  //   {
-  //     title: "Time Saving",
-  //     description:
-  //       "Reduce document review time by up to 80% with AI-powered analysis",
-  //     icon: <AccessTimeIcon sx={{ fontSize: 40, color: "#61DAFB" }} />,
-  //   },
-  //   {
-  //     title: "Risk Mitigation",
-  //     description:
-  //       "Identify potential legal risks and obligations automatically",
-  //     icon: <ShieldIcon sx={{ fontSize: 40, color: "#4DB33D" }} />,
-  //   },
-  //   {
-  //     title: "Cost Effective",
-  //     description:
-  //       "Significantly reduce legal review costs with automated analysis",
-  //     icon: <SavingsIcon sx={{ fontSize: 40, color: "#6B4FBB" }} />,
-  //   },
-  //   {
-  //     title: "Easy Integration",
-  //     description: "Seamlessly integrate with your existing workflow",
-  //     icon: (
-  //       <IntegrationInstructionsIcon sx={{ fontSize: 40, color: "#68A063" }} />
-  //     ),
-  //   },
-  // ];
-
   const stats = [
     {
       value: "90%",
@@ -369,708 +395,750 @@ function LandingPage() {
   ];
 
   return (
-    <Box
-      sx={{
-        bgcolor: "#000000",
-        color: "white",
-        background: `
-          radial-gradient(circle at 10% 20%, rgba(104, 160, 99, 0.15) 0%, transparent 20%),
-          radial-gradient(circle at 90% 30%, rgba(97, 218, 251, 0.15) 0%, transparent 20%),
-          radial-gradient(circle at 50% 50%, rgba(77, 179, 61, 0.15) 0%, transparent 20%),
-          radial-gradient(circle at 20% 80%, rgba(107, 79, 187, 0.15) 0%, transparent 20%),
-          #000000
-        `,
-      }}
-    >
-      {/* Navigation Bar */}
-      <AppBar
-        position="fixed"
+    <ThemeProvider theme={theme}>
+      <Box
         sx={{
-          background: "rgba(0, 0, 0, 0.8)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          bgcolor: theme.palette.background.default,
+          color: theme.palette.text.primary,
+          background:
+            theme.palette.mode === "light"
+              ? `
+        radial-gradient(circle at 10% 20%, rgba(255, 213, 79, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 30%, rgba(79, 195, 247, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 50% 50%, rgba(129, 212, 250, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 20% 80%, rgba(186, 104, 200, 0.1) 0%, transparent 20%),
+        #f0f2f5
+                `
+              : `
+                  radial-gradient(circle at 10% 20%, rgba(104, 160, 99, 0.15) 0%, transparent 20%),
+                  radial-gradient(circle at 90% 30%, rgba(97, 218, 251, 0.15) 0%, transparent 20%),
+                  radial-gradient(circle at 50% 50%, rgba(77, 179, 61, 0.15) 0%, transparent 20%),
+                  radial-gradient(circle at 20% 80%, rgba(107, 79, 187, 0.15) 0%, transparent 20%),
+                  #000000
+                `,
         }}
       >
-        <Toolbar>
-          <Typography variant="h4" sx={{ flexGrow: 1, fontWeight: "bold" }}>
-            Wrap
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <StyledButton
-              variant="text"
-              onClick={() => navigate("/login")}
-              sx={{ color: "white" }}
-            >
-              Login
-            </StyledButton>
-            <StyledButton
-              variant="contained"
-              onClick={() => navigate("/signup")}
-              sx={{
-                background: "linear-gradient(45deg, #61DAFB 10%, #6B4FBB 90%)",
-                color: "white",
-              }}
-            >
-              Sign Up
-            </StyledButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
-
-      {/* Main Content */}
-      <Box>
-        {/* Hero Section */}
-        <PageSection>
-          <StyledContainer maxWidth="lg">
-            <GradientText
-              variant="h1"
-              align="center"
-              sx={{
-                fontSize: { xs: "2.5rem", md: "4.5rem" },
-                fontWeight: "bold",
-                mb: 3,
-              }}
-            >
-              Simplify Legal Documents with{" "}
-              <span style={{ color: "#61DAFB" }}>Wrap</span>
-            </GradientText>
+        {/* Navigation Bar */}
+        <AppBar
+          position="fixed"
+          sx={{
+            background: theme.palette.background.paper,
+            backdropFilter: "blur(20px)",
+            borderBottom: `1px solid ${theme.palette.divider}`,
+          }}
+        >
+          <Toolbar>
             <Typography
-              variant="h5"
-              align="center"
+              variant="h4"
               sx={{
-                mb: 6,
-                color: "rgba(255, 255, 255, 0.8)",
-                maxWidth: "800px",
-                mx: "auto",
+                flexGrow: 1,
+                fontWeight: "bold",
+                color: theme.palette.text.primary,
               }}
             >
-              AI-powered legal document analysis that helps you understand terms
-              and conditions in seconds
+              Wrap
             </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-                justifyContent: "center",
-                flexWrap: "wrap",
-              }}
+            <IconButton
+              edge="end"
+              color="inherit"
+              onClick={() =>
+                setThemeMode((prevMode) =>
+                  prevMode === "light" ? "dark" : "light"
+                )
+              }
+              sx={{ mr: 2 }}
             >
+              {themeMode === "light" ? (
+                <Brightness4Icon />
+              ) : (
+                <Brightness7Icon />
+              )}
+            </IconButton>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <StyledButton
-                gradient="linear-gradient(45deg, #61DAFB 10%, #6B4FBB 90%)"
-                size="large"
+                variant="text"
+                onClick={() => navigate("/login")}
+                sx={{ color: theme.palette.text.primary }}
+              >
+                Login
+              </StyledButton>
+              <StyledButton
+                variant="contained"
                 onClick={() => navigate("/signup")}
-                endIcon={<ArrowForwardIcon />}
-                sx={{ color: "white" }}
-              >
-                Get Started Free
-              </StyledButton>
-              <StyledButton
-                component="a"
-                href="https://www.youtube.com/watch?v=lXnljtYhXJ0"
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="outlined"
-                size="large"
-                startIcon={<PlayArrowIcon />}
                 sx={{
+                  background:
+                    "linear-gradient(45deg, #61DAFB 10%, #6B4FBB 90%)",
                   color: "white",
-                  borderColor: "rgba(255, 255, 255, 0.3)",
-                  "&:hover": {
-                    borderColor: "white",
-                  },
                 }}
               >
-                View Demo
-              </StyledButton>
-              <StyledButton
-                component="a"
-                href="https://drive.google.com/file/d/1qKfThOw06QKqctrOcBA_m2JPOhW5RIup/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="outlined"
-                size="large"
-                startIcon={<DownloadIcon />}
-                sx={{
-                  color: "white",
-                  borderColor: "rgba(255, 255, 255, 0.3)",
-                  "&:hover": {
-                    borderColor: "white",
-                  },
-                }}
-              >
-                Download Extension
+                Sign Up
               </StyledButton>
             </Box>
-          </StyledContainer>
-        </PageSection>
+          </Toolbar>
+        </AppBar>
 
-        {/* How It Works Section */}
-        <PageSection>
-          <StyledContainer maxWidth="lg">
-            <Typography variant="h2" align="center" sx={{ mb: 2 }}>
-              How It Works
-            </Typography>
-            <Typography
-              variant="h6"
-              align="center"
-              sx={{
-                mb: 8,
-                color: "rgba(255, 255, 255, 0.7)",
-                maxWidth: "800px",
-                mx: "auto",
-              }}
-            >
-              Transform complex legal documents into clear, actionable insights
-              in four simple steps
-            </Typography>
+        {/* Main Content */}
+        <Box>
+          {/* Hero Section */}
+          <PageSection>
+            <StyledContainer maxWidth="lg">
+              <GradientText
+                variant="h1"
+                align="center"
+                sx={{
+                  fontSize: { xs: "2.5rem", md: "4.5rem" },
+                  fontWeight: "bold",
+                  mb: 3,
+                }}
+              >
+                Simplify Legal Documents with{" "}
+                <span style={{ color: "#61DAFB" }}>Wrap</span>
+              </GradientText>
+              <Typography
+                variant="h5"
+                align="center"
+                sx={{
+                  mb: 6,
+                  color: theme.palette.text.secondary,
+                  maxWidth: "800px",
+                  mx: "auto",
+                }}
+              >
+                AI-powered legal document analysis that helps you understand
+                terms and conditions in seconds
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  justifyContent: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <StyledButton
+                  gradient="linear-gradient(45deg, #61DAFB 10%, #6B4FBB 90%)"
+                  size="large"
+                  onClick={() => navigate("/signup")}
+                  endIcon={<ArrowForwardIcon />}
+                  sx={{ color: "white" }}
+                >
+                  Get Started Free
+                </StyledButton>
+                <StyledButton
+                  component="a"
+                  href="https://www.youtube.com/watch?v=lXnljtYhXJ0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="outlined"
+                  size="large"
+                  startIcon={<PlayArrowIcon />}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    borderColor: theme.palette.divider,
+                    "&:hover": {
+                      borderColor: theme.palette.text.primary,
+                    },
+                  }}
+                >
+                  View Demo
+                </StyledButton>
+                <StyledButton
+                  component="a"
+                  href="https://drive.google.com/file/d/1qKfThOw06QKqctrOcBA_m2JPOhW5RIup/view?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="outlined"
+                  size="large"
+                  startIcon={<DownloadIcon />}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    borderColor: theme.palette.divider,
+                    "&:hover": {
+                      borderColor: theme.palette.text.primary,
+                    },
+                  }}
+                >
+                  Download Extension
+                </StyledButton>
+              </Box>
+            </StyledContainer>
+          </PageSection>
 
-            <Grid container spacing={6}>
-              {workflowSteps.map((step, index) => (
-                <Grid item xs={12} md={6} lg={3} key={index}>
-                  <Box
-                    sx={{
-                      background: "rgba(255, 255, 255, 0.03)",
-                      borderRadius: "16px",
-                      p: 3,
-                      height: "100%",
-                      position: "relative",
-                      transition: "transform 0.3s ease",
-                      "&:hover": {
-                        transform: "translateY(-8px)",
-                      },
-                    }}
-                  >
+          {/* How It Works Section */}
+          <PageSection>
+            <StyledContainer maxWidth="lg">
+              <Typography variant="h2" align="center" sx={{ mb: 2 }}>
+                How It Works
+              </Typography>
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{
+                  mb: 8,
+                  color: theme.palette.text.secondary,
+                  maxWidth: "800px",
+                  mx: "auto",
+                }}
+              >
+                Transform complex legal documents into clear, actionable
+                insights in four simple steps
+              </Typography>
+
+              <Grid container spacing={6}>
+                {workflowSteps.map((step, index) => (
+                  <Grid item xs={12} md={6} lg={3} key={index}>
                     <Box
                       sx={{
-                        position: "absolute",
-                        top: -20,
-                        left: -20,
-                        width: 40,
-                        height: 40,
-                        borderRadius: "50%",
-                        background: "linear-gradient(45deg, #61DAFB, #6B4FBB)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "white",
-                        fontWeight: "bold",
+                        background: theme.palette.background.paper,
+                        borderRadius: "16px",
+                        p: 3,
+                        height: "100%",
+                        position: "relative",
+                        transition: "transform 0.3s ease",
+                        "&:hover": {
+                          transform: "translateY(-8px)",
+                        },
                       }}
                     >
-                      {index + 1}
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: -20,
+                          left: -20,
+                          width: 40,
+                          height: 40,
+                          borderRadius: "50%",
+                          background:
+                            "linear-gradient(45deg, #61DAFB, #6B4FBB)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {index + 1}
+                      </Box>
+
+                      <Box
+                        sx={{
+                          mb: 3,
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {React.cloneElement(step.icon, {
+                          sx: { fontSize: 48, color: "#61DAFB" },
+                        })}
+                      </Box>
+
+                      <Typography variant="h5" gutterBottom align="center">
+                        {step.title}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          mb: 3,
+                          textAlign: "center",
+                        }}
+                      >
+                        {step.description}
+                      </Typography>
+
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                        }}
+                      >
+                        {step.details.map((detail, idx) => (
+                          <Box
+                            key={idx}
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                width: 6,
+                                height: 6,
+                                borderRadius: "50%",
+                                backgroundColor: "#61DAFB",
+                              }}
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ color: theme.palette.text.secondary }}
+                            >
+                              {detail}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Box>
                     </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </StyledContainer>
+          </PageSection>
 
-                    <Box
-                      sx={{
-                        mb: 3,
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {React.cloneElement(step.icon, {
-                        sx: { fontSize: 48, color: "#61DAFB" },
-                      })}
-                    </Box>
+          {/* Detailed Features Section */}
+          <PageSection>
+            <StyledContainer maxWidth="lg">
+              <Typography variant="h2" align="center" sx={{ mb: 2 }}>
+                Key Features
+              </Typography>
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{
+                  mb: 8,
+                  color: theme.palette.text.secondary,
+                  maxWidth: "800px",
+                  mx: "auto",
+                }}
+              >
+                Advanced features designed to make legal document analysis
+                simple and efficient
+              </Typography>
 
-                    <Typography variant="h5" gutterBottom align="center">
-                      {step.title}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        color: "rgba(255, 255, 255, 0.7)",
-                        mb: 3,
-                        textAlign: "center",
-                      }}
-                    >
-                      {step.description}
-                    </Typography>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1,
-                      }}
-                    >
-                      {step.details.map((detail, idx) => (
+              <Grid container spacing={4}>
+                {detailedFeatures.map((feature, index) => (
+                  <Grid item xs={12} md={6} key={index}>
+                    <FeatureCard>
+                      <Box sx={{ position: "relative", zIndex: 1 }}>
                         <Box
-                          key={idx}
                           sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: 1,
+                            gap: 2,
+                            mb: 3,
                           }}
                         >
-                          <Box
-                            sx={{
-                              width: 6,
-                              height: 6,
-                              borderRadius: "50%",
-                              backgroundColor: "#61DAFB",
-                            }}
-                          />
+                          {feature.icon}
                           <Typography
-                            variant="body2"
-                            sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                            variant="h5"
+                            sx={{ color: theme.palette.text.primary }}
                           >
-                            {detail}
+                            {feature.title}
                           </Typography>
                         </Box>
-                      ))}
-                    </Box>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </StyledContainer>
-        </PageSection>
 
-        {/* Detailed Features Section */}
-        <PageSection>
-          <StyledContainer maxWidth="lg">
-            <Typography variant="h2" align="center" sx={{ mb: 2 }}>
-              Key Features
-            </Typography>
-            <Typography
-              variant="h6"
-              align="center"
-              sx={{
-                mb: 8,
-                color: "rgba(255, 255, 255, 0.7)",
-                maxWidth: "800px",
-                mx: "auto",
-              }}
-            >
-              Advanced features designed to make legal document analysis simple
-              and efficient
-            </Typography>
-
-            <Grid container spacing={4}>
-              {detailedFeatures.map((feature, index) => (
-                <Grid item xs={12} md={6} key={index}>
-                  <FeatureCard>
-                    <Box sx={{ position: "relative", zIndex: 1 }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 2,
-                          mb: 3,
-                        }}
-                      >
-                        {feature.icon}
-                        <Typography variant="h5" sx={{ color: "white" }}>
-                          {feature.title}
+                        <Typography
+                          sx={{
+                            color: theme.palette.text.secondary,
+                            mb: 3,
+                          }}
+                        >
+                          {feature.description}
                         </Typography>
-                      </Box>
 
-                      <Typography
-                        sx={{
-                          color: "rgba(255, 255, 255, 0.7)",
-                          mb: 3,
-                        }}
-                      >
-                        {feature.description}
-                      </Typography>
-
-                      <Grid container spacing={2}>
-                        {feature.details.map((detail, idx) => (
-                          <Grid item xs={6} key={idx}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                              }}
-                            >
+                        <Grid container spacing={2}>
+                          {feature.details.map((detail, idx) => (
+                            <Grid item xs={6} key={idx}>
                               <Box
                                 sx={{
-                                  width: 6,
-                                  height: 6,
-                                  borderRadius: "50%",
-                                  backgroundColor: "#61DAFB",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
                                 }}
-                              />
-                              <Typography
-                                variant="body2"
-                                sx={{ color: "rgba(255, 255, 255, 0.7)" }}
                               >
-                                {detail}
-                              </Typography>
-                            </Box>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </Box>
-                  </FeatureCard>
-                </Grid>
-              ))}
-            </Grid>
-          </StyledContainer>
-        </PageSection>
-
-        {/* Tech Stack Section */}
-        <PageSection>
-          <StyledContainer maxWidth="lg">
-            <Typography variant="h2" align="center" sx={{ mb: 2 }}>
-              Our Tech Stack
-            </Typography>
-            <Typography
-              variant="h6"
-              align="center"
-              sx={{
-                mb: 8,
-                color: "rgba(255, 255, 255, 0.7)",
-                maxWidth: "800px",
-                mx: "auto",
-              }}
-            >
-              Built with cutting-edge technologies to provide a secure,
-              scalable, and efficient solution
-            </Typography>
-
-            <Box sx={{ mb: 8 }}>
-              <Typography variant="h4" sx={{ mb: 4, color: "#61DAFB" }}>
-                Core Technologies
-              </Typography>
-              <Grid container spacing={4}>
-                {techStack.slice(0, 4).map((tech) => (
-                  <Grid item xs={12} sm={6} md={3} key={tech.name}>
-                    <TechStackCard>
-                      <Box
-                        sx={{
-                          width: "60px",
-                          height: "60px",
-                          borderRadius: "12px",
-                          background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          mb: 3,
-                          mx: "auto",
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            color: tech.color,
-                            fontWeight: "bold",
-                            fontSize: "1.5rem",
-                          }}
-                        >
-                          {tech.shortName}
-                        </Typography>
+                                <Box
+                                  sx={{
+                                    width: 6,
+                                    height: 6,
+                                    borderRadius: "50%",
+                                    backgroundColor: "#61DAFB",
+                                  }}
+                                />
+                                <Typography
+                                  variant="body2"
+                                  sx={{ color: theme.palette.text.secondary }}
+                                >
+                                  {detail}
+                                </Typography>
+                              </Box>
+                            </Grid>
+                          ))}
+                        </Grid>
                       </Box>
-                      <Typography
-                        variant="h6"
-                        align="center"
-                        gutterBottom
-                        sx={{ color: "white" }}
-                      >
-                        {tech.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        align="center"
-                        sx={{ color: "rgba(255, 255, 255, 0.7)", mb: 2 }}
-                      >
-                        {tech.description}
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: 1,
-                          justifyContent: "center",
-                        }}
-                      >
-                        {tech.features.map((feature, index) => (
-                          <Chip
-                            key={index}
-                            label={feature}
-                            size="small"
-                            sx={{
-                              background: `${tech.color}20`,
-                              color: tech.color,
-                              "&:hover": {
-                                background: `${tech.color}30`,
-                              },
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </TechStackCard>
+                    </FeatureCard>
                   </Grid>
                 ))}
               </Grid>
-            </Box>
+            </StyledContainer>
+          </PageSection>
 
-            <Box>
-              <Typography variant="h4" sx={{ mb: 4, color: "#4ECDC4" }}>
-                Additional Features
+          {/* Tech Stack Section */}
+          <PageSection>
+            <StyledContainer maxWidth="lg">
+              <Typography variant="h2" align="center" sx={{ mb: 2 }}>
+                Our Tech Stack
               </Typography>
-              <Grid container spacing={4}>
-                {techStack.slice(4).map((tech) => (
-                  <Grid item xs={12} sm={6} md={3} key={tech.name}>
-                    <TechStackCard>
-                      <Box
-                        sx={{
-                          width: "60px",
-                          height: "60px",
-                          borderRadius: "12px",
-                          background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          mb: 3,
-                          mx: "auto",
-                        }}
-                      >
-                        <Typography
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{
+                  mb: 8,
+                  color: theme.palette.text.secondary,
+                  maxWidth: "800px",
+                  mx: "auto",
+                }}
+              >
+                Built with cutting-edge technologies to provide a secure,
+                scalable, and efficient solution
+              </Typography>
+
+              <Box sx={{ mb: 8 }}>
+                <Typography variant="h4" sx={{ mb: 4, color: "#61DAFB" }}>
+                  Core Technologies
+                </Typography>
+                <Grid container spacing={4}>
+                  {techStack.slice(0, 4).map((tech) => (
+                    <Grid item xs={12} sm={6} md={3} key={tech.name}>
+                      <TechStackCard>
+                        <Box
                           sx={{
-                            color: tech.color,
-                            fontWeight: "bold",
-                            fontSize: "1.2rem",
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "12px",
+                            background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mb: 3,
+                            mx: "auto",
                           }}
                         >
-                          {tech.shortName}
+                          <Typography
+                            sx={{
+                              color: tech.color,
+                              fontWeight: "bold",
+                              fontSize: "1.5rem",
+                            }}
+                          >
+                            {tech.shortName}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          align="center"
+                          gutterBottom
+                          sx={{ color: theme.palette.text.primary }}
+                        >
+                          {tech.name}
                         </Typography>
-                      </Box>
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
+                        >
+                          {tech.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {tech.features.map((feature, index) => (
+                            <Chip
+                              key={index}
+                              label={feature}
+                              size="small"
+                              sx={{
+                                background: `${tech.color}20`,
+                                color: tech.color,
+                                "&:hover": {
+                                  background: `${tech.color}30`,
+                                },
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </TechStackCard>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+
+              <Box>
+                <Typography variant="h4" sx={{ mb: 4, color: "#4ECDC4" }}>
+                  Additional Features
+                </Typography>
+                <Grid container spacing={4}>
+                  {techStack.slice(4).map((tech) => (
+                    <Grid item xs={12} sm={6} md={3} key={tech.name}>
+                      <TechStackCard>
+                        <Box
+                          sx={{
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "12px",
+                            background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mb: 3,
+                            mx: "auto",
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: tech.color,
+                              fontWeight: "bold",
+                              fontSize: "1.2rem",
+                            }}
+                          >
+                            {tech.shortName}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          align="center"
+                          gutterBottom
+                          sx={{ color: theme.palette.text.primary }}
+                        >
+                          {tech.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
+                        >
+                          {tech.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {tech.features.map((feature, index) => (
+                            <Chip
+                              key={index}
+                              label={feature}
+                              size="small"
+                              sx={{
+                                background: `${tech.color}20`,
+                                color: tech.color,
+                                "&:hover": {
+                                  background: `${tech.color}30`,
+                                },
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </TechStackCard>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            </StyledContainer>
+          </PageSection>
+
+          {/* Statistics Section */}
+          <PageSection>
+            <StyledContainer maxWidth="lg">
+              <Grid container spacing={4}>
+                {stats.map((stat, index) => (
+                  <Grid item xs={12} sm={6} md={3} key={index}>
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        p: 4,
+                        background: theme.palette.background.paper,
+                        borderRadius: "16px",
+                        height: "100%",
+                      }}
+                    >
                       <Typography
-                        variant="h6"
-                        align="center"
-                        gutterBottom
-                        sx={{ color: "white" }}
-                      >
-                        {tech.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        align="center"
-                        sx={{ color: "rgba(255, 255, 255, 0.7)", mb: 2 }}
-                      >
-                        {tech.description}
-                      </Typography>
-                      <Box
+                        variant="h2"
                         sx={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: 1,
-                          justifyContent: "center",
+                          background:
+                            "linear-gradient(45deg, #61DAFB, #6B4FBB)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          mb: 1,
                         }}
                       >
-                        {tech.features.map((feature, index) => (
-                          <Chip
-                            key={index}
-                            label={feature}
-                            size="small"
-                            sx={{
-                              background: `${tech.color}20`,
-                              color: tech.color,
-                              "&:hover": {
-                                background: `${tech.color}30`,
-                              },
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </TechStackCard>
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="h6" gutterBottom>
+                        {stat.label}
+                      </Typography>
+                      <Typography sx={{ color: theme.palette.text.secondary }}>
+                        {stat.description}
+                      </Typography>
+                    </Box>
                   </Grid>
                 ))}
               </Grid>
-            </Box>
-          </StyledContainer>
-        </PageSection>
+            </StyledContainer>
+          </PageSection>
 
-        {/* Statistics Section */}
-        <PageSection>
-          <StyledContainer maxWidth="lg">
-            <Grid container spacing={4}>
-              {stats.map((stat, index) => (
-                <Grid item xs={12} sm={6} md={3} key={index}>
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      p: 4,
-                      background: "rgba(255, 255, 255, 0.03)",
-                      borderRadius: "16px",
-                      height: "100%",
-                    }}
-                  >
-                    <Typography
-                      variant="h2"
+          {/* Testimonials Section */}
+          <PageSection>
+            <StyledContainer maxWidth="lg">
+              <Typography variant="h2" align="center" sx={{ mb: 6 }}>
+                What Our Users Say
+              </Typography>
+              <Grid container spacing={4}>
+                {testimonials.map((testimonial, index) => (
+                  <Grid item xs={12} md={4} key={index}>
+                    <Box
                       sx={{
-                        background: "linear-gradient(45deg, #61DAFB, #6B4FBB)",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        mb: 1,
+                        p: 4,
+                        background: theme.palette.background.paper,
+                        borderRadius: "16px",
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
                       }}
                     >
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="h6" gutterBottom>
-                      {stat.label}
-                    </Typography>
-                    <Typography sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                      {stat.description}
-                    </Typography>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </StyledContainer>
-        </PageSection>
-
-        {/* Testimonials Section */}
-        <PageSection>
-          <StyledContainer maxWidth="lg">
-            <Typography variant="h2" align="center" sx={{ mb: 6 }}>
-              What Our Users Say
-            </Typography>
-            <Grid container spacing={4}>
-              {testimonials.map((testimonial, index) => (
-                <Grid item xs={12} md={4} key={index}>
-                  <Box
-                    sx={{
-                      p: 4,
-                      background: "rgba(255, 255, 255, 0.03)",
-                      borderRadius: "16px",
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        mb: 3,
-                        fontStyle: "italic",
-                        color: "rgba(255, 255, 255, 0.9)",
-                      }}
-                    >
-                      "{testimonial.quote}"
-                    </Typography>
-                    <Box>
                       <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: "bold" }}
+                        variant="h6"
+                        sx={{
+                          mb: 3,
+                          fontStyle: "italic",
+                          color: theme.palette.text.primary,
+                        }}
                       >
-                        {testimonial.author}
+                        "{testimonial.quote}"
                       </Typography>
-                      <Typography sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                        {testimonial.role}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "rgba(255, 255, 255, 0.5)" }}
-                      >
-                        {testimonial.company}
-                      </Typography>
+                      <Box>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: "bold" }}
+                        >
+                          {testimonial.author}
+                        </Typography>
+                        <Typography
+                          sx={{ color: theme.palette.text.secondary }}
+                        >
+                          {testimonial.role}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: theme.palette.text.secondary }}
+                        >
+                          {testimonial.company}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </StyledContainer>
-        </PageSection>
+                  </Grid>
+                ))}
+              </Grid>
+            </StyledContainer>
+          </PageSection>
 
-        {/* CTA Section */}
-        <PageSection>
-          <StyledContainer maxWidth="md" sx={{ textAlign: "center" }}>
-            <Typography variant="h2" gutterBottom>
-              Ready to Simplify Legal Documents?
-            </Typography>
-            <Typography sx={{ mb: 6, color: "rgba(255, 255, 255, 0.7)" }}>
-              Join thousands of users who are already using Wrap to understand
-              their legal documents better.
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                gap: 3,
-                justifyContent: "center",
-                flexWrap: "wrap",
-              }}
-            >
-              <StyledButton
-                gradient="linear-gradient(45deg, #61DAFB 10%, #6B4FBB 90%)"
-                size="large"
-                onClick={() => navigate("/signup")}
-                sx={{ color: "white" }}
-              >
-                Get Started Now
-              </StyledButton>
-              <StyledButton
-                component="a"
-                href="https://drive.google.com/file/d/1qKfThOw06QKqctrOcBA_m2JPOhW5RIup/view?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="outlined"
-                size="large"
-                startIcon={<DownloadIcon />}
+          {/* CTA Section */}
+          <PageSection>
+            <StyledContainer maxWidth="md" sx={{ textAlign: "center" }}>
+              <Typography variant="h2" gutterBottom>
+                Ready to Simplify Legal Documents?
+              </Typography>
+              <Typography sx={{ mb: 6, color: theme.palette.text.secondary }}>
+                Join thousands of users who are already using Wrap to understand
+                their legal documents better.
+              </Typography>
+              <Box
                 sx={{
-                  color: "white",
-                  borderColor: "rgba(255, 255, 255, 0.3)",
-                  "&:hover": {
-                    borderColor: "white",
-                  },
+                  display: "flex",
+                  gap: 3,
+                  justifyContent: "center",
+                  flexWrap: "wrap",
                 }}
               >
-                Download Extension
-              </StyledButton>
-            </Box>
-          </StyledContainer>
-        </PageSection>
+                <StyledButton
+                  gradient="linear-gradient(45deg, #61DAFB 10%, #6B4FBB 90%)"
+                  size="large"
+                  onClick={() => navigate("/signup")}
+                  sx={{ color: "white" }}
+                >
+                  Get Started Now
+                </StyledButton>
+                <StyledButton
+                  component="a"
+                  href="https://drive.google.com/file/d/1qKfThOw06QKqctrOcBA_m2JPOhW5RIup/view?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="outlined"
+                  size="large"
+                  startIcon={<DownloadIcon />}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    borderColor: theme.palette.divider,
+                    "&:hover": {
+                      borderColor: theme.palette.text.primary,
+                    },
+                  }}
+                >
+                  Download Extension
+                </StyledButton>
+              </Box>
+            </StyledContainer>
+          </PageSection>
 
-        {/* Footer */}
-        <Box
-          sx={{
-            backgroundColor: "#000000",
-            py: 4,
-            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-          }}
-        >
-          <Container maxWidth="lg">
-            <Typography
-              variant="body2"
-              align="center"
-              sx={{ color: "rgba(255, 255, 255, 0.7)" }}
-            >
-              &copy; {new Date().getFullYear()} Wrap. All rights reserved.
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                mt: 2,
-                gap: 4,
-              }}
-            >
-              <Button
-                color="inherit"
-                onClick={() => navigate("/privacy-policy")}
+          {/* Footer */}
+          <Box
+            sx={{
+              backgroundColor: theme.palette.background.default,
+              py: 4,
+              borderTop: `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <Container maxWidth="lg">
+              <Typography
+                variant="body2"
+                align="center"
+                sx={{ color: theme.palette.text.secondary }}
+              >
+                &copy; {new Date().getFullYear()} Wrap. All rights reserved.
+              </Typography>
+              <Box
                 sx={{
-                  textTransform: "none",
-                  color: "rgba(255, 255, 255, 0.7)",
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 2,
+                  gap: 4,
                 }}
               >
-                Privacy Policy
-              </Button>
-              <Button
-                color="inherit"
-                onClick={() => navigate("/terms-of-service")}
-                sx={{
-                  textTransform: "none",
-                  color: "rgba(255, 255, 255, 0.7)",
-                }}
-              >
-                Terms of Service
-              </Button>
-            </Box>
-          </Container>
+                <Button
+                  color="inherit"
+                  onClick={() => navigate("/privacy-policy")}
+                  sx={{
+                    textTransform: "none",
+                    color: theme.palette.text.secondary,
+                  }}
+                >
+                  Privacy Policy
+                </Button>
+                <Button
+                  color="inherit"
+                  onClick={() => navigate("/terms-of-service")}
+                  sx={{
+                    textTransform: "none",
+                    color: theme.palette.text.secondary,
+                  }}
+                >
+                  Terms of Service
+                </Button>
+              </Box>
+            </Container>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 }
 
