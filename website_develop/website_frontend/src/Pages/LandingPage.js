@@ -449,9 +449,9 @@ function LandingPage() {
               sx={{ mr: 2 }}
             >
               {themeMode === "light" ? (
-                <Brightness4Icon />
-              ) : (
                 <Brightness7Icon />
+              ) : (
+                <Brightness4Icon />
               )}
             </IconButton>
             <Box sx={{ display: "flex", gap: 2 }}>
