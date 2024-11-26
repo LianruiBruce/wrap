@@ -403,11 +403,11 @@ function LandingPage() {
           background:
             theme.palette.mode === "light"
               ? `
-        radial-gradient(circle at 10% 20%, rgba(255, 213, 79, 0.1) 0%, transparent 20%),
-        radial-gradient(circle at 90% 30%, rgba(79, 195, 247, 0.1) 0%, transparent 20%),
-        radial-gradient(circle at 50% 50%, rgba(129, 212, 250, 0.1) 0%, transparent 20%),
-        radial-gradient(circle at 20% 80%, rgba(186, 104, 200, 0.1) 0%, transparent 20%),
-        #f0f2f5
+                  radial-gradient(circle at 10% 20%, rgba(255, 105, 180, 0.2) 0%, transparent 20%),
+                  radial-gradient(circle at 90% 30%, rgba(255, 165, 0, 0.2) 0%, transparent 20%),
+                  radial-gradient(circle at 50% 50%, rgba(60, 179, 113, 0.2) 0%, transparent 20%),
+                  radial-gradient(circle at 20% 80%, rgba(65, 105, 225, 0.2) 0%, transparent 20%),
+                  #f9fafb
                 `
               : `
                   radial-gradient(circle at 10% 20%, rgba(104, 160, 99, 0.15) 0%, transparent 20%),
