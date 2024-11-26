@@ -410,11 +410,11 @@ function LandingPage() {
                   #f9fafb
                 `
               : `
-                  radial-gradient(circle at 10% 20%, rgba(104, 160, 99, 0.15) 0%, transparent 20%),
-                  radial-gradient(circle at 90% 30%, rgba(97, 218, 251, 0.15) 0%, transparent 20%),
-                  radial-gradient(circle at 50% 50%, rgba(77, 179, 61, 0.15) 0%, transparent 20%),
-                  radial-gradient(circle at 20% 80%, rgba(107, 79, 187, 0.15) 0%, transparent 20%),
-                  #000000
+        radial-gradient(circle at 10% 20%, rgba(255, 0, 132, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at 90% 30%, rgba(0, 204, 255, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at 50% 50%, rgba(255, 102, 0, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at 20% 80%, rgba(153, 51, 255, 0.15) 0%, transparent 20%),
+        #000000
                 `,
         }}
       >
