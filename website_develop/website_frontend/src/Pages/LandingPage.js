@@ -351,6 +351,12 @@ function LandingPage() {
 
   const testimonials = [
     {
+      quote: "The AI analysis saves us hours of document review time.",
+      author: "Xuanhao Mei",
+      role: "Technical Art Student",
+      company: "University of Utah",
+    },
+    {
       quote:
         "Wrap has the ability to transform the way we review legal documents.",
       author: "Jiachen Ren",
@@ -358,17 +364,12 @@ function LandingPage() {
       company: "Aureum Gale Games",
     },
     {
-      quote: "The AI analysis saves us hours of document review time.",
-      author: "Xuanhao Mei",
-      role: "Technical Art Student",
-      company: "University of Utah",
+      quote:
+        "Wrap has the potential to help users avoid the risks associated with legal documents.",
+      author: "Meiyi Zhang",
+      role: "Jiachen's ex",
+      company: "Lucas's Bedroom",
     },
-    // {
-    //   quote: "Simple yet powerful. Exactly what we needed.",
-    //   author: "Emily Thompson",
-    //   role: "Compliance Officer",
-    //   company: "Finance Corp",
-    // },
   ];
 
   const stats = [
