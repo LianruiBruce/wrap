@@ -158,20 +158,26 @@ app.post("/getLatestReportAfterDelete", authenticateToken, async (req, res) => {
       .json({ success: false, message: "Server error", error: error.message });
   }
 });
-
+// In getFlagOfDoc endpoint
 app.post("/getFlagOfDoc", authenticateToken, async (req, res) => {
   try {
     const userID = req.user.userId;
-    const { docID } = req.body;
+    const { documentID } = req.body;
 
-    // Fetch the flag from the database using userID and docID
-    const flag = await fetchFlag(userID, docID);
+    console.log('Fetching flag for userID:', userID, 'documentID:', documentID);
 
-    // Return the flag value to the client
-    res.status(200).json({ success: true, flag });
+    const result = await fetchFlag(userID, documentID);
+    console.log('Flag value from database:', result);
+    if (result) {
+      console.log('Flag value from database:', result);
+      res.status(200).json({ success: true, flag: result });
+    } else {
+      console.error(result);
+      res.status(200).json({ success: false, flag: result });
+    }
   } catch (error) {
-    console.error("Error fetching flag:", error);
-    res.status(500).json({ success: false, message: "Error fetching flag" });
+    console.error("Error fetching flag of document:", error);
+    res.status(500).json({ success: false, message: "Error fetching flag of document." });
   }
 });
 
