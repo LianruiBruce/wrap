@@ -17,7 +17,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import { ThemeContext } from "../colorTheme/ThemeContext";
@@ -38,11 +38,20 @@ function Header({
     "Select a document to open the report"
   );
   const [documentDate, setDocumentDate] = useState();
+  const [currentDocumentID, setCurrentDocumentID] = useState(null);
+  const currentDocumentIDRef = useRef(currentDocumentID);
 
   // Font size state
   const [fontSize, setFontSize] = useState(
     JSON.parse(localStorage.getItem("fontSize")) || 16 // Default to 16px
   );
+  useEffect(() => {
+    console.log(
+      "Updating currentDocumentIDRef in header.js .current to:",
+      currentDocumentID
+    );
+    currentDocumentIDRef.current = currentDocumentID;
+  }, [currentDocumentID]);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -60,7 +69,7 @@ function Header({
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    const socket = io.connect("https://wrapcapstone.com", {
+    const socket = io.connect("http://localhost:3000", {
       query: { token: token },
     });
 
@@ -71,6 +80,12 @@ function Header({
       setDocumentCompany(report.company);
       setDocumentCategory(report.category);
       setDocumentDate(report.date);
+
+      setCurrentDocumentID(report.documentID);
+      console.log(
+        "Current document ID has been updated to:",
+        report.documentID
+      );
     });
 
     socket.on("selectDocument", (selectInfo) => {
@@ -78,6 +93,30 @@ function Header({
       setDocumentCompany(selectInfo.company);
       setDocumentCategory(selectInfo.category);
       setDocumentDate(selectInfo.date);
+
+      setCurrentDocumentID(selectInfo.documentID);
+      console.log(
+        "Current document ID has been updated to:",
+        selectInfo.documentID
+      );
+    });
+
+    socket.on("documentDeleted", async (data) => {
+      console.log("Document deleted received:", data);
+      const { documentID: deletedDocumentID } = data;
+      console.log("current doc id is " + currentDocumentIDRef.current);
+      console.log("deleted doc id is " + deletedDocumentID);
+      if (currentDocumentIDRef.current === deletedDocumentID) {
+        console.log("Current document was deleted, clearing the header.");
+
+        // Clear the header information
+        setDocumentCompany("Welcome to Wrap");
+        setDocumentCategory("Select a document to open the report");
+        setDocumentDate(null);
+
+        // Clear the current document ID
+        setCurrentDocumentID(null);
+      }
     });
 
     return () => {
