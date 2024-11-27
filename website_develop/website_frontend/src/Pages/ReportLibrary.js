@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, { useEffect, useRef,useState, useMemo ,useContext } from "react";
 import {
   Box,
   CircularProgress,
@@ -24,8 +24,8 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -36,9 +36,9 @@ import AddIcon from "@mui/icons-material/Add";
 import Header from "../Components/LibraryHeader";
 import LibraryNavigator from "../Components/LibraryNavigator";
 import { ThemeContext } from "../colorTheme/ThemeContext";
-import pdfIcon from "../Images/PDF.png";
-import emailIcon from "../Images/Email.png";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import pdfIcon from '../Images/PDF.png';
+import emailIcon from '../Images/Email.png'; 
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf"; 
 import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
 
 function ReportLibrary() {
@@ -46,7 +46,7 @@ function ReportLibrary() {
   const theme = useTheme();
 
   const [documents, setDocuments] = useState([]);
-  const [filteredDocuments, setFilteredDocuments] = useState([]);
+  //const [filteredDocuments, setFilteredDocuments] = useState([]);
   const [collapsed, setCollapsed] = useState(true);
   const [showFlaggedOnly, setShowFlaggedOnly] = useState(false);
   const [chartData, setChartData] = useState([]);
@@ -57,9 +57,11 @@ function ReportLibrary() {
   const [documentTypeData, setDocumentTypeData] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
   const [sortBy, setSortBy] = useState("date"); // Default is "date"
-  const [sortOrder, setSortOrder] = useState("newest to oldest");
+  const [sortOrder, setSortOrder] = useState("newest to oldest"); 
   const [readabilityData, setReadabilityData] = useState([]);
   const [riskTrends, setRiskTrends] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
 
   const chartThemeColors = {
     textColor: mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
@@ -83,37 +85,87 @@ function ReportLibrary() {
     documentRiskTrends: useRef(),
   };
 
-  const exportChartsToPDF = async () => {
-    const pdf = new jsPDF("p", "mm", "a4");
-    const chartKeys = Object.keys(chartRefs);
 
+  const exportChartsToPDF = async () => {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const chartKeys = Object.keys(chartRefs);
+    
     for (let i = 0; i < chartKeys.length; i++) {
       const key = chartKeys[i];
       const ref = chartRefs[key];
       const chartElement = ref.current;
-
+  
       if (chartElement) {
         const canvas = await html2canvas(chartElement, { scale: 2 });
-        const imgData = canvas.toDataURL("image/png");
-
+        const imgData = canvas.toDataURL('image/png');
+  
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
+  
         if (i > 0) {
           pdf.addPage();
         }
-
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       }
     }
-
-    pdf.save("charts.pdf");
+  
+    pdf.save('charts.pdf');
   };
+
+
+const filteredDocuments = useMemo(() => {
+  let docs = [...documents];
+
+  // Apply flag filter
+  if (showFlaggedOnly) {
+    docs = docs.filter((doc) => doc.flagStatus);
+  }
+
+  // Apply search query filter
+  if (searchQuery) {
+    docs = docs.filter(
+      (doc) =>
+        doc.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doc.documentType.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
+
+  // Apply sorting
+  if (sortBy === "risk score") {
+    docs.sort((a, b) => {
+      if (sortOrder === "high to low") {
+        return b.overallScore - a.overallScore;
+      } else {
+        return a.overallScore - b.overallScore;
+      }
+    });
+  } else if (sortBy === "date") {
+    docs.sort((a, b) => {
+      const dateA = new Date(a.reportDate || 0);
+      const dateB = new Date(b.reportDate || 0);
+
+      if (sortOrder === "newest to oldest") {
+        return dateB - dateA; // Descending order
+      } else {
+        return dateA - dateB; // Ascending order
+      }
+    });
+  }
+
+  return docs;
+}, [documents, showFlaggedOnly, searchQuery, sortBy, sortOrder]);
+
+useEffect(() => {
+  setDisplayedDocuments(filteredDocuments);
+}, [filteredDocuments]);
+
+  
 
   useEffect(() => {
     let docs = [...filteredDocuments];
-
+  
     if (sortBy === "risk score") {
       docs.sort((a, b) => {
         if (sortOrder === "high to low") {
@@ -126,7 +178,7 @@ function ReportLibrary() {
       docs.sort((a, b) => {
         const dateA = new Date(a.reportDate || 0); // Use reportDate and handle missing dates
         const dateB = new Date(b.reportDate || 0);
-
+  
         if (sortOrder === "newest to oldest") {
           return dateB - dateA; // Descending order
         } else {
@@ -134,9 +186,10 @@ function ReportLibrary() {
         }
       });
     }
-
+  
     setDisplayedDocuments(docs); // Update the displayed documents
   }, [filteredDocuments, sortBy, sortOrder]);
+  
 
   const computeRiskTrends = (documents) => {
     const monthlyRiskScores = {};
@@ -200,98 +253,95 @@ function ReportLibrary() {
   useEffect(() => {
     fetchUserInfo();
   }, []);
-
+  
   async function fetchUserInfo() {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("https://wrapcapstone.com/getUserInfo", {
-        method: "POST",
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://wrapcapstone.com/getUserInfo', {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
-
+  
       if (!response.ok) {
-        throw new Error("Failed to fetch user information");
+        throw new Error('Failed to fetch user information');
       }
-
+  
       const { userInfo } = await response.json();
       setUserInfo(userInfo);
     } catch (error) {
-      console.error("Error fetching user information:", error);
+      console.error('Error fetching user information:', error);
     }
   }
 
-  async function emailChartsToUser() {
-    if (!userInfo) {
-      console.error("User info not available");
-      return;
-    }
+async function emailChartsToUser() {
+  if (!userInfo) {
+    console.error('User info not available');
+    return;
+  }
 
-    const pdf = new jsPDF("p", "mm", "a4");
-    const chartKeys = Object.keys(chartRefs);
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const chartKeys = Object.keys(chartRefs);
 
-    for (let i = 0; i < chartKeys.length; i++) {
-      const key = chartKeys[i];
-      const ref = chartRefs[key];
-      const chartElement = ref.current;
+  for (let i = 0; i < chartKeys.length; i++) {
+    const key = chartKeys[i];
+    const ref = chartRefs[key];
+    const chartElement = ref.current;
 
-      if (chartElement) {
-        // Wait a moment to ensure rendering is complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
+    if (chartElement) {
+      // Wait a moment to ensure rendering is complete
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-        const canvas = await html2canvas(chartElement, {
-          scale: 2,
-          useCORS: true,
-        });
-        const imgData = canvas.toDataURL("image/png");
+      const canvas = await html2canvas(chartElement, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
 
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        if (i > 0) {
-          pdf.addPage();
-        }
-
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      } else {
-        console.warn(`Chart element for ${key} is not available.`);
+      if (i > 0) {
+        pdf.addPage();
       }
-    }
 
-    // Get the PDF as a data URI and extract the base64 string
-    const pdfDataUri = pdf.output("datauristring");
-    const base64Pdf = pdfDataUri.split(",")[1];
-
-    // Send the PDF to the server
-    try {
-      const response = await fetch("/api/send-graphs-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: userInfo.email,
-          name: userInfo.firstName + " " + userInfo.lastName,
-          pdfData: base64Pdf,
-        }),
-      });
-
-      if (response.ok) {
-        console.log("Email sent successfully");
-        alert("Email sent successfully");
-      } else {
-        const errorData = await response.json();
-        console.error("Error sending email:", errorData.message);
-        alert("Error sending email: " + errorData.message);
-      }
-    } catch (error) {
-      console.error("Error sending email:", error);
-      alert("Error sending email: " + error.message);
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    } else {
+      console.warn(`Chart element for ${key} is not available.`);
     }
   }
+
+  // Get the PDF as a data URI and extract the base64 string
+  const pdfDataUri = pdf.output('datauristring');
+  const base64Pdf = pdfDataUri.split(',')[1];
+
+  // Send the PDF to the server
+  try {
+    const response = await fetch('/api/send-graphs-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: userInfo.email,
+        name: userInfo.firstName + " " + userInfo.lastName,
+        pdfData: base64Pdf,
+      }),
+    });
+
+    if (response.ok) {
+      console.log('Email sent successfully');
+      alert('Email sent successfully');
+    } else {
+      const errorData = await response.json();
+      console.error('Error sending email:', errorData.message);
+      alert('Error sending email: ' + errorData.message);
+    }
+  } catch (error) {
+    console.error('Error sending email:', error);
+    alert('Error sending email: ' + error.message);
+  }
+}
 
   const getColor = (score) => {
     if (mode === "dark") {
@@ -356,22 +406,15 @@ function ReportLibrary() {
         },
         body: JSON.stringify({ docID: documentID }),
       });
-
+  
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-
+  
       const data = await response.json();
       if (data.success) {
         setDocuments((prevDocuments) =>
           prevDocuments.map((doc) =>
-            doc.DocumentID === documentID
-              ? { ...doc, flagStatus: !doc.flagStatus }
-              : doc
-          )
-        );
-        setFilteredDocuments((prevFiltered) =>
-          prevFiltered.map((doc) =>
             doc.DocumentID === documentID
               ? { ...doc, flagStatus: !doc.flagStatus }
               : doc
@@ -384,6 +427,8 @@ function ReportLibrary() {
       console.error("Error toggling flag:", error);
     }
   };
+  
+  
 
   const handleDocumentDownload = async (documentID) => {
     console.log("Downloading document with ID:", documentID);
@@ -415,19 +460,14 @@ function ReportLibrary() {
   };
 
   const toggleFlaggedFilter = () => {
-    if (showFlaggedOnly) {
-      setFilteredDocuments(documents);
-    } else {
-      const flaggedDocs = documents.filter((doc) => doc.flagStatus);
-      setFilteredDocuments(flaggedDocs);
-    }
     setShowFlaggedOnly((prev) => !prev);
   };
+  
 
-  const handleFilterChange = (filteredDocs) => {
-    setFilteredDocuments(filteredDocs);
+  const handleFilterChange = (query) => {
+    setSearchQuery(query);
   };
-
+  
   const handleDeleteDocument = async (documentID, flagStatus) => {
     try {
       if (flagStatus) {
@@ -455,7 +495,7 @@ function ReportLibrary() {
           (doc) => doc.DocumentID !== documentID
         );
         setDocuments(updatedDocuments);
-        setFilteredDocuments(updatedDocuments);
+        //setFilteredDocuments(updatedDocuments);
       } else {
         console.error("Failed to delete document:", data.message);
       }
@@ -468,22 +508,19 @@ function ReportLibrary() {
     async function fetchDocuments() {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          "https://wrapcapstone.com/user-documents",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
+        const response = await fetch("https://wrapcapstone.com/user-documents", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
         }
         const data = await response.json();
-
+  
         const riskCategories = ["Legal", "Financial", "Data"];
         const totalRiskScores = { Legal: 0, Financial: 0, Data: 0 };
         let documentCount = 0;
@@ -491,13 +528,14 @@ function ReportLibrary() {
           Low: 0,
           Moderate: 0,
           High: 0,
+          Critical: 0, // Include 'Critical' if needed
         };
-
+  
         const documentsWithRisk = await Promise.all(
           data.map(async (doc) => {
             let overallRiskLevel = "Low";
             let overallScore = 0;
-
+  
             if (typeof doc.risky === "string") {
               try {
                 doc.risky = JSON.parse(doc.risky);
@@ -505,7 +543,7 @@ function ReportLibrary() {
                 console.error("Error parsing risky field:", e);
               }
             }
-
+  
             if (doc.risky && Array.isArray(doc.risky)) {
               doc.risky.forEach((risk) => {
                 const category = Object.keys(risk)[0];
@@ -521,9 +559,9 @@ function ReportLibrary() {
               else if (overallScore > 2) overallRiskLevel = "Moderate";
               else overallRiskLevel = "Low";
             }
-
+  
             riskLevelCounts[overallRiskLevel] += 1;
-
+  
             const flagResponse = await fetch(
               "https://wrapcapstone.com/getFlagOfDoc",
               {
@@ -532,112 +570,82 @@ function ReportLibrary() {
                   Authorization: `Bearer ${token}`,
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ docID: doc.DocumentID }),
+                body: JSON.stringify({ documentID: doc.DocumentID }), // Use documentID
               }
             );
-
+  
             const flagData = await flagResponse.json();
+            console.log("docID is " + doc.DocumentID + "Flag data:" + flagData.flag);
             const flagStatus = flagData.success ? flagData.flag : false;
-
+  
             documentCount += 1;
-
+  
             return { ...doc, overallRiskLevel, overallScore, flagStatus };
           })
         );
-
+  
         setDocuments(documentsWithRisk);
-        setFilteredDocuments(documentsWithRisk);
-
+        
+        // Proceed with other computations using documentsWithRisk
         const documentTypeCounts = {};
 
-        documentsWithRisk.forEach((doc) => {
-          const type = doc.documentType || "Unknown";
+documentsWithRisk.forEach((doc) => {
+  const docType = doc.documentType || 'Unknown';
+  if (documentTypeCounts[docType]) {
+    documentTypeCounts[docType] += 1;
+  } else {
+    documentTypeCounts[docType] = 1;
+  }
+});
 
-          if (documentTypeCounts[type]) {
-            documentTypeCounts[type] += 1;
-          } else {
-            documentTypeCounts[type] = 1;
-          }
-        });
+const documentTypeDataArray = Object.keys(documentTypeCounts).map((type) => ({
+  documentType: type,
+  count: documentTypeCounts[type],
+}));
 
-        // Convert counts to an array suitable for the chart
-        const documentTypeDataArray = Object.keys(documentTypeCounts).map(
-          (type) => ({
-            documentType: type,
-            count: documentTypeCounts[type],
-          })
-        );
+setDocumentTypeData(documentTypeDataArray);
+console.log('Document Type Data:', documentTypeDataArray);
+// Compute readability data
+const sortedDocuments = [...documentsWithRisk].sort((a, b) => {
+  const readabilityA = parseFloat(a.readability) || 0;
+  const readabilityB = parseFloat(b.readability) || 0;
+  return readabilityB - readabilityA;
+});
 
-        // Save the data to state
-        setDocumentTypeData(documentTypeDataArray);
+// Take the first 6 documents after sorting
+const documentsToProcess = sortedDocuments.slice(0, 6);
 
-       // Sort documents by readability score in descending order
-        const sortedDocuments = [...documentsWithRisk].sort((a, b) => {
-          const readabilityA = parseFloat(a.readability) || 0;
-          const readabilityB = parseFloat(b.readability) || 0;
-          return readabilityB - readabilityA;
-        });
+// Convert counts to an array suitable for the chart
+const readabilityDataArray = documentsToProcess.map((doc) => ({
+  companyName: doc.companyName || "Unnamed Report",
+  readability: parseFloat(doc.readability) || 0,
+}));
 
-        // Take the first 6 documents after sorting
-        const documentsToProcess = sortedDocuments.slice(0, 6);
+setReadabilityData(readabilityDataArray);
 
-        // Convert counts to an array suitable for the chart
-        const readabilityDataArray = documentsToProcess.map((doc) => ({
-          companyName: doc.companyName || "Unnamed Report",
-          readability: parseFloat(doc.readability) || 0,
-        }));
-
-        setReadabilityData(readabilityDataArray);
-
-
-        const documentsWithRisks = await Promise.all(
-          data.map(async (doc) => {
-            let overallScore = 0;
-
-            if (typeof doc.risky === "string") {
-              try {
-                doc.risky = JSON.parse(doc.risky);
-              } catch (e) {
-                console.error("Error parsing risky field:", e);
-              }
-            }
-
-            if (doc.risky && Array.isArray(doc.risky)) {
-              doc.risky.forEach((risk) => {
-                const category = Object.keys(risk)[0];
-                const score = parseFloat(risk[category].Score);
-                if (category === "Overall") {
-                  overallScore = score;
-                }
-              });
-            }
-
-            return { ...doc, overallScore };
-          })
-        );
-
-        setDocuments(documentsWithRisks);
-
+setReadabilityData(readabilityDataArray);
+console.log('Readability Data:', readabilityDataArray);
         // Compute risk trends directly
-        const trends = computeRiskTrends(documentsWithRisks);
+        const trends = computeRiskTrends(documentsWithRisk);
         setRiskTrends(trends);
-
+        console.log('Risk Trends Data:', trends);
+        // Compute reports per month
         const reportsPerMonth = {};
-
+  
         documentsWithRisk.forEach((doc) => {
           const date = new Date(doc.reportDate);
           const month = date.toLocaleString("default", {
             month: "short",
             year: "numeric",
           });
-
+  
           if (reportsPerMonth[month]) {
             reportsPerMonth[month] += 1;
           } else {
             reportsPerMonth[month] = 1;
           }
         });
-
+  
         const chartDataArray = Object.keys(reportsPerMonth)
           .map((month) => ({
             month,
@@ -648,33 +656,33 @@ function ReportLibrary() {
             const dateB = new Date(b.month);
             return dateA - dateB;
           });
-
+  
         setChartData(chartDataArray);
-
+  
         const averageRiskScores = riskCategories.map((category) => ({
           category,
           averageScore:
             documentCount > 0 ? totalRiskScores[category] / documentCount : 0,
         }));
-
+  
         setRiskScoreData(averageRiskScores);
-
-        const riskLevelDataArray = Object.keys(riskLevelCounts).map(
-          (level) => ({
-            name: level,
-            value: riskLevelCounts[level],
-          })
-        );
-
+  
+        const riskLevelDataArray = Object.keys(riskLevelCounts).map((level) => ({
+          name: level,
+          value: riskLevelCounts[level],
+        }));
+  
         setRiskLevelData(riskLevelDataArray);
+  
+        // Proceed with other state updates like documentTypeData, readabilityData, etc.
       } catch (error) {
         console.error("Error fetching documents:", error);
       }
     }
-
+  
     fetchDocuments();
   }, []);
-
+  
   return (
     <Box
       sx={{
@@ -698,6 +706,7 @@ function ReportLibrary() {
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
       />
+      
 
       <Grid container spacing={3} sx={{ maxWidth: "1200px", width: "100%" }}>
         <Grid item xs={collapsed ? 1 : 2}>
@@ -925,123 +934,126 @@ function ReportLibrary() {
               )}
             </Grid>
 
-            {/* Reports Generated Per Month */}
-            <Grid item xs={12} md={4}>
-              {/* Export to PDF Button */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  gap: "16px",
-                  marginBottom: "16px",
-                }}
-              >
-                {/* PDF Download Button */}
-                <IconButton
-                  onClick={exportChartsToPDF}
-                  aria-label="Export Charts to PDF"
-                  sx={{
-                    color: "primary.main",
-                    "&:hover": {
-                      color: "primary.dark",
-                    },
-                  }}
-                >
-                  <PictureAsPdfIcon fontSize="large" />
-                </IconButton>
 
-                {/* Email Forward Button */}
-                <IconButton
-                  onClick={emailChartsToUser}
-                  aria-label="Email Charts"
+              {/* Reports Generated Per Month */}
+            <Grid item xs={12} md={4}>
+           {/* Export to PDF Button */}
+           <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end", 
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "16px", 
+        }}
+      >
+        {/* PDF Download Button */}
+        <IconButton
+          onClick={exportChartsToPDF}
+          aria-label="Export Charts to PDF"
+          sx={{
+            color: "primary.main",
+            "&:hover": {
+              color: "primary.dark", 
+            },
+          }}
+        >
+          <PictureAsPdfIcon  fontSize="large" />
+        </IconButton>
+
+        {/* Email Forward Button */}
+        <IconButton
+          onClick={emailChartsToUser}
+          aria-label="Email Charts"
+          sx={{
+            color: "primary.main", 
+            "&:hover": {
+              color: "primary.dark", 
+            },
+          }}
+        >
+          <ForwardToInboxIcon fontSize="large" />
+        </IconButton>
+      </Box>
+                <Box
+                  ref={chartRefs.reportsPerMonth}
                   sx={{
-                    color: "primary.main",
-                    "&:hover": {
-                      color: "primary.dark",
-                    },
-                  }}
-                >
-                  <ForwardToInboxIcon fontSize="large" />
-                </IconButton>
-              </Box>
-              <Box
-                ref={chartRefs.reportsPerMonth}
-                sx={{
-                  backgroundColor:
-                    mode === "dark"
-                      ? "#2D2D2D"
-                      : theme.palette.background.paper,
-                  padding: "20px",
-                  borderRadius: "10px",
-                  boxShadow:
-                    mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
-                  marginBottom: "20px",
-                  color:
-                    mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  sx={{
+                    backgroundColor:
+                      mode === "dark"
+                        ? "#2D2D2D"
+                        : theme.palette.background.paper,
+                    padding: "20px",
+                    borderRadius: "10px",
+                    boxShadow:
+                      mode === "dark" ? "0 4px 12px rgba(0, 0, 0, 0.5)" : 3,
                     marginBottom: "20px",
-                    color: mode === "dark" ? "#FFFFFF" : "inherit",
-                    fontWeight: 600,
+                    color:
+                      mode === "dark" ? "#E0E0E0" : theme.palette.text.primary,
                   }}
-                >
-                  Reports Generated Per Month
-                </Typography>
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart
-                    data={chartData}
-                    style={{
-                      backgroundColor: chartThemeColors.backgroundColor,
+                 >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      marginBottom: "20px",
+                      color: mode === "dark" ? "#FFFFFF" : "inherit",
+                      fontWeight: 600,
                     }}
                   >
-                    <CartesianGrid stroke={chartThemeColors.gridColor} />
-                    <XAxis
-                      dataKey="month"
-                      stroke={chartThemeColors.textColor}
-                    />
-                    <YAxis
-                      allowDecimals={false}
-                      stroke={chartThemeColors.textColor}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor:
-                          chartThemeColors.tooltipBackgroundColor,
-                        color: chartThemeColors.tooltipTextColor,
-                        border: "none",
-                        borderRadius: "4px",
-                        boxShadow:
-                          mode === "dark"
-                            ? "0 4px 12px rgba(0, 0, 0, 0.5)"
-                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    Reports Generated Per Month
+                  </Typography>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart
+                      data={chartData}
+                      style={{
+                        backgroundColor: chartThemeColors.backgroundColor,
                       }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="reports"
-                      stroke={
-                        mode === "dark" ? "#90CAF9" : theme.palette.primary.main
-                      }
-                      strokeWidth={2}
-                      dot={{
-                        r: 3,
-                        fill:
+                    >
+                      <CartesianGrid stroke={chartThemeColors.gridColor} />
+                      <XAxis
+                        dataKey="month"
+                        stroke={chartThemeColors.textColor}
+                      />
+                      <YAxis
+                        allowDecimals={false}
+                        stroke={chartThemeColors.textColor}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor:
+                            chartThemeColors.tooltipBackgroundColor,
+                          color: chartThemeColors.tooltipTextColor,
+                          border: "none",
+                          borderRadius: "4px",
+                          boxShadow:
+                            mode === "dark"
+                              ? "0 4px 12px rgba(0, 0, 0, 0.5)"
+                              : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="reports"
+                        stroke={
                           mode === "dark"
                             ? "#90CAF9"
-                            : theme.palette.primary.main,
-                      }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Box>
+                            : theme.palette.primary.main
+                        }
+                        strokeWidth={2}
+                        dot={{
+                          r: 3,
+                          fill:
+                            mode === "dark"
+                              ? "#90CAF9"
+                              : theme.palette.primary.main,
+                        }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </Box>
               {/* Average Risk Scores by Category */}
               <Box
-                ref={chartRefs.riskScores}
+               ref={chartRefs.riskScores}
                 sx={{
                   backgroundColor:
                     mode === "dark"
@@ -1108,7 +1120,7 @@ function ReportLibrary() {
               </Box>
               {/* Risk Level Distribution */}
               <Box
-                ref={chartRefs.riskLevelDistribution}
+               ref={chartRefs.riskLevelDistribution}
                 sx={{
                   backgroundColor:
                     mode === "dark"
@@ -1141,7 +1153,7 @@ function ReportLibrary() {
                       cx="50%"
                       cy="50%"
                       outerRadius={70}
-                      label={({ name, percent }) => `${name}`}
+                      label={({ name, percent }) => (percent > 0 ? `${name}` : '')}
                       labelLine={false}
                       stroke={mode === "dark" ? "#2D2D2D" : "#ffffff"}
                       strokeWidth={2}
@@ -1280,7 +1292,7 @@ function ReportLibrary() {
               </Box>
               {/* readability */}
               <Box
-                ref={chartRefs.readabilityScore}
+               ref={chartRefs.readabilityScore}
                 sx={{
                   backgroundColor:
                     mode === "dark"
@@ -1318,9 +1330,9 @@ function ReportLibrary() {
                       dataKey="companyName" // X-axis will now display report names
                       stroke={chartThemeColors.textColor}
                       interval={0}
-                      tick={{ fontSize: 12, angle: -30, textAnchor: "end" }}
+                      tick={{ fontSize: 12, angle: 45, textAnchor: "start" }}
                       tickFormatter={(name) =>
-                        name.length > 15 ? `${name.slice(0, 25)}...` : name
+                        name.length > 30 ? `${name.slice(0, 30)}...` : name
                       }
                     />
                     <YAxis
@@ -1357,7 +1369,7 @@ function ReportLibrary() {
               </Box>
               {/* Risk Trends */}
               <Box
-                ref={chartRefs.documentRiskTrends}
+              ref={chartRefs.documentRiskTrends}
                 sx={{
                   backgroundColor:
                     mode === "dark"
