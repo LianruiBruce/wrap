@@ -1,5 +1,4 @@
 let isProcessing = false;
-// This is rule IDs for non-essential cookies -- Lianrui
 
 const keepAlive = ((i) => (state) => {
   if (state && !i) {
@@ -24,14 +23,21 @@ chrome.runtime.onInstalled.addListener(() => {
       detectLegalDoc: true,
       generateReport: true,
       showNotification: true,
-      // safeMode: true,
       termsConditions: true,
       privacyPolicy: true,
       contractAgreement: true,
       cookiePolicy: true,
+      subscriptionAgreement: true,
+      purchaseTerms: true,
+      rentalAgreement: true,
+      warrantyPolicy: true,
+      liabilityWaiver: true,
+      employmentAgreement: true,
+      accessPolicy: true,
+      disputeResolution: true,
     },
     () => {
-      console.log("Default settings saved.");
+      console.log("Settings initialized");
     }
   );
 
@@ -70,7 +76,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (tab.url && tab.url.startsWith("https://wrapcapstone.com")) {
     console.log("Skipping legal document detection for localhost:3000");
-    return; // Don't execute further if the URL matches localhost:3000
+    return;
   }
 
   checkTokenExpirationOnStartup((token) => {
@@ -393,11 +399,18 @@ function getCurrentSettings(callback) {
       "detectLegalDoc",
       "generateReport",
       "showNotification",
-      // "safeMode",
       "termsConditions",
       "privacyPolicy",
       "contractAgreement",
       "cookiePolicy",
+      "subscriptionAgreement",
+      "purchaseTerms",
+      "rentalAgreement",
+      "warrantyPolicy",
+      "liabilityWaiver",
+      "employmentAgreement",
+      "accessPolicy",
+      "disputeResolution",
     ],
     callback
   );
@@ -411,6 +424,14 @@ function getDetectSettings() {
         privacyPolicy: true,
         contractAgreement: true,
         cookiePolicy: true,
+        subscriptionAgreement: true,
+        purchaseTerms: true,
+        rentalAgreement: true,
+        warrantyPolicy: true,
+        liabilityWaiver: true,
+        employmentAgreement: true,
+        accessPolicy: true,
+        disputeResolution: true,
       },
       (settings) => {
         resolve(settings);
@@ -629,6 +650,9 @@ async function isLegalDocument(header, headers2, title, url) {
           "services agreement",
           "agreement of service",
           "user conditions",
+          "site terms",
+          "use agreement",
+          "terms of"
         ]
       : [],
     "privacy policy": settings.privacyPolicy
@@ -638,6 +662,9 @@ async function isLegalDocument(header, headers2, title, url) {
           "data privacy",
           "gdpr compliance",
           "privacy statement",
+          "privacy terms",
+          "data protection policy",
+          "privacy choices"
         ]
       : [],
     "contract agreement": settings.contractAgreement
@@ -647,10 +674,90 @@ async function isLegalDocument(header, headers2, title, url) {
           "end user license agreement",
           "eula",
           "service agreement",
+          "licensing terms",
+          "usage agreement",
         ]
       : [],
     "cookie policy": settings.cookiePolicy
-      ? ["cookie policy", "cookie notice", "use of cookies", "tracking policy"]
+      ? [
+        "cookie policy",
+        "cookie notice",
+        "use of cookies",
+        "tracking policy",
+        "cookie terms",
+        "cookie declaration",
+        "data usage",
+        "data collection",
+        "cookies permissions",
+        "data permissions"
+      ]
+      : [],
+    "subscription agreement": settings.subscriptionAgreement
+      ? [
+        "subscription terms",
+        "membership agreement",
+        "auto-renewal terms",
+        "recurring payment terms",
+        "subscription service agreement",
+      ]
+      : [],
+    "purchase terms": settings.purchaseTerms
+      ? [
+        "online purchase terms",
+        "refund policy",
+        "return policy",
+        "purchase agreement",
+        "sale terms",
+        "installment agreement",
+        "layaway terms",
+      ]
+      : [],
+    "rental agreement": settings.rentalAgreement
+      ? [
+        "rental terms",
+        "lease agreement",
+        "rental agreement",
+        "short-term rental policy",
+        "property rental agreement",
+      ]
+      : [],
+    "warranty policy": settings.warrantyPolicy
+      ? [
+        "warranty terms",
+        "service guarantee",
+        "product warranty",
+        "extended warranty",
+      ]
+      : [],
+    "liability waiver": settings.liabilityWaiver
+      ? [
+        "liability waiver",
+        "indemnity agreement",
+        "assumption of risk",
+        "liability release",
+      ]
+      : [],
+    "employment agreement": settings.employmentAgreement
+      ? [
+        "contractor agreement",
+        "independent contractor terms",
+        "nda",
+        "freelance agreement",
+      ]
+      : [],
+    "access policy": settings.accessPolicy
+      ? [
+        "access terms",
+        "api use policy",
+        "facility access agreement",
+      ]
+      : [],
+    "dispute resolution": settings.disputeResolution
+      ? [
+        "arbitration agreement",
+        "dispute resolution policy",
+        "conflict resolution terms",
+      ]
       : [],
   };
 
