@@ -470,6 +470,7 @@ export default function Content({ isDocumentSettingsClicked }) {
       const formattedSectionSummary = section_summary.map((section, index) => {
         const key = Object.keys(section)[0];
         const summary = section[key].Summary;
+        console.log("Section Summary:" + summary);
 
         return { key, summary };
       });
