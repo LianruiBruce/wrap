@@ -508,8 +508,8 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                   mx: "auto",
                 }}
               >
-                AI-powered legal document analysis that helps you understand
-                terms and conditions in seconds
+                AI and NLP models powered legal document analysis that helps you
+                understand terms and conditions in seconds
               </Typography>
               <Box
                 sx={{
@@ -722,7 +722,8 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                       sx={{ mb: 4, color: theme.palette.text.secondary }}
                     >
                       Simply click the Wrap extension icon when viewing any
-                      legal document. Our AI provides instant analysis with:
+                      legal document. Our NLP models provide instant analysis
+                      with:
                     </Typography>
                     <Box
                       sx={{ display: "flex", flexDirection: "column", gap: 2 }}
@@ -911,10 +912,10 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                           </Typography>
                         </Box>
                         <Typography variant="body2" color="textSecondary">
-                          "Our AI provides intelligent summaries that highlight
-                          the most important aspects of each document section,
-                          helping you understand complex legal language
-                          quickly."
+                          "Our NLP models and AI provide intelligent summaries
+                          that highlight the most important aspects of each
+                          document section, helping you understand complex legal
+                          language quickly."
                         </Typography>
                       </CardContent>
                     </Card>
