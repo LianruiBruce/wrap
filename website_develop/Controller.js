@@ -270,6 +270,7 @@ async function generateReportByPDF(pdfBuffer, text, userSettings, io, userID) {
     console.log("Title is:", title);
     const documentDate = new Date(title.date);
     const formattedDate = isNaN(documentDate) ? null : documentDate;
+    const readability = title.readability;
 
     const oldDocument = await Document.findOne({
       companyName: title.company,
@@ -317,7 +318,8 @@ async function generateReportByPDF(pdfBuffer, text, userSettings, io, userID) {
         title.category,
         section_summary,
         risk_assessment,
-        sections
+        sections,
+        readability,
       );
 
       documentID = document._id;
