@@ -8,6 +8,7 @@ import {
   Container,
   Grid,
   Card,
+  CardContent,
   Box,
   Chip,
   IconButton,
@@ -16,6 +17,8 @@ import { styled } from "@mui/system";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import extensionResultImage from "../Images/screenshot/extension_result.png";
+import mainPageImage from "../Images/screenshot/mainpage.png";
 
 // Import all required icons
 import ExtensionIcon from "@mui/icons-material/Extension";
@@ -683,6 +686,240 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                     </Box>
                   </Grid>
                 ))}
+              </Grid>
+            </StyledContainer>
+          </PageSection>
+
+          {/* Demo Section */}
+          {/* Demo Section */}
+          <PageSection>
+            <StyledContainer maxWidth="lg">
+              <Typography variant="h2" align="center" sx={{ mb: 2 }}>
+                See Wrap in Action
+              </Typography>
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{
+                  mb: 8,
+                  color: theme.palette.text.secondary,
+                  maxWidth: "800px",
+                  mx: "auto",
+                }}
+              >
+                Experience how Wrap transforms complex legal documents into
+                clear, actionable insights
+              </Typography>
+
+              {/* Extension Analysis Demo */}
+              <Grid container spacing={6} alignItems="center" sx={{ mb: 12 }}>
+                <Grid item xs={12} md={6}>
+                  <Box sx={{ position: "relative", zIndex: 1 }}>
+                    <Typography variant="h4" gutterBottom>
+                      Quick Document Analysis
+                    </Typography>
+                    <Typography
+                      sx={{ mb: 4, color: theme.palette.text.secondary }}
+                    >
+                      Simply click the Wrap extension icon when viewing any
+                      legal document. Our AI provides instant analysis with:
+                    </Typography>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      {[
+                        "Readability score for document complexity",
+                        "Risk assessment across multiple dimensions",
+                        "Average 10-20 seconds to complete analysis",
+                      ].map((text, index) => (
+                        <Box
+                          key={index}
+                          sx={{ display: "flex", gap: 2, alignItems: "center" }}
+                        >
+                          <Box
+                            sx={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: "50%",
+                              bgcolor: "#61DAFB",
+                            }}
+                          />
+                          <Typography>{text}</Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                    <Card
+                      sx={{
+                        mt: 4,
+                        border: `1px solid ${theme.palette.divider}`,
+                      }}
+                    >
+                      <CardContent>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mb: 2,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: "50%",
+                              bgcolor: "green",
+                            }}
+                          />
+                          <Typography variant="subtitle2" color="textSecondary">
+                            Active Analysis
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="textSecondary">
+                          "Wrap automatically detects legal documents and begins
+                          analysis as soon as you navigate to them. No
+                          copy-pasting required!"
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Card
+                    sx={{
+                      overflow: "hidden",
+                      boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
+                      borderRadius: "24px",
+                      maxWidth: "400px", // Limit width
+                      mx: "auto", // Center the card
+                      backgroundColor: "white",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        p: 3,
+                        backgroundColor: theme.palette.background.paper,
+                      }}
+                    >
+                      <img
+                        src={extensionResultImage}
+                        alt="Wrap extension analysis"
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          display: "block",
+                          borderRadius: "12px",
+                        }}
+                      />
+                    </Box>
+                  </Card>
+                </Grid>
+              </Grid>
+
+              {/* Detailed Report Demo */}
+              <Grid container spacing={6} alignItems="center">
+                <Grid item xs={12} md={6} sx={{ order: { xs: 2, md: 1 } }}>
+                  <Card
+                    sx={{
+                      overflow: "hidden",
+                      boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
+                      borderRadius: "24px",
+                      maxWidth: "600px", // Increased max-width for report
+                      mx: "auto",
+                      backgroundColor: "white",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        p: 3,
+                        backgroundColor: theme.palette.background.paper,
+                      }}
+                    >
+                      <img
+                        src={mainPageImage}
+                        alt="Wrap detailed report"
+                        style={{
+                          width: "100%",
+                          height: "auto",
+                          display: "block",
+                          borderRadius: "12px",
+                        }}
+                      />
+                    </Box>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={6} sx={{ order: { xs: 1, md: 2 } }}>
+                  <Box sx={{ position: "relative", zIndex: 1 }}>
+                    <Typography variant="h4" gutterBottom>
+                      Comprehensive Reports
+                    </Typography>
+                    <Typography
+                      sx={{ mb: 4, color: theme.palette.text.secondary }}
+                    >
+                      Get detailed insights with our comprehensive report view.
+                      Each analysis includes:
+                    </Typography>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      {[
+                        "Section-by-section breakdown with summaries",
+                        "Important clauses and obligations highlighted",
+                        "Visual risk indicators for quick assessment",
+                      ].map((text, index) => (
+                        <Box
+                          key={index}
+                          sx={{ display: "flex", gap: 2, alignItems: "center" }}
+                        >
+                          <Box
+                            sx={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: "50%",
+                              bgcolor: "#6B4FBB",
+                            }}
+                          />
+                          <Typography>{text}</Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                    <Card
+                      sx={{
+                        mt: 4,
+                        border: `1px solid ${theme.palette.divider}`,
+                      }}
+                    >
+                      <CardContent>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mb: 2,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: "50%",
+                              bgcolor: "#6B4FBB",
+                            }}
+                          />
+                          <Typography variant="subtitle2" color="textSecondary">
+                            Smart Summary
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="textSecondary">
+                          "Our AI provides intelligent summaries that highlight
+                          the most important aspects of each document section,
+                          helping you understand complex legal language
+                          quickly."
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                </Grid>
               </Grid>
             </StyledContainer>
           </PageSection>
