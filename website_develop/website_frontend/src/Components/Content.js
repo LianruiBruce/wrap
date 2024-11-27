@@ -44,6 +44,7 @@ export default function Content({ isDocumentSettingsClicked }) {
 
   // New state variable to store parsed document elements
   const [documentElements, setDocumentElements] = useState([]);
+  const currentDocumentIDRef = useRef(currentDocumentID);
 
   // Search-related state
   const [searchQuery, setSearchQuery] = useState("");
@@ -438,6 +439,12 @@ export default function Content({ isDocumentSettingsClicked }) {
   };
 
   useEffect(() => {
+    console.log("Updating currentDocumentIDRef.current to:", currentDocumentID);
+    currentDocumentIDRef.current = currentDocumentID;
+  }, [currentDocumentID]);
+
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
 
     const socket = io.connect("https://wrapcapstone.com/", {
@@ -493,10 +500,11 @@ export default function Content({ isDocumentSettingsClicked }) {
     });
 
     socket.on("documentDeleted", async (data) => {
+      console.log("Document deleted received:", data);
       const { documentID: deletedDocumentID } = data;
       console.log("current doc id is " + currentDocumentID);
       console.log("deleted doc id is " + deletedDocumentID);
-      if (currentDocumentID === deletedDocumentID) {
+      if (currentDocumentIDRef.current === deletedDocumentID) {
         console.log("Current document was deleted, clearing the report data.");
 
         // Clear all data fields to avoid bugs
