@@ -381,15 +381,16 @@ async function toggleFlag(userID, docID) {
   }
 }
 
+
 async function fetchFlag(userID, docID) {
   try {
-    const result = await getFlag(userID, docID);
-
+    const result = await getFlag(userID, docID); 
+    console.log("Result of fetching flag:", result);
     if (result.success) {
-      return result.flag;
+      return result.flag; 
     } else {
-      console.log(result.message);
-      return false;
+      console.log(result.message); 
+      return false; 
     }
   } catch (error) {
     console.error("Error fetching flag of document:", error);

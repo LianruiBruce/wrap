@@ -288,13 +288,22 @@ async function getNumOfUserDoc(userID) {
   }
 }
 
+// In getFlag function
 async function getFlag(userID, documentID) {
   try {
-    const userDoc = await userDocument.findOne({ userID, documentID }).exec();
+    console.log('In getFlag, userID:', userID, 'documentID:', documentID);
+
+    // Convert IDs to ObjectId
+
+
+    const userDoc = await userDocument.findOne({ userID: userID, documentID: documentID }).exec();
 
     if (!userDoc) {
+      console.error(`Document not found for userID ${userID} and documentID ${documentID}`);
       return { success: false, message: "Document not found for the user." };
     }
+    console.log('Found userDoc:', userDoc);
+    console.log('userDoc Flag is :', userDoc.flag);
     return { success: true, flag: userDoc.flag };
   } catch (error) {
     console.error("Error retrieving the flag:", error);
