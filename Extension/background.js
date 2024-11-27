@@ -73,8 +73,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     return; // Don't execute further if the URL matches localhost:3000
   }
 
-  chrome.storage.local.get("token", (result) => {
-    const token = result.token;
+  checkTokenExpirationOnStartup((token) => {
     if (token) {
       getCurrentSettings((settings) => {
         if (settings.detectLegalDoc && !isDuplicateRequest(tab, changeInfo)) {
@@ -323,9 +322,7 @@ chrome.runtime.onMessage.addListener(async function (
   if (message.type === "FETCH_REPORT") {
     const documentID = message.documentID;
 
-    chrome.storage.local.get("token", (result) => {
-      const token = result.token;
-
+    checkTokenExpirationOnStartup((token) => {
       if (!token) {
         console.error("Token not found. User might not be logged in.");
         getCurrentSettings(async (settings) => {
@@ -459,10 +456,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
   isProcessing = true;
 
   return new Promise((resolve, reject) => {
-    chrome.storage.local.get(["token", "reportInfo"], (result) => {
-      const token = result.token;
-      const reportData = result.reportInfo;
-
+    checkTokenExpirationOnStartup((token) => {
       if (!token) {
         console.error("Token not found. User might not be logged in.");
         getCurrentSettings(async (settings) => {
@@ -481,67 +475,70 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
         return;
       }
 
-      fetch("https://wrapcapstone.com/generate-report", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: text,
-          sections: sections,
-          company: reportData.company,
-          date: reportData.date,
-          category: reportData.category,
-          readability: reportData.readability,
-          textTags: textTags,
-          saveToDatabase: saveToDatabase,
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            if (response.status === 401) {
-              reject(new Error("Not logged in"));
-              return;
-            }
-            return response.json().then((errorData) => {
-              reject(
-                new Error(errorData.message || "Failed to generate report")
-              );
-            });
-          }
-          return response.json();
+      chrome.storage.local.get(["reportInfo"], (result) => {
+        const reportData = result.reportInfo;
+        fetch("https://wrapcapstone.com/generate-report", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: text,
+            sections: sections,
+            company: reportData.company,
+            date: reportData.date,
+            category: reportData.category,
+            readability: reportData.readability,
+            textTags: textTags,
+            saveToDatabase: saveToDatabase,
+          }),
         })
-        .then((data) => {
-          if (data.success) {
-            console.log(data.data.risk_assessment);
-            const documentID = data.documentID;
-            chrome.storage.local.set({ documentID: documentID }, () => {
-              console.log("Document ID stored:", documentID);
-            });
-            resolve(data);
-          } else {
-            reject(new Error("Failed to generate report"));
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error.message);
-          getCurrentSettings(async (settings) => {
-            if (settings.showNotification) {
-              chrome.notifications.create("generateReportError", {
-                type: "basic",
-                iconUrl: "icons/error.png",
-                title: "Error to Generate Report",
-                message: error.message,
-                priority: 1,
+          .then((response) => {
+            if (!response.ok) {
+              if (response.status === 401) {
+                reject(new Error("Not logged in"));
+                return;
+              }
+              return response.json().then((errorData) => {
+                reject(
+                  new Error(errorData.message || "Failed to generate report")
+                );
               });
             }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              console.log(data.data.risk_assessment);
+              const documentID = data.documentID;
+              chrome.storage.local.set({ documentID: documentID }, () => {
+                console.log("Document ID stored:", documentID);
+              });
+              resolve(data);
+            } else {
+              reject(new Error("Failed to generate report"));
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error.message);
+            getCurrentSettings(async (settings) => {
+              if (settings.showNotification) {
+                chrome.notifications.create("generateReportError", {
+                  type: "basic",
+                  iconUrl: "icons/error.png",
+                  title: "Error to Generate Report",
+                  message: error.message,
+                  priority: 1,
+                });
+              }
+            });
+            reject(error);
+          })
+          .finally(() => {
+            isProcessing = false;
           });
-          reject(error);
-        })
-        .finally(() => {
-          isProcessing = false;
-        });
+      });
     });
   });
 }
@@ -793,6 +790,28 @@ function handleTokenExpiration() {
         });
       }
     });
+  });
+}
+
+function checkTokenExpirationOnStartup(callback) {
+  chrome.storage.local.get(["token", "tokenExp"], (result) => {
+    const { token, tokenExp } = result;
+    if (!token || !tokenExp) {
+      console.log("No token found. Skipping expiration check.");
+      callback(null);
+      return;
+    }
+
+    const currentTime = Date.now();
+    if (currentTime >= tokenExp) {
+      console.log("Token already expired on startup.");
+      handleTokenExpiration();
+      callback(null);
+    } else {
+      console.log("Token is valid on startup. Scheduling expiration check.");
+      scheduleExpirationNotification(tokenExp);
+      callback(token);
+    }
   });
 }
 
