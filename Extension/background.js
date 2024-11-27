@@ -275,7 +275,7 @@ chrome.runtime.onMessage.addListener(async function (
   }
 
   if (message.type === "USER_LOGIN") {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
       const currentTab = tabs[0];
       const validURL = "https://wrapcapstone.com/";
 
@@ -283,21 +283,7 @@ chrome.runtime.onMessage.addListener(async function (
         const token = message.token;
         console.log("Token received:", token);
 
-        chrome.storage.local.set({ token }, () => {
-          chrome.action.setIcon({ path: "icons/Wrap.png" });
-          console.log("Token stored in chrome.storage.local");
-          getCurrentSettings(async (settings) => {
-            if (settings.showNotification) {
-              chrome.notifications.create("Login", {
-                type: "basic",
-                iconUrl: "icons/notification.png",
-                title: "Login Successfully",
-                message: "You have logged into the extension successfully!",
-                priority: 1,
-              });
-            }
-          });
-        });
+        await storeToken(token);
 
         sendResponse({ success: true });
       } else {
@@ -716,117 +702,97 @@ function isDuplicateRequest(tab, changeInfo) {
   return true;
 }
 
-// const MAX_DYNAMIC_RULES = 30000; // Theoretical max for dynamic rules
-// const BATCH_SIZE = 5000; // Adjusted batch size for loading rules
-// let currentBatchIndex = 0;
+async function storeToken(token) {
+  const expTime = parseTokenExpiration(token);
+  if (!expTime) {
+    console.error("Invalid token: cannot parse expiration.");
+    return;
+  }
 
-// // Function to update settings based on Safe Mode
-// function updateSettingsBasedOnSafeMode(safeMode) {
-//   const ruleFilePath = chrome.runtime.getURL("rules/ad_block_rules.json");
+  chrome.storage.local.set({ token, tokenExp: expTime }, () => {
+    console.log("Token and expiration time stored:", expTime);
 
-//   if (safeMode) {
-//     // Clear all existing dynamic rules before loading new ones
-//     clearAllDynamicRules().then(() => {
-//       fetch(ruleFilePath)
-//         .then((response) => response.json())
-//         .then((rules) => {
-//           const limitedRules = rules.slice(0, MAX_DYNAMIC_RULES);
-//           currentBatchIndex = 0;
-//           loadRulesInBatches(limitedRules);
-//         })
-//         .catch((error) => console.error("Failed to load rules from JSON:", error));
-//     });
-//   } else {
-//     clearAllDynamicRules().then(() => {
-//       console.log("All dynamic rules cleared upon exiting Safe Mode.");
-//       reloadActiveTab();
-//     });
-//   }
-// }
+    chrome.action.setIcon({ path: "icons/Wrap.png" });
+    getCurrentSettings(async (settings) => {
+      if (settings.showNotification) {
+        chrome.notifications.create("Login", {
+          type: "basic",
+          iconUrl: "icons/notification.png",
+          title: "Login Successfully",
+          message: "You have logged into the extension successfully!",
+          priority: 1,
+        });
+      }
+    });
 
-// // Helper function to load rules in batches
-// function loadRulesInBatches(rules) {
-//   const totalBatches = Math.ceil(rules.length / BATCH_SIZE);
+    scheduleExpirationNotification(expTime);
+  });
+}
 
-//   const batchInterval = setInterval(() => {
-//     if (currentBatchIndex >= totalBatches) {
-//       clearInterval(batchInterval);
-//       console.log("All batches loaded successfully.");
-//       return;
-//     }
+function parseTokenExpiration(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000;
+  } catch (error) {
+    console.error("Failed to parse token expiration:", error);
+    return null;
+  }
+}
 
-//     const start = currentBatchIndex * BATCH_SIZE;
-//     const batch = rules.slice(start, start + BATCH_SIZE);
+function scheduleExpirationNotification(expTime) {
+  const currentTime = Date.now();
+  const notifyBeforeMs = 5 * 60 * 1000;
+  const timeUntilNotify = expTime - currentTime - notifyBeforeMs;
+  const timeExp = expTime - currentTime;
 
-//     chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
-//       const currentRuleCount = existingRules.length;
-//       const remainingCapacity = MAX_DYNAMIC_RULES - currentRuleCount;
+  if (timeUntilNotify > 0) {
+    setTimeout(() => {
+      getCurrentSettings(async (settings) => {
+        if (settings.showNotification) {
+          chrome.notifications.create("tokenExpiring", {
+            type: "basic",
+            iconUrl: "icons/warning.png",
+            title: "Token Expiring Soon",
+            message: "Your session token will expire in 5 minutes. Please log in again.",
+            priority: 1,
+          });
+        }
+      });
+      console.log("Notification scheduled for token expiration.");
+    }, timeUntilNotify);
 
-//       if (remainingCapacity <= 0) {
-//         console.warn("Cannot add more rules, dynamic rule limit reached.");
-//         clearInterval(batchInterval);
-//         return;
-//       }
+    setTimeout(() => {
+      handleTokenExpiration();
+    }, timeUntilNotify + notifyBeforeMs);
 
-//       const adjustedBatch = batch.slice(0, remainingCapacity);
+  }
+  else if (timeExp < 0)
+  {
+    console.warn("Token will expire very soon or already expired. Immediate handling triggered.");
+    handleTokenExpiration();
+  }
+}
 
-//       chrome.declarativeNetRequest.updateDynamicRules(
-//         {
-//           removeRuleIds: [],
-//           addRules: adjustedBatch,
-//         },
-//         () => {
-//           if (chrome.runtime.lastError) {
-//             console.error("Error adding dynamic rules:", chrome.runtime.lastError);
-//             clearInterval(batchInterval); // Stop if an error occurs
-//           } else {
-//             console.log(`Batch ${currentBatchIndex + 1} added with ${adjustedBatch.length} rules.`);
-//             currentBatchIndex++;
-//           }
-//         }
-//       );
-//     });
-//   }, 1000); // Adjust interval time if necessary
-// }
+function handleTokenExpiration() {
 
-// // Clear all dynamic rules
-// function clearAllDynamicRules() {
-//   return new Promise((resolve) => {
-//     chrome.declarativeNetRequest.getDynamicRules((rules) => {
-//       const ruleIds = rules.map((rule) => rule.id);
-//       chrome.declarativeNetRequest.updateDynamicRules(
-//         { removeRuleIds: ruleIds },
-//         () => {
-//           if (chrome.runtime.lastError) {
-//             console.error("Error clearing dynamic rules:", chrome.runtime.lastError);
-//           } else {
-//             console.log("All dynamic rules cleared.");
-//           }
-//           resolve();
-//         }
-//       );
-//     });
-//   });
-// }
+  chrome.storage.local.remove(["token", "tokenExp"], () => {
+    console.log("Token and related data removed from storage.");
 
-// // Helper function to reload the active tab
-// function reloadActiveTab() {
-//   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-//     if (tabs.length > 0) {
-//       chrome.tabs.reload(tabs[0].id);
-//     }
-//   });
-// }
+    chrome.action.setIcon({ path: "icons/Wrap_Red.png" }, () => {
+      console.log("Extension icon updated to Wrap_Red.png.");
+    });
 
-// // Initialize settings based on Safe Mode
-// getCurrentSettings((settings) =>
-//   updateSettingsBasedOnSafeMode(settings.safeMode)
-// );
+    getCurrentSettings(async (settings) => {
+      if (settings.showNotification) {
+        chrome.notifications.create("tokenExpired", {
+          type: "basic",
+          iconUrl: "icons/error.png",
+          title: "Token Expired",
+          message: "Your session token has expired. Please log in again.",
+          priority: 2,
+        });
+      }
+    });
+  });
+}
 
-// // Listen for storage changes
-// chrome.storage.onChanged.addListener((changes, area) => {
-//   if (area === "sync" && changes.safeMode) {
-//     console.log("Safe Mode is changed to " + changes.safeMode.newValue);
-//     updateSettingsBasedOnSafeMode(changes.safeMode.newValue);
-//   }
-// });

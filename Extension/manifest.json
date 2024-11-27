@@ -10,7 +10,6 @@
     "storage",
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
-    "webRequest",
     "notifications",
     "contextMenus"
   ],
