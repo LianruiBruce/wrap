@@ -467,10 +467,11 @@ export default function Content({ isDocumentSettingsClicked }) {
       setSections(report.sections);
 
       const section_summary = JSON.parse(report.section_summary);
+      console.log("Section Summary:" + section_summary);
       const formattedSectionSummary = section_summary.map((section, index) => {
         const key = Object.keys(section)[0];
         const summary = section[key].Summary;
-        console.log("Section Summary:" + summary);
+        console.log("foramted Section Summary:" + summary);
 
         return { key, summary };
       });
