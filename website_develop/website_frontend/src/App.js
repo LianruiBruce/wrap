@@ -20,6 +20,7 @@ import VerificationCode from "./Pages/VerificationCodePage";
 import LandingPage from "./Pages/LandingPage";
 import PrivacyPolicy from "./Components/PrivacyPolicy.jsx";
 import TermsOfService from "../src/Components/TermsCondition.jsx";
+import TeamPage from "./Pages/TeamPage.js";
 
 function App() {
   return (
@@ -198,6 +199,7 @@ function AppContent() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/team" element={<TeamPage />} />
 
           {/* Protected routes */}
           <Route

@@ -370,8 +370,8 @@ function LandingPage() {
       quote:
         "Wrap has the potential to help users avoid the risks associated with legal documents.",
       author: "Meiyi Zhang",
-      role: "Jiachen's ex",
-      company: "Lucas's Bedroom",
+      role: "Software Developer",
+      company: "SLCC",
     },
   ];
 
@@ -459,6 +459,13 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               )}
             </IconButton>
             <Box sx={{ display: "flex", gap: 2 }}>
+              <StyledButton
+                variant="text"
+                onClick={() => navigate("/team")}
+                sx={{ color: theme.palette.text.primary }}
+              >
+                Team
+              </StyledButton>
               <StyledButton
                 variant="text"
                 onClick={() => navigate("/login")}
