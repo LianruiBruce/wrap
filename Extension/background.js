@@ -1,5 +1,4 @@
 let isProcessing = false;
-// This is rule IDs for non-essential cookies -- Lianrui
 
 const keepAlive = ((i) => (state) => {
   if (state && !i) {
@@ -24,14 +23,21 @@ chrome.runtime.onInstalled.addListener(() => {
       detectLegalDoc: true,
       generateReport: true,
       showNotification: true,
-      // safeMode: true,
       termsConditions: true,
       privacyPolicy: true,
       contractAgreement: true,
       cookiePolicy: true,
+      subscriptionAgreement: true,
+      purchaseTerms: true,
+      rentalAgreement: true,
+      warrantyPolicy: true,
+      liabilityWaiver: true,
+      employmentAgreement: true,
+      accessPolicy: true,
+      disputeResolution: true,
     },
     () => {
-      console.log("Default settings saved.");
+      console.log("Settings initialized");
     }
   );
 
@@ -70,11 +76,10 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (tab.url && tab.url.startsWith("https://wrapcapstone.com")) {
     console.log("Skipping legal document detection for localhost:3000");
-    return; // Don't execute further if the URL matches localhost:3000
+    return;
   }
 
-  chrome.storage.local.get("token", (result) => {
-    const token = result.token;
+  checkTokenExpirationOnStartup((token) => {
     if (token) {
       getCurrentSettings((settings) => {
         if (settings.detectLegalDoc && !isDuplicateRequest(tab, changeInfo)) {
@@ -323,9 +328,7 @@ chrome.runtime.onMessage.addListener(async function (
   if (message.type === "FETCH_REPORT") {
     const documentID = message.documentID;
 
-    chrome.storage.local.get("token", (result) => {
-      const token = result.token;
-
+    checkTokenExpirationOnStartup((token) => {
       if (!token) {
         console.error("Token not found. User might not be logged in.");
         getCurrentSettings(async (settings) => {
@@ -396,11 +399,18 @@ function getCurrentSettings(callback) {
       "detectLegalDoc",
       "generateReport",
       "showNotification",
-      // "safeMode",
       "termsConditions",
       "privacyPolicy",
       "contractAgreement",
       "cookiePolicy",
+      "subscriptionAgreement",
+      "purchaseTerms",
+      "rentalAgreement",
+      "warrantyPolicy",
+      "liabilityWaiver",
+      "employmentAgreement",
+      "accessPolicy",
+      "disputeResolution",
     ],
     callback
   );
@@ -414,6 +424,14 @@ function getDetectSettings() {
         privacyPolicy: true,
         contractAgreement: true,
         cookiePolicy: true,
+        subscriptionAgreement: true,
+        purchaseTerms: true,
+        rentalAgreement: true,
+        warrantyPolicy: true,
+        liabilityWaiver: true,
+        employmentAgreement: true,
+        accessPolicy: true,
+        disputeResolution: true,
       },
       (settings) => {
         resolve(settings);
@@ -459,10 +477,7 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
   isProcessing = true;
 
   return new Promise((resolve, reject) => {
-    chrome.storage.local.get(["token", "reportInfo"], (result) => {
-      const token = result.token;
-      const reportData = result.reportInfo;
-
+    checkTokenExpirationOnStartup((token) => {
       if (!token) {
         console.error("Token not found. User might not be logged in.");
         getCurrentSettings(async (settings) => {
@@ -481,67 +496,70 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
         return;
       }
 
-      fetch("https://wrapcapstone.com/generate-report", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: text,
-          sections: sections,
-          company: reportData.company,
-          date: reportData.date,
-          category: reportData.category,
-          readability: reportData.readability,
-          textTags: textTags,
-          saveToDatabase: saveToDatabase,
-        }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            if (response.status === 401) {
-              reject(new Error("Not logged in"));
-              return;
-            }
-            return response.json().then((errorData) => {
-              reject(
-                new Error(errorData.message || "Failed to generate report")
-              );
-            });
-          }
-          return response.json();
+      chrome.storage.local.get(["reportInfo"], (result) => {
+        const reportData = result.reportInfo;
+        fetch("https://wrapcapstone.com/generate-report", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: text,
+            sections: sections,
+            company: reportData.company,
+            date: reportData.date,
+            category: reportData.category,
+            readability: reportData.readability,
+            textTags: textTags,
+            saveToDatabase: saveToDatabase,
+          }),
         })
-        .then((data) => {
-          if (data.success) {
-            console.log(data.data.risk_assessment);
-            const documentID = data.documentID;
-            chrome.storage.local.set({ documentID: documentID }, () => {
-              console.log("Document ID stored:", documentID);
-            });
-            resolve(data);
-          } else {
-            reject(new Error("Failed to generate report"));
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error.message);
-          getCurrentSettings(async (settings) => {
-            if (settings.showNotification) {
-              chrome.notifications.create("generateReportError", {
-                type: "basic",
-                iconUrl: "icons/error.png",
-                title: "Error to Generate Report",
-                message: error.message,
-                priority: 1,
+          .then((response) => {
+            if (!response.ok) {
+              if (response.status === 401) {
+                reject(new Error("Not logged in"));
+                return;
+              }
+              return response.json().then((errorData) => {
+                reject(
+                  new Error(errorData.message || "Failed to generate report")
+                );
               });
             }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              console.log(data.data.risk_assessment);
+              const documentID = data.documentID;
+              chrome.storage.local.set({ documentID: documentID }, () => {
+                console.log("Document ID stored:", documentID);
+              });
+              resolve(data);
+            } else {
+              reject(new Error("Failed to generate report"));
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error.message);
+            getCurrentSettings(async (settings) => {
+              if (settings.showNotification) {
+                chrome.notifications.create("generateReportError", {
+                  type: "basic",
+                  iconUrl: "icons/error.png",
+                  title: "Error to Generate Report",
+                  message: error.message,
+                  priority: 1,
+                });
+              }
+            });
+            reject(error);
+          })
+          .finally(() => {
+            isProcessing = false;
           });
-          reject(error);
-        })
-        .finally(() => {
-          isProcessing = false;
-        });
+      });
     });
   });
 }
@@ -632,6 +650,9 @@ async function isLegalDocument(header, headers2, title, url) {
           "services agreement",
           "agreement of service",
           "user conditions",
+          "site terms",
+          "use agreement",
+          "terms of"
         ]
       : [],
     "privacy policy": settings.privacyPolicy
@@ -641,6 +662,9 @@ async function isLegalDocument(header, headers2, title, url) {
           "data privacy",
           "gdpr compliance",
           "privacy statement",
+          "privacy terms",
+          "data protection policy",
+          "privacy choices"
         ]
       : [],
     "contract agreement": settings.contractAgreement
@@ -650,10 +674,90 @@ async function isLegalDocument(header, headers2, title, url) {
           "end user license agreement",
           "eula",
           "service agreement",
+          "licensing terms",
+          "usage agreement",
         ]
       : [],
     "cookie policy": settings.cookiePolicy
-      ? ["cookie policy", "cookie notice", "use of cookies", "tracking policy"]
+      ? [
+        "cookie policy",
+        "cookie notice",
+        "use of cookies",
+        "tracking policy",
+        "cookie terms",
+        "cookie declaration",
+        "data usage",
+        "data collection",
+        "cookies permissions",
+        "data permissions"
+      ]
+      : [],
+    "subscription agreement": settings.subscriptionAgreement
+      ? [
+        "subscription terms",
+        "membership agreement",
+        "auto-renewal terms",
+        "recurring payment terms",
+        "subscription service agreement",
+      ]
+      : [],
+    "purchase terms": settings.purchaseTerms
+      ? [
+        "online purchase terms",
+        "refund policy",
+        "return policy",
+        "purchase agreement",
+        "sale terms",
+        "installment agreement",
+        "layaway terms",
+      ]
+      : [],
+    "rental agreement": settings.rentalAgreement
+      ? [
+        "rental terms",
+        "lease agreement",
+        "rental agreement",
+        "short-term rental policy",
+        "property rental agreement",
+      ]
+      : [],
+    "warranty policy": settings.warrantyPolicy
+      ? [
+        "warranty terms",
+        "service guarantee",
+        "product warranty",
+        "extended warranty",
+      ]
+      : [],
+    "liability waiver": settings.liabilityWaiver
+      ? [
+        "liability waiver",
+        "indemnity agreement",
+        "assumption of risk",
+        "liability release",
+      ]
+      : [],
+    "employment agreement": settings.employmentAgreement
+      ? [
+        "contractor agreement",
+        "independent contractor terms",
+        "nda",
+        "freelance agreement",
+      ]
+      : [],
+    "access policy": settings.accessPolicy
+      ? [
+        "access terms",
+        "api use policy",
+        "facility access agreement",
+      ]
+      : [],
+    "dispute resolution": settings.disputeResolution
+      ? [
+        "arbitration agreement",
+        "dispute resolution policy",
+        "conflict resolution terms",
+      ]
       : [],
   };
 
@@ -793,6 +897,28 @@ function handleTokenExpiration() {
         });
       }
     });
+  });
+}
+
+function checkTokenExpirationOnStartup(callback) {
+  chrome.storage.local.get(["token", "tokenExp"], (result) => {
+    const { token, tokenExp } = result;
+    if (!token || !tokenExp) {
+      console.log("No token found. Skipping expiration check.");
+      callback(null);
+      return;
+    }
+
+    const currentTime = Date.now();
+    if (currentTime >= tokenExp) {
+      console.log("Token already expired on startup.");
+      handleTokenExpiration();
+      callback(null);
+    } else {
+      console.log("Token is valid on startup. Scheduling expiration check.");
+      scheduleExpirationNotification(tokenExp);
+      callback(token);
+    }
   });
 }
 
