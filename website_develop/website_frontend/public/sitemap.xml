@@ -1,27 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Home Page -->
   <url>
     <loc>https://wrapcapstone.com/</loc>
-    <lastmod>2024-02-28</lastmod>
+    <lastmod>2024-11-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Authentication Pages -->
   <url>
-    <loc>https://wrapcapstone.com/about</loc>
-    <lastmod>2024-02-28</lastmod>
+    <loc>https://wrapcapstone.com/login</loc>
+    <lastmod>2024-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wrapcapstone.com/features</loc>
-    <lastmod>2024-02-28</lastmod>
+    <loc>https://wrapcapstone.com/signup</loc>
+    <lastmod>2024-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Public Information Pages -->
   <url>
-    <loc>https://wrapcapstone.com/contact</loc>
-    <lastmod>2024-02-28</lastmod>
+    <loc>https://wrapcapstone.com/team</loc>
+    <lastmod>2024-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://wrapcapstone.com/privacy-policy</loc>
+    <lastmod>2024-11-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://wrapcapstone.com/terms-of-service</loc>
+    <lastmod>2024-11-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://wrapcapstone.com/resetpassword</loc>
+    <lastmod>2024-11-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>
