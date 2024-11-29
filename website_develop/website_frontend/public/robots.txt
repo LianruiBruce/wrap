@@ -1,4 +1,4 @@
-# WRAP - Web-based Resource for Analyzing Papers
+# WRAP - Legal Document Analysis System (University of Utah Capstone Project)
 # https://wrapcapstone.com
 
 User-agent: *
