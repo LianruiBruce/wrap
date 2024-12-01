@@ -669,16 +669,16 @@ function AppContent() {
               </SEOWrapper>
             }
           />
+          {/* Add this catch-all route at the end */}
+          <Route
+            path="*"
+            element={
+              <SEOWrapper route="404">
+                <PageNotFound />
+              </SEOWrapper>
+            }
+          />
         </Routes>
-        {/* Add this catch-all route at the end */}
-        <Route
-          path="*"
-          element={
-            <SEOWrapper route="404">
-              <PageNotFound />
-            </SEOWrapper>
-          }
-        />
       </Router>
     </MuiThemeProvider>
   );
