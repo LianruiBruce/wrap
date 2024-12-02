@@ -492,7 +492,8 @@ async function generateReport(text, sections, textTags, saveToDatabase) {
           }
         });
         isProcessing = false;
-        reject(new Error("Token not found"));
+        handleRiskAssessmentError("Not logged in");
+        reject(new Error("Not logged in"));
         return;
       }
 
