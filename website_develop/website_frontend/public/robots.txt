@@ -1,3 +1,30 @@
-# https://www.robotstxt.org/robotstxt.html
+# WRAP - Legal Document Analysis System (University of Utah Capstone Project)
+# https://wrapcapstone.com
+
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /user/
+Allow: /Wrap.ico
+Allow: /Wrap.png
+
+# Allow search engines to crawl public pages
+Allow: /login
+Allow: /signup
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /team
+
+# Protect private routes
+Disallow: /mainpage
+Disallow: /settings
+Disallow: /history
+Disallow: /profile
+
+# Site map
+Sitemap: https://wrapcapstone.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 10

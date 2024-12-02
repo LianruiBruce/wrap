@@ -5,39 +5,53 @@
     <link rel="icon" href="%PUBLIC_URL%/Wrap.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/Wrap.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    
+    <!-- SEO Meta Tags -->
+    <title>WRAP - University of Utah Legal Document Analysis System</title>
+    <meta name="description" content="WRAP is a comprehensive legal document analysis system for analyzing Terms and Conditions, Privacy Policies, and Contract Agreements using advanced NLP techniques." />
+    <meta name="keywords" content="WRAP, document analysis, legal document, terms and conditions analyzer, University of Utah, legal tech, AI document analysis, WRAP capstone, Lianrui Geng" />
+    <meta name="author" content="Lianrui Geng, Xinyang Wang, Daniel Colmbra, Joey Cai." />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="WRAP - University of Utah Legal Document Analysis System" />
+    <meta property="og:description" content="Comprehensive legal document analysis system powered by advanced NLP." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wrapcapstone.com" />
+    <meta property="og:image" content="%PUBLIC_URL%/Wrap.png" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="WRAP - Legal Document Analysis" />
+    <meta name="twitter:description" content="AI-powered legal document analysis system" />
+    <meta name="twitter:image" content="%PUBLIC_URL%/Wrap.png" />
+    
+    <!-- Schema.org markup -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "WRAP Document Analysis",
+        "alternateName": "WRAP Capstone",
+        "url": "https://wrapcapstone.com",
+        "description": "University of Utah Capstone Project - Legal Document Analysis System",
+        "applicationCategory": "Legal Document Analysis",
+        "keywords": "legal document analysis, University of Utah, WRAP capstone, terms analyzer",
+        "author": {
+          "@type": "Organization",
+          "name": "University of Utah WRAP Team"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0"
+        }
+      }
+      </script>
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>Wrap Website</title>
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/Wrap.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>You need to enable JavaScript to run WRAP.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>
