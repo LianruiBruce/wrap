@@ -253,11 +253,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else if (riskStatus === "loginError") {
       document.querySelector(".risk-container").style.display = "none";
       document.querySelector(".loading-container").style.display = "none";
-      document.getElementById("report-btn").disabled = true;
+      document.getElementById("report-btn").disabled = false;
     } else if (riskStatus === "reportError") {
       document.querySelector(".risk-container").style.display = "none";
       document.querySelector(".loading-container").style.display = "none";
-      document.getElementById("report-btn").disabled = false;
+      document.getElementById("report-btn").disabled = true;
     } else {
       console.log("No risk status found.");
     }
@@ -337,6 +337,11 @@ function updateRiskFields(risk) {
     updateCircleProgress("data-risk", dataScore);
     document.getElementById("data-risk-level").textContent =
       getRiskLevelLabel(dataScore); // Update Data Risk Label
+  }
+
+  if (risk)
+  {
+    document.getElementById("report-btn").disabled = false;
   }
 }
 
