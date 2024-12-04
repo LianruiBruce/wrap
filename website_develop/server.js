@@ -731,14 +731,22 @@ app.post("/get-report-by-documentID", authenticateToken, async (req, res) => {
       const waitForConnection = new Promise((resolve, reject) => {
         const timeout = setTimeout(() => reject(new Error("Connection timed out")), 10000);
 
-        const interval = setInterval(() => {
-          const room = io.sockets.adapter.rooms.get(userRoom);
-          if (room && room.size > 0) {
-            clearTimeout(timeout);
-            clearInterval(interval);
-            resolve();
-          }
-        }, 100);
+        // const interval = setInterval(() => {
+        //   const room = io.sockets.adapter.rooms.get(userRoom);
+        //   if (room && room.size > 0) {
+        //     clearTimeout(timeout);
+        //     clearInterval(interval);
+        //     resolve();
+        //   }
+        // }, 100);
+        io.on("connection", (socket) => {
+          socket.on("joinedRoom", (room) => {
+            if (room === userRoom) {
+              clearTimeout(timeout);
+              resolve();
+            }
+          });
+        });
       });
 
       await waitForConnection;
