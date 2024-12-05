@@ -1004,93 +1004,8 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Grid>
             </StyledContainer>
           </PageSection>
-          {/* Detailed Features Section */}
-          <PageSection>
-            <StyledContainer maxWidth="lg">
-              <Typography variant="h2" align="center" sx={{ mb: 2 }}>
-                Key Features
-              </Typography>
-              <Typography
-                variant="h6"
-                align="center"
-                sx={{
-                  mb: 8,
-                  color: theme.palette.text.secondary,
-                  maxWidth: "800px",
-                  mx: "auto",
-                }}
-              >
-                Advanced features designed to make legal document analysis
-                simple and efficient
-              </Typography>
 
-              <Grid container spacing={4}>
-                {detailedFeatures.map((feature, index) => (
-                  <Grid item xs={12} md={6} key={index}>
-                    <FeatureCard>
-                      <Box sx={{ position: "relative", zIndex: 1 }}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 2,
-                            mb: 3,
-                          }}
-                        >
-                          {feature.icon}
-                          <Typography
-                            variant="h5"
-                            sx={{ color: theme.palette.text.primary }}
-                          >
-                            {feature.title}
-                          </Typography>
-                        </Box>
-
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            mb: 3,
-                          }}
-                        >
-                          {feature.description}
-                        </Typography>
-
-                        <Grid container spacing={2}>
-                          {feature.details.map((detail, idx) => (
-                            <Grid item xs={6} key={idx}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 1,
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    width: 6,
-                                    height: 6,
-                                    borderRadius: "50%",
-                                    backgroundColor: "#61DAFB",
-                                  }}
-                                />
-                                <Typography
-                                  variant="body2"
-                                  sx={{ color: theme.palette.text.secondary }}
-                                >
-                                  {detail}
-                                </Typography>
-                              </Box>
-                            </Grid>
-                          ))}
-                        </Grid>
-                      </Box>
-                    </FeatureCard>
-                  </Grid>
-                ))}
-              </Grid>
-            </StyledContainer>
-          </PageSection>
-          Tech Stack Section
+          {/* tech stack section
           <PageSection>
             <StyledContainer maxWidth="lg">
               <Typography variant="h2" align="center" sx={{ mb: 2 }}>
@@ -1106,23 +1021,184 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                   mx: "auto",
                 }}
               >
-                Powered by state-of-the-art transformer models and cutting-edge
-                technologies for advanced legal document analysis
+                Built with cutting-edge technologies to provide a secure,
+                scalable, and efficient solution
               </Typography>
-              {/* Transformer Models Section */}
-              <Box sx={{ mb: 12 }}>
-                <Typography variant="h4" sx={{ mb: 4, color: "#FF4B4B" }}>
-                  Advanced AI Models
+              <Box sx={{ mb: 8 }}>
+                <Typography variant="h4" sx={{ mb: 4, color: "#61DAFB" }}>
+                  Core Technologies
                 </Typography>
-                <Typography
-                  sx={{
-                    mb: 4,
-                    color: theme.palette.text.secondary,
-                    maxWidth: "800px",
-                  }}
-                >
-                  Our platform leverages powerful transformer models, each
-                  specialized for specific aspects of legal document analysis
+                <Grid container spacing={4}>
+                  {techStack.slice(0, 4).map((tech) => (
+                    <Grid item xs={12} sm={6} md={3} key={tech.name}>
+                      <TechStackCard>
+                        <Box
+                          sx={{
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "12px",
+                            background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mb: 3,
+                            mx: "auto",
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: tech.color,
+                              fontWeight: "bold",
+                              fontSize: "1.5rem",
+                            }}
+                          >
+                            {tech.shortName}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          align="center"
+                          gutterBottom
+                          sx={{ color: theme.palette.text.primary }}
+                        >
+                          {tech.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
+                        >
+                          {tech.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {tech.features.map((feature, index) => (
+                            <Chip
+                              key={index}
+                              label={feature}
+                              size="small"
+                              sx={{
+                                background: `${tech.color}20`,
+                                color: tech.color,
+                                "&:hover": {
+                                  background: `${tech.color}30`,
+                                },
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </TechStackCard>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+
+              <Box>
+                <Typography variant="h4" sx={{ mb: 4, color: "#4ECDC4" }}>
+                  Additional Features
+                </Typography>
+                <Grid container spacing={4}>
+                  {techStack.slice(4).map((tech) => (
+                    <Grid item xs={12} sm={6} md={3} key={tech.name}>
+                      <TechStackCard>
+                        <Box
+                          sx={{
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "12px",
+                            background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mb: 3,
+                            mx: "auto",
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: tech.color,
+                              fontWeight: "bold",
+                              fontSize: "1.2rem",
+                            }}
+                          >
+                            {tech.shortName}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          align="center"
+                          gutterBottom
+                          sx={{ color: theme.palette.text.primary }}
+                        >
+                          {tech.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
+                        >
+                          {tech.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {tech.features.map((feature, index) => (
+                            <Chip
+                              key={index}
+                              label={feature}
+                              size="small"
+                              sx={{
+                                background: `${tech.color}20`,
+                                color: tech.color,
+                                "&:hover": {
+                                  background: `${tech.color}30`,
+                                },
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </TechStackCard>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            </StyledContainer>
+          </PageSection> */}
+
+          {/* Tech Stack Section */}
+          <PageSection>
+            <StyledContainer maxWidth="lg">
+              <Typography variant="h2" align="center" sx={{ mb: 2 }}>
+                Our Tech Stack
+              </Typography>
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{
+                  mb: 8,
+                  color: theme.palette.text.secondary,
+                  maxWidth: "800px",
+                  mx: "auto",
+                }}
+              >
+                Built with cutting-edge AI models and advanced technologies to
+                provide a secure, scalable, and efficient solution
+              </Typography>
+
+              <Box sx={{ mb: 8 }}>
+                <Typography variant="h4" sx={{ mb: 4, color: "#FF4B4B" }}>
+                  Transformer Models
                 </Typography>
                 <Grid container spacing={4}>
                   {[
@@ -1131,72 +1207,62 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                       shortName: "BM",
                       color: "#FF4B4B",
                       description:
-                        "Zero-shot classification model for intelligent document categorization and analysis",
+                        "Classification model with zero-shot learning capabilities for document analysis",
                       features: [
-                        "Document Classification",
                         "Zero-shot Learning",
                         "175M Parameters",
-                        "Multi-label Support",
+                        "Multi-class Labels",
+                        "Document Classification",
                       ],
                     },
                     {
                       name: "FLAN-T5-Large",
                       shortName: "FT",
-                      color: "#FF8A3D",
+                      color: "#FF6B6B",
                       description:
-                        "Advanced question-answering model for precise information extraction from legal documents",
+                        "Large-scale model specialized in question answering and information extraction",
                       features: [
-                        "Information Extraction",
                         "Question Answering",
                         "780M Parameters",
                         "Context Understanding",
+                        "Information Extraction",
                       ],
                     },
                     {
                       name: "BART-large-CNN",
                       shortName: "BC",
-                      color: "#FF6B6B",
+                      color: "#FF8A3D",
                       description:
-                        "Specialized model for generating accurate and concise document summaries",
+                        "Advanced model optimized for generating accurate document summaries",
                       features: [
                         "Text Summarization",
-                        "Content Distillation",
                         "400M Parameters",
-                        "Enhanced Clarity",
+                        "Content Distillation",
+                        "Section Analysis",
                       ],
                     },
                     {
                       name: "LegalPro-BERT",
                       shortName: "LB",
-                      color: "#FF9A8B",
+                      color: "#FFA07A",
                       description:
-                        "Domain-specific model fine-tuned for legal document understanding and analysis",
+                        "Domain-specific model fine-tuned for legal document understanding",
                       features: [
                         "Legal Text Analysis",
-                        "Contract Review",
                         "110M Parameters",
-                        "Domain Expertise",
+                        "Contract Review",
+                        "Term Extraction",
                       ],
                     },
                   ].map((model) => (
                     <Grid item xs={12} sm={6} md={3} key={model.name}>
-                      <TechStackCard
-                        sx={{
-                          background: `linear-gradient(135deg, ${model.color}08, ${model.color}15)`,
-                          transition:
-                            "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
-                          "&:hover": {
-                            transform: "translateY(-8px)",
-                            boxShadow: `0 12px 24px ${model.color}20`,
-                          },
-                        }}
-                      >
+                      <TechStackCard>
                         <Box
                           sx={{
-                            width: "70px",
-                            height: "70px",
-                            borderRadius: "16px",
-                            background: `linear-gradient(135deg, ${model.color}20, ${model.color}40)`,
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "12px",
+                            background: `linear-gradient(135deg, ${model.color}30, ${model.color}10)`,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -1225,11 +1291,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                         <Typography
                           variant="body2"
                           align="center"
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            mb: 3,
-                            minHeight: "60px",
-                          }}
+                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
                         >
                           {model.description}
                         </Typography>
@@ -1247,11 +1309,10 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                               label={feature}
                               size="small"
                               sx={{
-                                background: `${model.color}15`,
+                                background: `${model.color}20`,
                                 color: model.color,
-                                fontWeight: 500,
                                 "&:hover": {
-                                  background: `${model.color}25`,
+                                  background: `${model.color}30`,
                                 },
                               }}
                             />
@@ -1263,7 +1324,6 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                 </Grid>
               </Box>
 
-              {/* Core Technologies Section */}
               <Box sx={{ mb: 8 }}>
                 <Typography variant="h4" sx={{ mb: 4, color: "#61DAFB" }}>
                   Core Technologies
@@ -1415,6 +1475,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Box>
             </StyledContainer>
           </PageSection>
+
           {/* Statistics Section */}
           <PageSection>
             <StyledContainer maxWidth="lg">
