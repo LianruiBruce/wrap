@@ -30,6 +30,9 @@ export default function Paperbase() {
   const isSmUp = useMediaQuery((theme) => theme.breakpoints.up("sm"));
   const drawerWidth = isShortNavigator ? 100 : 256;
 
+  const [chatbotVisible, setChatbotVisible] = useState(false);
+  const [floatingButtonVisible, setFloatingButtonVisible] = useState(false);
+
   // Define background colors based on theme mode
   const mainBgColor = mode === "dark" ? "#1A1A1A" : "#ffffff";
 
@@ -91,8 +94,9 @@ export default function Paperbase() {
 
   const toggleNavigator = () => {
     setIsShortNavigator((prev) => !prev);
+    // Always show the floating button after toggling the navigator
+    setFloatingButtonVisible(true);
   };
-
   return (
     <Box
       sx={{
@@ -155,6 +159,10 @@ export default function Paperbase() {
                 }}
                 documents={documents}
                 isLoading={isLoading}
+                chatbotVisible={chatbotVisible}
+                setChatbotVisible={setChatbotVisible}
+                floatingButtonVisible={floatingButtonVisible}
+                setFloatingButtonVisible={setFloatingButtonVisible}
               />
             )}
           </>

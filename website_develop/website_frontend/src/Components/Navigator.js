@@ -23,14 +23,14 @@ import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import ChatBot from "./ChatBot";
 
-function Navigator(props) {
+function Navigator({ chatbotVisible, setChatbotVisible, floatingButtonVisible, setFloatingButtonVisible, ...props }) {
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const [chatbotVisible, setChatbotVisible] = useState(false);
-  const [floatingButtonVisible, setFloatingButtonVisible] = useState(false);
+  //const [chatbotVisible, setChatbotVisible] = useState(false);
+  //const [floatingButtonVisible, setFloatingButtonVisible] = useState(false);
   const [selectedDocumentID, setSelectedDocumentID] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
