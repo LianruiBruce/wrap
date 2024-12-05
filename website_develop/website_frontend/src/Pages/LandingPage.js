@@ -569,7 +569,25 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                     },
                   }}
                 >
-                  Download Extension
+                  Download Extension(.zip)
+                </StyledButton>
+                <StyledButton
+                  component="a"
+                  href="https://chromewebstore.google.com/detail/wrap/pmaajlkakfpenkopkmhlepopeipgjpgn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="outlined"
+                  size="large"
+                  startIcon={<DownloadIcon />}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    borderColor: theme.palette.divider,
+                    "&:hover": {
+                      borderColor: theme.palette.text.primary,
+                    },
+                  }}
+                >
+                  Add from Chrome Extension Store
                 </StyledButton>
               </Box>
             </StyledContainer>
