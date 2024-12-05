@@ -370,8 +370,8 @@ function LandingPage() {
       quote:
         "Wrap has the potential to help users avoid the risks associated with legal documents.",
       author: "Meiyi Zhang",
-      role: "Software Developer",
-      company: "SLCC",
+      role: "Freelance",
+      company: "Shenzhen, China",
     },
   ];
 
@@ -555,7 +555,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                 </StyledButton>
                 <StyledButton
                   component="a"
-                  href="https://drive.google.com/file/d/1qG3NcHPQHh8uTkYvyOj04dmCnWc4GlDG/view?usp=sharing"
+                  href="https://drive.google.com/file/d/1Z2SGd5GBtHOPW7rX7vAIcfK_v83lhs6c/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="outlined"
@@ -1314,7 +1314,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                 </StyledButton>
                 <StyledButton
                   component="a"
-                  href="https://drive.google.com/file/d/1qG3NcHPQHh8uTkYvyOj04dmCnWc4GlDG/view?usp=sharing"
+                  href="https://drive.google.com/file/d/1Z2SGd5GBtHOPW7rX7vAIcfK_v83lhs6c/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="outlined"
