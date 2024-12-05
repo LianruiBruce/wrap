@@ -555,7 +555,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                 </StyledButton>
                 <StyledButton
                   component="a"
-                  href="https://drive.google.com/file/d/1qKfThOw06QKqctrOcBA_m2JPOhW5RIup/view?usp=sharing"
+                  href="https://drive.google.com/file/d/1qG3NcHPQHh8uTkYvyOj04dmCnWc4GlDG/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="outlined"
@@ -1314,7 +1314,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                 </StyledButton>
                 <StyledButton
                   component="a"
-                  href="https://drive.google.com/file/d/1qKfThOw06QKqctrOcBA_m2JPOhW5RIup/view?usp=sharing"
+                  href="https://drive.google.com/file/d/1qG3NcHPQHh8uTkYvyOj04dmCnWc4GlDG/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="outlined"
