@@ -24,7 +24,9 @@ async function processData(data) {
 
   console.log("Processing Data:", data);
 
-  if (url.startsWith("https://wrapcapstone.com")) {
+  if (url.startsWith("https://wrapcapstone.com")&&
+  tab.url !== "https://wrapcapstone.com/terms-of-service" &&
+  tab.url !== "https://wrapcapstone.com/privacy-policy") {
     console.log("Skipping processing for internal app URL");
     return { success: false, message: "Internal app URLs are not processed" };
   }

@@ -74,7 +74,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (tab.url && tab.url.startsWith("https://wrapcapstone.com")) {
+  if (tab.url && tab.url.startsWith("https://wrapcapstone.com") &&
+   tab.url !== "https://wrapcapstone.com/terms-of-service" &&
+   tab.url !== "https://wrapcapstone.com/privacy-policy") {
     console.log("Skipping legal document detection for localhost:3000");
     return;
   }
