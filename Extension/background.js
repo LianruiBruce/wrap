@@ -282,47 +282,70 @@ chrome.runtime.onMessage.addListener(async function (
   }
 
   if (message.type === "USER_LOGIN") {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-      const currentTab = tabs[0];
-      const validURL = "https://wrapcapstone.com/";
-
-      if (currentTab && currentTab.url && currentTab.url.startsWith(validURL)) {
-        const token = message.token;
-        console.log("Token received:", token);
-
-        await storeToken(token);
-
-        sendResponse({ success: true });
+    checkTokenExpirationOnStartup((currentToken) => {
+      if (currentToken) {
+        if (currentToken === message.token) {
+          console.log("User already logged in with the same token.");
+          sendResponse({ success: true });
+          return;
+        } else {
+          console.log("Token has changed. Updating to the new token.");
+        }
       } else {
-        console.error(
-          "Login attempt from unauthorized source:",
-          currentTab?.url
-        );
-        sendResponse({ success: false, error: "Unauthorized source" });
+        console.log("No valid token found. Proceeding with login.");
       }
+
+      chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+        const currentTab = tabs[0];
+        const validURL = "https://wrapcapstone.com/";
+
+        if (currentTab && currentTab.url && currentTab.url.startsWith(validURL)) {
+          const token = message.token;
+          console.log("Token received:", token);
+
+          await storeToken(token);
+
+          sendResponse({ success: true });
+        } else {
+          console.error(
+            "Login attempt from unauthorized source:",
+            currentTab?.url
+          );
+          sendResponse({ success: false, error: "Unauthorized source" });
+        }
+      });
     });
 
     return true;
   }
 
   if (message.type === "USER_LOGOUT") {
-    chrome.storage.local.remove(["token", "reportInfo", "riskInfo"], () => {
-      chrome.action.setIcon({ path: "icons/Wrap_Red.png" });
-      console.log("Token and report data removed from storage");
-      getCurrentSettings(async (settings) => {
-        if (settings.showNotification) {
-          chrome.notifications.create("Logout", {
-            type: "basic",
-            iconUrl: "icons/notification.png",
-            title: "Logout Successfully",
-            message: "You have logged out of the extension successfully!",
-            priority: 1,
-          });
-        }
-      });
-    });
+    checkTokenExpirationOnStartup((currentToken) => {
+      if (!currentToken) {
+        console.log("No valid token found. Skipping logout logic.");
+        sendResponse({ success: true });
+        return;
+      }
 
-    sendResponse({ success: true });
+      chrome.storage.local.remove(["token", "reportInfo", "riskInfo"], () => {
+        chrome.action.setIcon({ path: "icons/Wrap_Red.png" });
+        console.log("Token and report data removed from storage");
+
+        getCurrentSettings(async (settings) => {
+          if (settings.showNotification) {
+            chrome.notifications.create("Logout", {
+              type: "basic",
+              iconUrl: "icons/notification.png",
+              title: "Logout Successfully",
+              message: "You have logged out of the extension successfully!",
+              priority: 1,
+            });
+          }
+        });
+      });
+
+      sendResponse({ success: true });
+    });
 
     return true;
   }
