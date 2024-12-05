@@ -770,7 +770,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Grid>
             </StyledContainer>
           </PageSection>
-          {/* Demo Section */}
+
           {/* Demo Section */}
           <PageSection>
             <StyledContainer maxWidth="lg">
@@ -1005,631 +1005,467 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
             </StyledContainer>
           </PageSection>
 
-          {/* tech stack section
-          <PageSection>
-            <StyledContainer maxWidth="lg">
-              <Typography variant="h2" align="center" sx={{ mb: 2 }}>
-                Our Tech Stack
-              </Typography>
-              <Typography
-                variant="h6"
-                align="center"
-                sx={{
-                  mb: 8,
-                  color: theme.palette.text.secondary,
-                  maxWidth: "800px",
-                  mx: "auto",
-                }}
-              >
-                Built with cutting-edge technologies to provide a secure,
-                scalable, and efficient solution
-              </Typography>
-              <Box sx={{ mb: 8 }}>
-                <Typography variant="h4" sx={{ mb: 4, color: "#61DAFB" }}>
-                  Core Technologies
-                </Typography>
-                <Grid container spacing={4}>
-                  {techStack.slice(0, 4).map((tech) => (
-                    <Grid item xs={12} sm={6} md={3} key={tech.name}>
-                      <TechStackCard>
-                        <Box
-                          sx={{
-                            width: "60px",
-                            height: "60px",
-                            borderRadius: "12px",
-                            background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            mb: 3,
-                            mx: "auto",
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              color: tech.color,
-                              fontWeight: "bold",
-                              fontSize: "1.5rem",
-                            }}
-                          >
-                            {tech.shortName}
-                          </Typography>
-                        </Box>
-                        <Typography
-                          variant="h6"
-                          align="center"
-                          gutterBottom
-                          sx={{ color: theme.palette.text.primary }}
-                        >
-                          {tech.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          align="center"
-                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
-                        >
-                          {tech.description}
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1,
-                            justifyContent: "center",
-                          }}
-                        >
-                          {tech.features.map((feature, index) => (
-                            <Chip
-                              key={index}
-                              label={feature}
-                              size="small"
-                              sx={{
-                                background: `${tech.color}20`,
-                                color: tech.color,
-                                "&:hover": {
-                                  background: `${tech.color}30`,
-                                },
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </TechStackCard>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-
-              <Box>
-                <Typography variant="h4" sx={{ mb: 4, color: "#4ECDC4" }}>
-                  Additional Features
-                </Typography>
-                <Grid container spacing={4}>
-                  {techStack.slice(4).map((tech) => (
-                    <Grid item xs={12} sm={6} md={3} key={tech.name}>
-                      <TechStackCard>
-                        <Box
-                          sx={{
-                            width: "60px",
-                            height: "60px",
-                            borderRadius: "12px",
-                            background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            mb: 3,
-                            mx: "auto",
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              color: tech.color,
-                              fontWeight: "bold",
-                              fontSize: "1.2rem",
-                            }}
-                          >
-                            {tech.shortName}
-                          </Typography>
-                        </Box>
-                        <Typography
-                          variant="h6"
-                          align="center"
-                          gutterBottom
-                          sx={{ color: theme.palette.text.primary }}
-                        >
-                          {tech.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          align="center"
-                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
-                        >
-                          {tech.description}
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1,
-                            justifyContent: "center",
-                          }}
-                        >
-                          {tech.features.map((feature, index) => (
-                            <Chip
-                              key={index}
-                              label={feature}
-                              size="small"
-                              sx={{
-                                background: `${tech.color}20`,
-                                color: tech.color,
-                                "&:hover": {
-                                  background: `${tech.color}30`,
-                                },
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </TechStackCard>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-            </StyledContainer>
-          </PageSection> */}
-
           {/* Tech Stack Section */}
           <PageSection>
             <StyledContainer maxWidth="lg">
-              <Typography variant="h2" align="center" sx={{ mb: 2 }}>
-                Our Tech Stack
-              </Typography>
-              <Typography
-                variant="h6"
-                align="center"
-                sx={{
-                  mb: 8,
-                  color: theme.palette.text.secondary,
-                  maxWidth: "800px",
-                  mx: "auto",
-                }}
-              >
-                Built with cutting-edge technologies to provide a secure,
-                scalable, and efficient solution
-              </Typography>
-
-              {/* NLP Pipeline Section */}
-              <Box sx={{ mb: 12 }}>
-                <Typography variant="h4" sx={{ mb: 4, color: "#FF4B4B" }}>
-                  NLP Pipeline
+              <Box sx={{ pt: 24, pb: 12 }}>
+                <Typography variant="h2" align="center" sx={{ mb: 2 }}>
+                  Our Tech Stack
                 </Typography>
-                <Grid container spacing={6}>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant="h5" gutterBottom>
-                      Advanced Language Models
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ mb: 4, color: theme.palette.text.secondary }}
-                    >
-                      Our pipeline combines four powerful transformer models,
-                      each specialized for a specific aspect of legal document
-                      analysis
-                    </Typography>
-                    <Box
-                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                    >
-                      <Box>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ color: theme.palette.text.primary }}
-                        >
-                          Document Classification
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: theme.palette.text.secondary }}
-                        >
-                          BART-large-MNLI (175M parameters) provides zero-shot
-                          classification capabilities to identify document types
-                          and key sections
-                        </Typography>
+                <Typography
+                  variant="h6"
+                  align="center"
+                  sx={{
+                    mb: 8,
+                    color: theme.palette.text.secondary,
+                    maxWidth: "800px",
+                    mx: "auto",
+                  }}
+                >
+                  Built with cutting-edge technologies to provide a secure,
+                  scalable, and efficient solution
+                </Typography>
+
+                {/* NLP Pipeline Section */}
+                <Box sx={{ mb: 12 }}>
+                  <Typography variant="h4" sx={{ mb: 4, color: "#FF4B4B" }}>
+                    NLP Pipeline
+                  </Typography>
+                  <Grid container spacing={6}>
+                    <Grid item xs={12} md={6}>
+                      <Typography variant="h5" gutterBottom>
+                        Advanced Language Models
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ mb: 4, color: theme.palette.text.secondary }}
+                      >
+                        Our pipeline combines four powerful transformer models,
+                        each specialized for a specific aspect of legal document
+                        analysis
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 3,
+                        }}
+                      >
+                        <Box>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ color: theme.palette.text.primary }}
+                          >
+                            Document Classification
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            BART-large-MNLI (175M parameters) provides zero-shot
+                            classification capabilities to identify document
+                            types and key sections
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ color: theme.palette.text.primary }}
+                          >
+                            Information Extraction
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            FLAN-T5-XL handles question answering and precise
+                            information extraction from complex documents
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ color: theme.palette.text.primary }}
+                          >
+                            Document Summarization
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            BART-large-CNN processes and condenses long
+                            documents into clear, actionable summaries while
+                            preserving key information
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ color: theme.palette.text.primary }}
+                          >
+                            Legal Understanding
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            LegalPro-BERT provides domain-specific analysis of
+                            legal terminology and document structure
+                          </Typography>
+                        </Box>
                       </Box>
-                      <Box>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ color: theme.palette.text.primary }}
-                        >
-                          Information Extraction
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: theme.palette.text.secondary }}
-                        >
-                          FLAN-T5-Large (780M parameters) handles question
-                          answering and precise information extraction from
-                          complex documents
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ color: theme.palette.text.primary }}
-                        >
-                          Document Summarization
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: theme.palette.text.secondary }}
-                        >
-                          BART-large-CNN processes and condenses long documents
-                          into clear, actionable summaries while preserving key
-                          information
-                        </Typography>
-                      </Box>
-                      <Box>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ color: theme.palette.text.primary }}
-                        >
-                          Legal Understanding
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: theme.palette.text.secondary }}
-                        >
-                          LegalPro-BERT provides domain-specific analysis of
-                          legal terminology and document structure
-                        </Typography>
-                      </Box>
-                    </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Card
+                        sx={{
+                          background: `linear-gradient(135deg, ${
+                            theme.palette.background.paper
+                          }, ${alpha(theme.palette.primary.main, 0.1)})`,
+                          borderRadius: "16px",
+                          height: "100%",
+                          position: "relative",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <CardContent>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 2,
+                              height: "100%",
+                              position: "relative",
+                              p: 2,
+                            }}
+                          >
+                            {[
+                              {
+                                model: "BART-large-MNLI",
+                                task: "Classification",
+                                color: "#FF4B4B",
+                                description:
+                                  "Zero-shot document classification",
+                              },
+                              {
+                                model: "FLAN-T5-XL",
+                                task: "Question Answering",
+                                color: "#FF8A3D",
+                                description: "Information extraction & QA",
+                              },
+                              {
+                                model: "BART-large-CNN",
+                                task: "Summarization",
+                                color: "#FF6B6B",
+                                description: "Document summarization",
+                              },
+                              {
+                                model: "LegalPro-BERT-base",
+                                task: "Legal Analysis",
+                                color: "#FFA07A",
+                                description: "Legal document understanding",
+                              },
+                            ].map((item, index) => (
+                              <Box
+                                key={item.model}
+                                sx={{
+                                  p: 2,
+                                  borderRadius: "8px",
+                                  border: "1px solid",
+                                  borderColor: alpha(item.color, 0.3),
+                                  backgroundColor: alpha(item.color, 0.1),
+                                  position: "relative",
+                                  "&::after": {
+                                    content: '""',
+                                    position: "absolute",
+                                    bottom: index === 3 ? 0 : "-20px",
+                                    left: "50%",
+                                    width: "2px",
+                                    height: index === 3 ? 0 : "20px",
+                                    backgroundColor: item.color,
+                                    zIndex: 1,
+                                  },
+                                }}
+                              >
+                                <Typography
+                                  variant="subtitle2"
+                                  sx={{ color: item.color, mb: 1 }}
+                                >
+                                  {item.model}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ color: theme.palette.text.primary }}
+                                >
+                                  {item.description}
+                                </Typography>
+                              </Box>
+                            ))}
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Card
-                      sx={{
-                        background: `linear-gradient(135deg, ${
-                          theme.palette.background.paper
-                        }, ${alpha(theme.palette.primary.main, 0.1)})`,
-                        borderRadius: "16px",
-                        height: "100%",
-                        position: "relative",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <CardContent>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                            height: "100%",
-                            position: "relative",
-                            p: 2,
-                          }}
-                        >
-                          {[
-                            {
-                              model: "BART-large-MNLI",
-                              task: "Classification",
-                              color: "#FF4B4B",
-                              description: "Zero-shot document classification",
-                            },
-                            {
-                              model: "FLAN-T5-Large",
-                              task: "Question Answering",
-                              color: "#FF8A3D",
-                              description: "Information extraction & QA",
-                            },
-                            {
-                              model: "BART-large-CNN",
-                              task: "Summarization",
-                              color: "#FF6B6B",
-                              description: "Document summarization",
-                            },
-                            {
-                              model: "LegalPro-BERT",
-                              task: "Legal Analysis",
-                              color: "#FFA07A",
-                              description: "Legal document understanding",
-                            },
-                          ].map((item, index) => (
-                            <Box
-                              key={item.model}
+                </Box>
+
+                {/* Core Technologies Section */}
+                <Box sx={{ mb: 8 }}>
+                  <Typography variant="h4" sx={{ mb: 4, color: "#61DAFB" }}>
+                    Core Technologies
+                  </Typography>
+                  <Grid container spacing={4}>
+                    {[
+                      {
+                        name: "React",
+                        shortName: "R",
+                        color: "#61DAFB",
+                        description:
+                          "Modern frontend framework for building dynamic user interfaces",
+                        features: [
+                          "Component-Based",
+                          "Virtual DOM",
+                          "React Router",
+                          "Material-UI",
+                        ],
+                      },
+                      {
+                        name: "Node.js",
+                        shortName: "N",
+                        color: "#68A063",
+                        description:
+                          "Server-side JavaScript runtime environment powering our backend infrastructure",
+                        features: [
+                          "Express.js",
+                          "REST API",
+                          "WebSocket",
+                          "JWT Auth",
+                        ],
+                      },
+                      {
+                        name: "MongoDB",
+                        shortName: "M",
+                        color: "#4DB33D",
+                        description:
+                          "NoSQL database for efficient data management and scalability",
+                        features: [
+                          "Mongoose ODM",
+                          "CRUD Operations",
+                          "Atlas Cloud",
+                          "Real-time Updates",
+                        ],
+                      },
+                      {
+                        name: "Claude's API",
+                        shortName: "C",
+                        color: "#6B4FBB",
+                        description:
+                          "Advanced AI capabilities for intelligent document analysis",
+                        features: [
+                          "NLP Processing",
+                          "Document Analysis",
+                          "Risk Assessment",
+                          "Smart Summaries",
+                        ],
+                      },
+                    ].map((tech) => (
+                      <Grid item xs={12} sm={6} md={3} key={tech.name}>
+                        <TechStackCard>
+                          <Box
+                            sx={{
+                              width: "60px",
+                              height: "60px",
+                              borderRadius: "12px",
+                              background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              mb: 3,
+                              mx: "auto",
+                            }}
+                          >
+                            <Typography
                               sx={{
-                                p: 2,
-                                borderRadius: "8px",
-                                border: "1px solid",
-                                borderColor: alpha(item.color, 0.3),
-                                backgroundColor: alpha(item.color, 0.1),
-                                position: "relative",
-                                "&::after": {
-                                  content: '""',
-                                  position: "absolute",
-                                  bottom: index === 3 ? 0 : "-20px",
-                                  left: "50%",
-                                  width: "2px",
-                                  height: index === 3 ? 0 : "20px",
-                                  backgroundColor: item.color,
-                                  zIndex: 1,
-                                },
+                                color: tech.color,
+                                fontWeight: "bold",
+                                fontSize: "1.5rem",
                               }}
                             >
-                              <Typography
-                                variant="subtitle2"
-                                sx={{ color: item.color, mb: 1 }}
-                              >
-                                {item.model}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                sx={{ color: theme.palette.text.primary }}
-                              >
-                                {item.description}
-                              </Typography>
-                            </Box>
-                          ))}
-                        </Box>
-                      </CardContent>
-                    </Card>
+                              {tech.shortName}
+                            </Typography>
+                          </Box>
+                          <Typography
+                            variant="h6"
+                            align="center"
+                            gutterBottom
+                            sx={{ color: theme.palette.text.primary }}
+                          >
+                            {tech.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            align="center"
+                            sx={{ color: theme.palette.text.secondary, mb: 2 }}
+                          >
+                            {tech.description}
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 1,
+                              justifyContent: "center",
+                            }}
+                          >
+                            {tech.features.map((feature, index) => (
+                              <Chip
+                                key={index}
+                                label={feature}
+                                size="small"
+                                sx={{
+                                  background: `${tech.color}20`,
+                                  color: tech.color,
+                                  "&:hover": {
+                                    background: `${tech.color}30`,
+                                  },
+                                }}
+                              />
+                            ))}
+                          </Box>
+                        </TechStackCard>
+                      </Grid>
+                    ))}
                   </Grid>
-                </Grid>
-              </Box>
+                </Box>
 
-              {/* Core Technologies Section */}
-              <Box sx={{ mb: 8 }}>
-                <Typography variant="h4" sx={{ mb: 4, color: "#61DAFB" }}>
-                  Core Technologies
-                </Typography>
-                <Grid container spacing={4}>
-                  {[
-                    {
-                      name: "React",
-                      shortName: "R",
-                      color: "#61DAFB",
-                      description:
-                        "Modern frontend framework for building dynamic user interfaces",
-                      features: [
-                        "Component-Based",
-                        "Virtual DOM",
-                        "React Router",
-                        "Material-UI",
-                      ],
-                    },
-                    {
-                      name: "Node.js",
-                      shortName: "N",
-                      color: "#68A063",
-                      description:
-                        "Server-side JavaScript runtime environment powering our backend infrastructure",
-                      features: [
-                        "Express.js",
-                        "REST API",
-                        "WebSocket",
-                        "JWT Auth",
-                      ],
-                    },
-                    {
-                      name: "MongoDB",
-                      shortName: "M",
-                      color: "#4DB33D",
-                      description:
-                        "NoSQL database for efficient data management and scalability",
-                      features: [
-                        "Mongoose ODM",
-                        "CRUD Operations",
-                        "Atlas Cloud",
-                        "Real-time Updates",
-                      ],
-                    },
-                    {
-                      name: "Claude's API",
-                      shortName: "C",
-                      color: "#6B4FBB",
-                      description:
-                        "Advanced AI capabilities for intelligent document analysis",
-                      features: [
-                        "NLP Processing",
-                        "Document Analysis",
-                        "Risk Assessment",
-                        "Smart Summaries",
-                      ],
-                    },
-                  ].map((tech) => (
-                    <Grid item xs={12} sm={6} md={3} key={tech.name}>
-                      <TechStackCard>
-                        <Box
-                          sx={{
-                            width: "60px",
-                            height: "60px",
-                            borderRadius: "12px",
-                            background: `linear-gradient(135deg, ${tech.color}30, ${tech.color}10)`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            mb: 3,
-                            mx: "auto",
-                          }}
-                        >
-                          <Typography
+                {/* Additional Features Section */}
+                <Box>
+                  <Typography variant="h4" sx={{ mb: 4, color: "#4ECDC4" }}>
+                    Additional Features
+                  </Typography>
+                  <Grid container spacing={4}>
+                    {[
+                      {
+                        name: "Security",
+                        shortName: "S",
+                        color: "#FF6B6B",
+                        description:
+                          "Comprehensive security features to protect your data",
+                        features: [
+                          "bcryptjs",
+                          "JWT",
+                          "Secure Headers",
+                          "CORS Protection",
+                        ],
+                      },
+                      {
+                        name: "Real-time",
+                        shortName: "RT",
+                        color: "#4ECDC4",
+                        description: "Real-time communication and updates",
+                        features: [
+                          "Socket.io",
+                          "Live Updates",
+                          "WebSocket",
+                          "Event Handling",
+                        ],
+                      },
+                      {
+                        name: "Document Processing",
+                        shortName: "DP",
+                        color: "#45B7D1",
+                        description:
+                          "Advanced document processing capabilities",
+                        features: [
+                          "PDF Parse",
+                          "PDFKit",
+                          "File Upload",
+                          "Document Generation",
+                        ],
+                      },
+                      {
+                        name: "API Integration",
+                        shortName: "API",
+                        color: "#96C93D",
+                        description:
+                          "Robust API infrastructure and integrations",
+                        features: [
+                          "Axios",
+                          "REST APIs",
+                          "Error Handling",
+                          "Rate Limiting",
+                        ],
+                      },
+                    ].map((feature) => (
+                      <Grid item xs={12} sm={6} md={3} key={feature.name}>
+                        <TechStackCard>
+                          <Box
                             sx={{
-                              color: tech.color,
-                              fontWeight: "bold",
-                              fontSize: "1.5rem",
+                              width: "60px",
+                              height: "60px",
+                              borderRadius: "12px",
+                              background: `linear-gradient(135deg, ${feature.color}30, ${feature.color}10)`,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              mb: 3,
+                              mx: "auto",
                             }}
                           >
-                            {tech.shortName}
-                          </Typography>
-                        </Box>
-                        <Typography
-                          variant="h6"
-                          align="center"
-                          gutterBottom
-                          sx={{ color: theme.palette.text.primary }}
-                        >
-                          {tech.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          align="center"
-                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
-                        >
-                          {tech.description}
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1,
-                            justifyContent: "center",
-                          }}
-                        >
-                          {tech.features.map((feature, index) => (
-                            <Chip
-                              key={index}
-                              label={feature}
-                              size="small"
+                            <Typography
                               sx={{
-                                background: `${tech.color}20`,
-                                color: tech.color,
-                                "&:hover": {
-                                  background: `${tech.color}30`,
-                                },
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </TechStackCard>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-
-              {/* Additional Features Section */}
-              <Box>
-                <Typography variant="h4" sx={{ mb: 4, color: "#4ECDC4" }}>
-                  Additional Features
-                </Typography>
-                <Grid container spacing={4}>
-                  {[
-                    {
-                      name: "Security",
-                      shortName: "S",
-                      color: "#FF6B6B",
-                      description:
-                        "Comprehensive security features to protect your data",
-                      features: [
-                        "bcryptjs",
-                        "JWT",
-                        "Secure Headers",
-                        "CORS Protection",
-                      ],
-                    },
-                    {
-                      name: "Real-time",
-                      shortName: "RT",
-                      color: "#4ECDC4",
-                      description: "Real-time communication and updates",
-                      features: [
-                        "Socket.io",
-                        "Live Updates",
-                        "WebSocket",
-                        "Event Handling",
-                      ],
-                    },
-                    {
-                      name: "Document Processing",
-                      shortName: "DP",
-                      color: "#45B7D1",
-                      description: "Advanced document processing capabilities",
-                      features: [
-                        "PDF Parse",
-                        "PDFKit",
-                        "File Upload",
-                        "Document Generation",
-                      ],
-                    },
-                    {
-                      name: "API Integration",
-                      shortName: "API",
-                      color: "#96C93D",
-                      description: "Robust API infrastructure and integrations",
-                      features: [
-                        "Axios",
-                        "REST APIs",
-                        "Error Handling",
-                        "Rate Limiting",
-                      ],
-                    },
-                  ].map((feature) => (
-                    <Grid item xs={12} sm={6} md={3} key={feature.name}>
-                      <TechStackCard>
-                        <Box
-                          sx={{
-                            width: "60px",
-                            height: "60px",
-                            borderRadius: "12px",
-                            background: `linear-gradient(135deg, ${feature.color}30, ${feature.color}10)`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            mb: 3,
-                            mx: "auto",
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              color: feature.color,
-                              fontWeight: "bold",
-                              fontSize: "1.2rem",
-                            }}
-                          >
-                            {feature.shortName}
-                          </Typography>
-                        </Box>
-                        <Typography
-                          variant="h6"
-                          align="center"
-                          gutterBottom
-                          sx={{ color: theme.palette.text.primary }}
-                        >
-                          {feature.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          align="center"
-                          sx={{ color: theme.palette.text.secondary, mb: 2 }}
-                        >
-                          {feature.description}
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1,
-                            justifyContent: "center",
-                          }}
-                        >
-                          {feature.features.map((feat, index) => (
-                            <Chip
-                              key={index}
-                              label={feat}
-                              size="small"
-                              sx={{
-                                background: `${feature.color}20`,
                                 color: feature.color,
-                                "&:hover": {
-                                  background: `${feature.color}30`,
-                                },
+                                fontWeight: "bold",
+                                fontSize: "1.2rem",
                               }}
-                            />
-                          ))}
-                        </Box>
-                      </TechStackCard>
-                    </Grid>
-                  ))}
-                </Grid>
+                            >
+                              {feature.shortName}
+                            </Typography>
+                          </Box>
+                          <Typography
+                            variant="h6"
+                            align="center"
+                            gutterBottom
+                            sx={{ color: theme.palette.text.primary }}
+                          >
+                            {feature.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            align="center"
+                            sx={{ color: theme.palette.text.secondary, mb: 2 }}
+                          >
+                            {feature.description}
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 1,
+                              justifyContent: "center",
+                            }}
+                          >
+                            {feature.features.map((feat, index) => (
+                              <Chip
+                                key={index}
+                                label={feat}
+                                size="small"
+                                sx={{
+                                  background: `${feature.color}20`,
+                                  color: feature.color,
+                                  "&:hover": {
+                                    background: `${feature.color}30`,
+                                  },
+                                }}
+                              />
+                            ))}
+                          </Box>
+                        </TechStackCard>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
               </Box>
             </StyledContainer>
           </PageSection>
-
           {/* Statistics Section */}
           <PageSection>
             <StyledContainer maxWidth="lg">
