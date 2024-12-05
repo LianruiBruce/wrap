@@ -157,6 +157,63 @@ function LandingPage() {
 
   // Data arrays
   const techStack = [
+    //transformers models for NLP
+    {
+      name: "BART-large-MNLI",
+      shortName: "BM",
+      category: "Transformer",
+      color: "#FF4B4B",
+      description:
+        "Advanced natural language inference model for document classification and analysis.",
+      features: [
+        "Document Classification",
+        "Zero-shot Learning",
+        "Multi-class Prediction",
+        "175M Parameters",
+      ],
+    },
+    {
+      name: "FLAN-T5-Large",
+      shortName: "FT",
+      category: "Transformer",
+      color: "#FF8A3D",
+      description:
+        "Powerful question-answering model for extracting specific information from documents.",
+      features: [
+        "Question Answering",
+        "Information Extraction",
+        "Text Generation",
+        "780M Parameters",
+      ],
+    },
+    {
+      name: "BART-large-CNN",
+      shortName: "BC",
+      category: "Transformer",
+      color: "#FF6B6B",
+      description:
+        "Specialized in generating concise and accurate document summaries.",
+      features: [
+        "Text Summarization",
+        "Content Distillation",
+        "Section Analysis",
+        "400M Parameters",
+      ],
+    },
+    {
+      name: "LegalPro-BERT",
+      shortName: "LB",
+      category: "Transformer",
+      color: "#4ECDC4",
+      description:
+        "Domain-specific model fine-tuned for legal document understanding and analysis.",
+      features: [
+        "Legal Text Analysis",
+        "Contract Review",
+        "Term Extraction",
+        "110M Parameters",
+      ],
+    },
     // Frontend Technologies
     {
       name: "React",
@@ -592,7 +649,6 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Box>
             </StyledContainer>
           </PageSection>
-
           {/* How It Works Section */}
           <PageSection>
             <StyledContainer maxWidth="lg">
@@ -714,7 +770,6 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Grid>
             </StyledContainer>
           </PageSection>
-
           {/* Demo Section */}
           {/* Demo Section */}
           <PageSection>
@@ -949,7 +1004,6 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Grid>
             </StyledContainer>
           </PageSection>
-
           {/* Detailed Features Section */}
           <PageSection>
             <StyledContainer maxWidth="lg">
@@ -1036,8 +1090,7 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Grid>
             </StyledContainer>
           </PageSection>
-
-          {/* Tech Stack Section */}
+          Tech Stack Section
           <PageSection>
             <StyledContainer maxWidth="lg">
               <Typography variant="h2" align="center" sx={{ mb: 2 }}>
@@ -1053,10 +1106,164 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                   mx: "auto",
                 }}
               >
-                Built with cutting-edge technologies to provide a secure,
-                scalable, and efficient solution
+                Powered by state-of-the-art transformer models and cutting-edge
+                technologies for advanced legal document analysis
               </Typography>
+              {/* Transformer Models Section */}
+              <Box sx={{ mb: 12 }}>
+                <Typography variant="h4" sx={{ mb: 4, color: "#FF4B4B" }}>
+                  Advanced AI Models
+                </Typography>
+                <Typography
+                  sx={{
+                    mb: 4,
+                    color: theme.palette.text.secondary,
+                    maxWidth: "800px",
+                  }}
+                >
+                  Our platform leverages powerful transformer models, each
+                  specialized for specific aspects of legal document analysis
+                </Typography>
+                <Grid container spacing={4}>
+                  {[
+                    {
+                      name: "BART-large-MNLI",
+                      shortName: "BM",
+                      color: "#FF4B4B",
+                      description:
+                        "Zero-shot classification model for intelligent document categorization and analysis",
+                      features: [
+                        "Document Classification",
+                        "Zero-shot Learning",
+                        "175M Parameters",
+                        "Multi-label Support",
+                      ],
+                    },
+                    {
+                      name: "FLAN-T5-Large",
+                      shortName: "FT",
+                      color: "#FF8A3D",
+                      description:
+                        "Advanced question-answering model for precise information extraction from legal documents",
+                      features: [
+                        "Information Extraction",
+                        "Question Answering",
+                        "780M Parameters",
+                        "Context Understanding",
+                      ],
+                    },
+                    {
+                      name: "BART-large-CNN",
+                      shortName: "BC",
+                      color: "#FF6B6B",
+                      description:
+                        "Specialized model for generating accurate and concise document summaries",
+                      features: [
+                        "Text Summarization",
+                        "Content Distillation",
+                        "400M Parameters",
+                        "Enhanced Clarity",
+                      ],
+                    },
+                    {
+                      name: "LegalPro-BERT",
+                      shortName: "LB",
+                      color: "#FF9A8B",
+                      description:
+                        "Domain-specific model fine-tuned for legal document understanding and analysis",
+                      features: [
+                        "Legal Text Analysis",
+                        "Contract Review",
+                        "110M Parameters",
+                        "Domain Expertise",
+                      ],
+                    },
+                  ].map((model) => (
+                    <Grid item xs={12} sm={6} md={3} key={model.name}>
+                      <TechStackCard
+                        sx={{
+                          background: `linear-gradient(135deg, ${model.color}08, ${model.color}15)`,
+                          transition:
+                            "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                          "&:hover": {
+                            transform: "translateY(-8px)",
+                            boxShadow: `0 12px 24px ${model.color}20`,
+                          },
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: "70px",
+                            height: "70px",
+                            borderRadius: "16px",
+                            background: `linear-gradient(135deg, ${model.color}20, ${model.color}40)`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            mb: 3,
+                            mx: "auto",
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: model.color,
+                              fontWeight: "bold",
+                              fontSize: "1.5rem",
+                            }}
+                          >
+                            {model.shortName}
+                          </Typography>
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          align="center"
+                          gutterBottom
+                          sx={{ color: theme.palette.text.primary }}
+                        >
+                          {model.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          align="center"
+                          sx={{
+                            color: theme.palette.text.secondary,
+                            mb: 3,
+                            minHeight: "60px",
+                          }}
+                        >
+                          {model.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {model.features.map((feature, index) => (
+                            <Chip
+                              key={index}
+                              label={feature}
+                              size="small"
+                              sx={{
+                                background: `${model.color}15`,
+                                color: model.color,
+                                fontWeight: 500,
+                                "&:hover": {
+                                  background: `${model.color}25`,
+                                },
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </TechStackCard>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
 
+              {/* Core Technologies Section */}
               <Box sx={{ mb: 8 }}>
                 <Typography variant="h4" sx={{ mb: 4, color: "#61DAFB" }}>
                   Core Technologies
@@ -1208,7 +1415,6 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Box>
             </StyledContainer>
           </PageSection>
-
           {/* Statistics Section */}
           <PageSection>
             <StyledContainer maxWidth="lg">
@@ -1248,7 +1454,6 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Grid>
             </StyledContainer>
           </PageSection>
-
           {/* Testimonials Section */}
           <PageSection>
             <StyledContainer maxWidth="lg">
@@ -1304,7 +1509,6 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Grid>
             </StyledContainer>
           </PageSection>
-
           {/* CTA Section */}
           <PageSection>
             <StyledContainer maxWidth="md" sx={{ textAlign: "center" }}>
@@ -1351,7 +1555,6 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
               </Box>
             </StyledContainer>
           </PageSection>
-
           {/* Footer */}
           <Box
             sx={{
