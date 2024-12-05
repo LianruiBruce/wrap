@@ -467,11 +467,11 @@ export default function Content({ isDocumentSettingsClicked }) {
       setSections(report.sections);
 
       const section_summary = JSON.parse(report.section_summary);
-      console.log("Section Summary:" + section_summary);
+      //console.log("Section Summary:" + section_summary);
       const formattedSectionSummary = section_summary.map((section, index) => {
         const key = Object.keys(section)[0];
         const summary = section[key].Summary;
-        console.log("foramted Section Summary:" + summary);
+        //console.log("foramted Section Summary:" + summary);
 
         return { key, summary };
       });
@@ -528,13 +528,15 @@ export default function Content({ isDocumentSettingsClicked }) {
       setSections(selectInfo.sections);
 
       const section_summary = JSON.parse(selectInfo.section_summary);
-
+      console.log("Section Summary from select document:" + section_summary);
       const formattedSectionSummary = section_summary.map((section, index) => {
         const key = Object.keys(section)[0];
         const summary = section[key].Description;
-
+        console.log("foramted Section Summary from select document:" + summary);
         return { key, summary };
       });
+
+
 
       setCategoryLabelsData(formattedSectionSummary); // Store data
 
