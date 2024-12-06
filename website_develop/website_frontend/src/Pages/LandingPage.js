@@ -389,7 +389,7 @@ function LandingPage() {
                 </StyledButton>
                 <StyledButton
                   component="a"
-                  href="https://drive.google.com/file/d/1Z2SGd5GBtHOPW7rX7vAIcfK_v83lhs6c/view?usp=sharing"
+                  href="https://drive.google.com/file/d/1nridL8YNknQwpetn9mXtM3sKLg07z_k_/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="outlined"
@@ -1374,7 +1374,7 @@ function LandingPage() {
                 </StyledButton>
                 <StyledButton
                   component="a"
-                  href="https://drive.google.com/file/d/1Z2SGd5GBtHOPW7rX7vAIcfK_v83lhs6c/view?usp=sharing"
+                  href="https://drive.google.com/file/d/1nridL8YNknQwpetn9mXtM3sKLg07z_k_/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="outlined"
