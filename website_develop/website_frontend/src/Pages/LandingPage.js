@@ -12,6 +12,7 @@ import {
   Box,
   Chip,
   IconButton,
+  Stack,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { createTheme, ThemeProvider, alpha } from "@mui/material/styles";
@@ -1038,170 +1039,180 @@ radial-gradient(circle at 20% 80%, rgba(251, 207, 232, 0.08) 0%, transparent 25%
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ mb: 4, color: theme.palette.text.secondary }}
+                        sx={{
+                          mb: 4,
+                          color: theme.palette.text.secondary,
+                        }}
                       >
                         Our pipeline combines four powerful transformer models,
                         each specialized for a specific aspect of legal document
                         analysis
                       </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 3,
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{ color: theme.palette.text.primary }}
-                          >
+
+                      {/* Model Cards */}
+                      <Stack spacing={3}>
+                        <Card
+                          sx={{
+                            p: 3,
+                            background: `linear-gradient(135deg, ${alpha(
+                              "#FF4B4B",
+                              0.05
+                            )}, ${alpha("#FF4B4B", 0.1)})`,
+                            border: "1px solid",
+                            borderColor: alpha("#FF4B4B", 0.1),
+                          }}
+                        >
+                          <Typography variant="subtitle1" gutterBottom>
                             Document Classification
                           </Typography>
                           <Typography
                             variant="body2"
-                            sx={{ color: theme.palette.text.secondary }}
+                            color="text.secondary"
+                            gutterBottom
                           >
                             BART-large-MNLI (175M parameters) provides zero-shot
                             classification capabilities to identify document
                             types and key sections
                           </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{ color: theme.palette.text.primary }}
-                          >
+                        </Card>
+
+                        <Card
+                          sx={{
+                            p: 3,
+                            background: `linear-gradient(135deg, ${alpha(
+                              "#FF8A3D",
+                              0.05
+                            )}, ${alpha("#FF8A3D", 0.1)})`,
+                            border: "1px solid",
+                            borderColor: alpha("#FF8A3D", 0.1),
+                          }}
+                        >
+                          <Typography variant="subtitle1" gutterBottom>
                             Information Extraction
                           </Typography>
                           <Typography
                             variant="body2"
-                            sx={{ color: theme.palette.text.secondary }}
+                            color="text.secondary"
+                            gutterBottom
                           >
                             FLAN-T5-XL handles question answering and precise
                             information extraction from complex documents
                           </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{ color: theme.palette.text.primary }}
-                          >
+                        </Card>
+
+                        <Card
+                          sx={{
+                            p: 3,
+                            background: `linear-gradient(135deg, ${alpha(
+                              "#FF6B6B",
+                              0.05
+                            )}, ${alpha("#FF6B6B", 0.1)})`,
+                            border: "1px solid",
+                            borderColor: alpha("#FF6B6B", 0.1),
+                          }}
+                        >
+                          <Typography variant="subtitle1" gutterBottom>
                             Document Summarization
                           </Typography>
                           <Typography
                             variant="body2"
-                            sx={{ color: theme.palette.text.secondary }}
+                            color="text.secondary"
+                            gutterBottom
                           >
                             BART-large-CNN processes and condenses long
                             documents into clear, actionable summaries while
                             preserving key information
                           </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="subtitle1"
-                            sx={{ color: theme.palette.text.primary }}
-                          >
+                        </Card>
+
+                        <Card
+                          sx={{
+                            p: 3,
+                            background: `linear-gradient(135deg, ${alpha(
+                              "#FFA07A",
+                              0.05
+                            )}, ${alpha("#FFA07A", 0.1)})`,
+                            border: "1px solid",
+                            borderColor: alpha("#FFA07A", 0.1),
+                          }}
+                        >
+                          <Typography variant="subtitle1" gutterBottom>
                             Legal Understanding
                           </Typography>
                           <Typography
                             variant="body2"
-                            sx={{ color: theme.palette.text.secondary }}
+                            color="text.secondary"
+                            gutterBottom
                           >
-                            LegalPro-BERT provides domain-specific analysis of
-                            legal terminology and document structure
+                            LegalPro-BERT-base provides domain-specific analysis
+                            of legal terminology and document structure
                           </Typography>
-                        </Box>
-                      </Box>
+                        </Card>
+                      </Stack>
                     </Grid>
+
+                    {/* Right side visualization remains the same */}
                     <Grid item xs={12} md={6}>
-                      <Card
-                        sx={{
-                          background: `linear-gradient(135deg, ${
-                            theme.palette.background.paper
-                          }, ${alpha(theme.palette.primary.main, 0.1)})`,
-                          borderRadius: "16px",
-                          height: "100%",
-                          position: "relative",
-                          overflow: "hidden",
-                        }}
-                      >
-                        <CardContent>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: 2,
-                              height: "100%",
-                              position: "relative",
-                              p: 2,
-                            }}
-                          >
-                            {[
-                              {
-                                model: "BART-large-MNLI",
-                                task: "Classification",
-                                color: "#FF4B4B",
-                                description:
-                                  "Zero-shot document classification",
-                              },
-                              {
-                                model: "FLAN-T5-XL",
-                                task: "Question Answering",
-                                color: "#FF8A3D",
-                                description: "Information extraction & QA",
-                              },
-                              {
-                                model: "BART-large-CNN",
-                                task: "Summarization",
-                                color: "#FF6B6B",
-                                description: "Document summarization",
-                              },
-                              {
-                                model: "LegalPro-BERT-base",
-                                task: "Legal Analysis",
-                                color: "#FFA07A",
-                                description: "Legal document understanding",
-                              },
-                            ].map((item, index) => (
-                              <Box
-                                key={item.model}
-                                sx={{
-                                  p: 2,
-                                  borderRadius: "8px",
-                                  border: "1px solid",
-                                  borderColor: alpha(item.color, 0.3),
-                                  backgroundColor: alpha(item.color, 0.1),
-                                  position: "relative",
-                                  "&::after": {
-                                    content: '""',
-                                    position: "absolute",
-                                    bottom: index === 3 ? 0 : "-20px",
-                                    left: "50%",
-                                    width: "2px",
-                                    height: index === 3 ? 0 : "20px",
-                                    backgroundColor: item.color,
-                                    zIndex: 1,
-                                  },
-                                }}
+                      <Card>
+                        <Box sx={{ p: 4, position: "relative" }}>
+                          {[
+                            {
+                              name: "BART-large-MNLI",
+                              description: "Zero-shot document classification",
+                              color: "#FF4B4B",
+                            },
+                            {
+                              name: "FLAN-T5-XL",
+                              description: "Information extraction & QA",
+                              color: "#FF8A3D",
+                            },
+                            {
+                              name: "BART-large-CNN",
+                              description: "Document summarization",
+                              color: "#FF6B6B",
+                            },
+                            {
+                              name: "LegalPro-BERT-base",
+                              description: "Legal document understanding",
+                              color: "#FFA07A",
+                            },
+                          ].map((model, index) => (
+                            <Box
+                              key={model.name}
+                              sx={{
+                                p: 3,
+                                mb: 2,
+                                borderRadius: 2,
+                                border: "1px solid",
+                                borderColor: alpha(model.color, 0.3),
+                                backgroundColor: alpha(model.color, 0.1),
+                                position: "relative",
+                                "&::after":
+                                  index < 3
+                                    ? {
+                                        content: '""',
+                                        position: "absolute",
+                                        left: "50%",
+                                        bottom: "-16px",
+                                        width: "2px",
+                                        height: "16px",
+                                        backgroundColor: model.color,
+                                      }
+                                    : {},
+                              }}
+                            >
+                              <Typography variant="subtitle1" gutterBottom>
+                                {model.name}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
                               >
-                                <Typography
-                                  variant="subtitle2"
-                                  sx={{ color: item.color, mb: 1 }}
-                                >
-                                  {item.model}
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  sx={{ color: theme.palette.text.primary }}
-                                >
-                                  {item.description}
-                                </Typography>
-                              </Box>
-                            ))}
-                          </Box>
-                        </CardContent>
+                                {model.description}
+                              </Typography>
+                            </Box>
+                          ))}
+                        </Box>
                       </Card>
                     </Grid>
                   </Grid>
