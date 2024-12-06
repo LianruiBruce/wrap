@@ -23,7 +23,8 @@ import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import ChatBot from "./ChatBot";
 
-function Navigator({ chatbotVisible, setChatbotVisible, floatingButtonVisible, setFloatingButtonVisible, ...props }) {
+function Navigator({ chatbotVisible, setChatbotVisible, floatingButtonVisible, setFloatingButtonVisible, selectedDocumentID,
+  setSelectedDocumentID, ...props }) {
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef(null);
@@ -31,7 +32,7 @@ function Navigator({ chatbotVisible, setChatbotVisible, floatingButtonVisible, s
 
   //const [chatbotVisible, setChatbotVisible] = useState(false);
   //const [floatingButtonVisible, setFloatingButtonVisible] = useState(false);
-  const [selectedDocumentID, setSelectedDocumentID] = useState(null);
+  //const [selectedDocumentID, setSelectedDocumentID] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -71,6 +72,15 @@ function Navigator({ chatbotVisible, setChatbotVisible, floatingButtonVisible, s
         setCategories(transformDocuments(documents));
         setIsLoading(false);
       });
+
+      socket.on("newDocumentUploaded", (newDocumentID) => {
+        // Update the currently selected document
+        console.log("New document uploaded:", newDocumentID);
+        setSelectedDocumentID(newDocumentID);
+        handleDocumentSelect(newDocumentID);
+
+      });
+
       socket.on("error", console.error);
 
       return () => socket.disconnect();
