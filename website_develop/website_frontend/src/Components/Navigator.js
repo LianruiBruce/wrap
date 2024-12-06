@@ -77,7 +77,6 @@ function Navigator({ chatbotVisible, setChatbotVisible, floatingButtonVisible, s
         // Update the currently selected document
         console.log("New document uploaded:", newDocumentID);
         setSelectedDocumentID(newDocumentID);
-        console.log("invoke handleDocumentSelect:", selectedDocumentID);
         handleDocumentSelect(newDocumentID);
 
       });
