@@ -260,6 +260,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("report-btn").disabled = true;
     } else {
       console.log("No risk status found.");
+      document.getElementById("report-btn").disabled = false;
     }
   });
 });
