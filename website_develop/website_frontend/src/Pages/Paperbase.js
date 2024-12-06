@@ -26,10 +26,10 @@ export default function Paperbase() {
     useState(false);
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [selectedDocumentID, setSelectedDocumentID] = useState(null);
   const isSmUp = useMediaQuery((theme) => theme.breakpoints.up("sm"));
-  const drawerWidth = isShortNavigator ? 100 : 256;
+  const drawerWidth = isShortNavigator ? 70 : 256;
 
   const [chatbotVisible, setChatbotVisible] = useState(false);
   const [floatingButtonVisible, setFloatingButtonVisible] = useState(false);

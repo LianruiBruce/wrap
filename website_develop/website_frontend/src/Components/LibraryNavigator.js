@@ -28,7 +28,7 @@ export default function LibraryNavigator({ collapsed }) {
   return (
     <Box
       sx={{
-        width: collapsed ? "50px" : "200px",
+        width: collapsed ? "70px" : "200px",
         height: "100vh",
         backgroundColor: "#181B1B",
         display: "flex",
