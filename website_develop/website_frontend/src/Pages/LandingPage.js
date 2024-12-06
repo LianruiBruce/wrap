@@ -30,10 +30,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import SecurityIcon from "@mui/icons-material/Security";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import ShieldIcon from "@mui/icons-material/Shield";
-import SavingsIcon from "@mui/icons-material/Savings";
-import IntegrationInstructionsIcon from "@mui/icons-material/IntegrationInstructions";
 
 // Define Light and Dark Themes
 const lightTheme = createTheme({
@@ -93,23 +89,6 @@ const StyledButton = styled(Button)(({ theme, gradient }) => ({
   },
 }));
 
-const FeatureCard = styled(Card)(({ theme }) => ({
-  background: theme.palette.background.paper,
-  backdropFilter: "blur(10px)",
-  borderRadius: "16px",
-  padding: "24px",
-  height: "100%",
-  transition: "all 0.3s ease",
-  position: "relative",
-  overflow: "hidden",
-  "&:hover": {
-    transform: "translateY(-8px)",
-    "& .card-glow": {
-      opacity: 1,
-    },
-  },
-}));
-
 const TechStackCard = styled(Card)(({ theme }) => ({
   background: theme.palette.background.paper,
   backdropFilter: "blur(10px)",
@@ -155,155 +134,6 @@ function LandingPage() {
   const theme = themeMode === "light" ? lightTheme : darkTheme;
 
   const navigate = useNavigate();
-
-  // Data arrays
-  const techStack = [
-    //transformers models for NLP
-    {
-      name: "BART-large-MNLI",
-      shortName: "BM",
-      category: "Transformer",
-      color: "#FF4B4B",
-      description:
-        "Advanced natural language inference model for document classification and analysis.",
-      features: [
-        "Document Classification",
-        "Zero-shot Learning",
-        "Multi-class Prediction",
-        "175M Parameters",
-      ],
-    },
-    {
-      name: "FLAN-T5-Large",
-      shortName: "FT",
-      category: "Transformer",
-      color: "#FF8A3D",
-      description:
-        "Powerful question-answering model for extracting specific information from documents.",
-      features: [
-        "Question Answering",
-        "Information Extraction",
-        "Text Generation",
-        "780M Parameters",
-      ],
-    },
-    {
-      name: "BART-large-CNN",
-      shortName: "BC",
-      category: "Transformer",
-      color: "#FF6B6B",
-      description:
-        "Specialized in generating concise and accurate document summaries.",
-      features: [
-        "Text Summarization",
-        "Content Distillation",
-        "Section Analysis",
-        "400M Parameters",
-      ],
-    },
-    {
-      name: "LegalPro-BERT",
-      shortName: "LB",
-      category: "Transformer",
-      color: "#4ECDC4",
-      description:
-        "Domain-specific model fine-tuned for legal document understanding and analysis.",
-      features: [
-        "Legal Text Analysis",
-        "Contract Review",
-        "Term Extraction",
-        "110M Parameters",
-      ],
-    },
-    // Frontend Technologies
-    {
-      name: "React",
-      shortName: "R",
-      category: "Frontend",
-      color: "#61DAFB",
-      description:
-        "Modern frontend framework for building dynamic user interfaces.",
-      features: [
-        "Component-Based",
-        "Virtual DOM",
-        "React Router",
-        "Material-UI",
-      ],
-    },
-    // Backend Technologies
-    {
-      name: "Node.js",
-      shortName: "N",
-      category: "Backend",
-      color: "#68A063",
-      description:
-        "Server-side JavaScript runtime environment powering our backend infrastructure.",
-      features: ["Express.js", "REST API", "WebSocket", "JWT Auth"],
-    },
-    // Database
-    {
-      name: "MongoDB",
-      shortName: "M",
-      category: "Database",
-      color: "#4DB33D",
-      description:
-        "NoSQL database for efficient data management and scalability.",
-      features: [
-        "Mongoose ODM",
-        "CRUD Operations",
-        "Atlas Cloud",
-        "Real-time Updates",
-      ],
-    },
-    // AI/ML
-    {
-      name: "Claude's API",
-      shortName: "C",
-      category: "AI",
-      color: "#6B4FBB",
-      description:
-        "Advanced AI capabilities for intelligent document analysis.",
-      features: [
-        "NLP Processing",
-        "Document Analysis",
-        "Risk Assessment",
-        "Smart Summaries",
-      ],
-    },
-    // Additional Technologies
-    {
-      name: "Security",
-      shortName: "S",
-      category: "Security",
-      color: "#FF6B6B",
-      description: "Comprehensive security features to protect your data.",
-      features: ["bcryptjs", "JWT", "Secure Headers", "CORS Protection"],
-    },
-    {
-      name: "Real-time",
-      shortName: "RT",
-      category: "Features",
-      color: "#4ECDC4",
-      description: "Real-time communication and updates.",
-      features: ["Socket.io", "Live Updates", "WebSocket", "Event Handling"],
-    },
-    {
-      name: "Document Processing",
-      shortName: "DP",
-      category: "Features",
-      color: "#45B7D1",
-      description: "Advanced document processing capabilities.",
-      features: ["PDF Parse", "PDFKit", "File Upload", "Document Generation"],
-    },
-    {
-      name: "API Integration",
-      shortName: "API",
-      category: "Features",
-      color: "#96C93D",
-      description: "Robust API infrastructure and integrations.",
-      features: ["Axios", "REST APIs", "Error Handling", "Rate Limiting"],
-    },
-  ];
 
   const workflowSteps = [
     {
@@ -352,60 +182,6 @@ function LandingPage() {
         "Risk highlights",
         "Important clauses",
         "Action items",
-      ],
-    },
-  ];
-
-  const detailedFeatures = [
-    {
-      title: "Smart Document Analysis",
-      description:
-        "Understand complex legal documents in seconds with our AI-powered analysis.",
-      icon: <AutoAwesomeIcon sx={{ fontSize: 40, color: "#61DAFB" }} />,
-      gradient: "linear-gradient(135deg, #61DAFB20 0%, #2A5AFA20 100%)",
-      details: [
-        "Key terms extraction",
-        "Obligation identification",
-        "Risk assessment",
-        "Summary generation",
-      ],
-    },
-    {
-      title: "Browser Integration",
-      description:
-        "Seamlessly analyze documents while browsing with our Chrome extension.",
-      icon: <ExtensionIcon sx={{ fontSize: 40, color: "#4DB33D" }} />,
-      gradient: "linear-gradient(135deg, #4DB33D20 0%, #2E7D3220 100%)",
-      details: [
-        "One-click analysis",
-        "Works on most website",
-        "Real-time processing",
-        "Secure connection",
-      ],
-    },
-    {
-      title: "Comprehensive Reports",
-      description:
-        "Get detailed reports with actionable insights and risk assessments.",
-      icon: <AssessmentIcon sx={{ fontSize: 40, color: "#6B4FBB" }} />,
-      gradient: "linear-gradient(135deg, #6B4FBB20 0%, #4527A020 100%)",
-      details: [
-        "Clear summaries",
-        "Risk highlights",
-        "Action items",
-        "Export options",
-      ],
-    },
-    {
-      title: "Security & Privacy",
-      description:
-        "Your documents are processed with enterprise-grade security and privacy.",
-      icon: <SecurityIcon sx={{ fontSize: 40, color: "#FF6B6B" }} />,
-      gradient: "linear-gradient(135deg, #FF6B6B20 0%, #CC4B4B20 100%)",
-      details: [
-        "Data privacy",
-        "Secure processing",
-        "No sensitive data storage",
       ],
     },
   ];
@@ -1613,6 +1389,24 @@ function LandingPage() {
                   }}
                 >
                   Download Extension
+                </StyledButton>
+                <StyledButton
+                  component="a"
+                  href="https://chromewebstore.google.com/detail/wrap/pmaajlkakfpenkopkmhlepopeipgjpgn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="outlined"
+                  size="large"
+                  startIcon={<DownloadIcon />}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    borderColor: theme.palette.divider,
+                    "&:hover": {
+                      borderColor: theme.palette.text.primary,
+                    },
+                  }}
+                >
+                  Add from Chrome Extension Store
                 </StyledButton>
               </Box>
             </StyledContainer>
