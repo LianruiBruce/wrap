@@ -722,7 +722,6 @@ app.post("/process-question", async (req, res) => {
   }
 });
 
-// Update /get-report-by-documentID endpoint to emit to user-specific room
 app.post("/get-report-by-documentID", authenticateToken, async (req, res) => {
   const { documentID } = req.body;
 
@@ -734,31 +733,20 @@ app.post("/get-report-by-documentID", authenticateToken, async (req, res) => {
     );
 
     if (documentData) {
-      const userID = req.user.userId; 
+      const userID = req.user.userId;
       const userRoom = `user_${userID}`;
 
-      const waitForConnection = new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error("Connection timed out")), 10000);
-
-        // const interval = setInterval(() => {
-        //   const room = io.sockets.adapter.rooms.get(userRoom);
-        //   if (room && room.size > 0) {
-        //     clearTimeout(timeout);
-        //     clearInterval(interval);
-        //     resolve();
-        //   }
-        // }, 100);
-        io.on("connection", (socket) => {
-          socket.on("joinedRoom", (room) => {
-            if (room === userRoom) {
-              clearTimeout(timeout);
-              resolve();
-            }
-          });
-        });
+      const checkUserInRoom = new Promise((resolve) => {
+        const interval = setInterval(() => {
+          const room = io.sockets.adapter.rooms.get(userRoom);
+          if (room && room.size > 0) {
+            clearInterval(interval);
+            resolve(true);
+          }
+        }, 100);
       });
 
-      await waitForConnection;
+      await checkUserInRoom;
 
       io.to(userRoom).emit("selectDocument", documentData);
       console.log(`Document data sent to room: ${userRoom}`);
