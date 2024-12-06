@@ -288,6 +288,7 @@ async function generateReportByPDF(pdfBuffer, text, userSettings, io, userID) {
       console.log("the current pdf uploaded is already in the database" + data);
 
       io.emit("selectDocument", data);
+      io.emit("newDocumentUploaded",data.documentID);
     } else {
       console.log("starting generate reprot by PDF");
       const response = await axios.post(
@@ -328,6 +329,7 @@ async function generateReportByPDF(pdfBuffer, text, userSettings, io, userID) {
 
       const reportData = await pullUpDocandRepByDocID(documentID);
       io.emit("selectDocument", reportData);
+      io.emit("newDocumentUploaded",reportData.documentID);
     }
 
     if (userID) {

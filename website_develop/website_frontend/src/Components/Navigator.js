@@ -72,6 +72,14 @@ function Navigator({ chatbotVisible, setChatbotVisible, floatingButtonVisible, s
         setCategories(transformDocuments(documents));
         setIsLoading(false);
       });
+
+      socket.on("newDocumentUploaded", (newDocumentID) => {
+        // Update the currently selected document
+        console.log("New document uploaded:", newDocumentID);
+        setSelectedDocumentID(newDocumentID);
+
+      });
+
       socket.on("error", console.error);
 
       return () => socket.disconnect();
