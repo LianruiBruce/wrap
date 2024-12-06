@@ -667,55 +667,67 @@ async function isLegalDocument(header, headers2, title, url) {
   const documentLabels = {
     "terms and conditions": settings.termsConditions
       ? [
-          "terms & conditions",
-          "terms and conditions",
-          "terms of use",
-          "terms of service",
-          "user agreement",
-          "other conditions",
-          "services agreement",
-          "agreement of service",
-          "user conditions",
-          "site terms",
-          "use agreement",
-          "terms of"
-        ]
+        "terms & conditions",
+        "terms and conditions",
+        "terms of use",
+        "terms of service",
+        "user agreement",
+        "other conditions",
+        "services agreement",
+        "agreement of service",
+        "user conditions",
+        "site terms",
+        "use agreement",
+        "terms of",
+        "general conditions",
+        "use policies",
+        "acceptance of terms",
+        "legal disclaimer",
+        "copyright policy",
+        "copyright rules",
+        "DMCA Policy"
+      ]
       : [],
     "privacy policy": settings.privacyPolicy
       ? [
-          "privacy policy",
-          "policy documents",
-          "data privacy",
-          "gdpr compliance",
-          "privacy statement",
-          "privacy terms",
-          "data protection policy",
-          "privacy choices"
-        ]
+        "privacy policy",
+        "policy documents",
+        "data privacy",
+        "gdpr compliance",
+        "privacy statement",
+        "privacy terms",
+        "data protection policy",
+        "privacy choices"
+      ]
       : [],
     "contract agreement": settings.contractAgreement
       ? [
-          "contract agreement",
-          "legal agreement",
-          "end user license agreement",
-          "eula",
-          "service agreement",
-          "licensing terms",
-          "usage agreement",
-        ]
+        "contract agreement",
+        "binding agreement",
+        "legal agreement",
+        "end user license agreement",
+        "eula",
+        "service agreement",
+        "licensing terms",
+        "usage agreement",
+        "license agreement"
+      ]
       : [],
     "cookie policy": settings.cookiePolicy
       ? [
         "cookie policy",
         "cookie notice",
         "use of cookies",
+        "cookies usage",
         "tracking policy",
         "cookie terms",
         "cookie declaration",
         "data usage",
         "data collection",
         "cookies permissions",
-        "data permissions"
+        "data permissions",
+        "cookie consent",
+        "cookie agreement"
       ]
       : [],
     "subscription agreement": settings.subscriptionAgreement
@@ -725,6 +737,9 @@ async function isLegalDocument(header, headers2, title, url) {
         "auto-renewal terms",
         "recurring payment terms",
         "subscription service agreement",
+        "renewal policy",
+        "membership terms",
+        "billing agreement"
       ]
       : [],
     "purchase terms": settings.purchaseTerms
@@ -736,6 +751,9 @@ async function isLegalDocument(header, headers2, title, url) {
         "sale terms",
         "installment agreement",
         "layaway terms",
+        "payment terms",
+        "refund terms",
+        "return terms"
       ]
       : [],
     "rental agreement": settings.rentalAgreement
@@ -753,6 +771,7 @@ async function isLegalDocument(header, headers2, title, url) {
         "service guarantee",
         "product warranty",
         "extended warranty",
+        "guarantee policy"
       ]
       : [],
     "liability waiver": settings.liabilityWaiver
