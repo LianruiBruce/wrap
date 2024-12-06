@@ -629,9 +629,18 @@ app.post("/submit-issue", upload.single("issue-image"), (req, res) => {
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <div style="text-align: center; margin-bottom: 20px;">
             <a href="https://wrapcapstone.com" style="text-decoration: none;" target="_blank">
-              <div style="border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; border: 2px solid #333; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 36px; font-weight: bold; color: #333; display: inline-block; line-height: 1;">W</span>
-              </div>
+              <img 
+                src="https://wrapcapstone.com/Wrap.png" 
+                alt="Wrap Icon" 
+                style="
+                  display: block; 
+                  margin: 0 auto; 
+                  width: 80px; 
+                  height: 80px; 
+                  border-radius: 50%; 
+                  border: 2px solid #333;
+                " 
+              />
             </a>
           </div>
           <p>Dear User,</p>
@@ -864,12 +873,20 @@ app.post("/api/verification-code", async (req, res) => {
       subject: "Wrap Verification Code",
       htmlContent: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <h2 style="text-align: center; color: #333;">Verification Code</h2>
           <div style="text-align: center; margin-bottom: 20px;">
             <a href="https://wrapcapstone.com" style="text-decoration: none;" target="_blank">
-              <div style="border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; border: 2px solid #333; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 36px; font-weight: bold; color: #333; display: inline-block; line-height: 1;">W</span>
-              </div>
+              <img 
+                src="https://wrapcapstone.com/Wrap.png" 
+                alt="Wrap Icon" 
+                style="
+                  display: block; 
+                  margin: 0 auto; 
+                  width: 80px; 
+                  height: 80px; 
+                  border-radius: 50%; 
+                  border: 2px solid #333;
+                " 
+              />
             </a>
           </div>
           <p>Dear ${name},</p>
@@ -924,9 +941,18 @@ app.post("/api/send-graphs-email", async (req, res) => {
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <div style="text-align: center; margin-bottom: 20px;">
             <a href="https://wrapcapstone.com" style="text-decoration: none;" target="_blank">
-              <div style="border-radius: 50%; width: 80px; height: 80px; margin: 0 auto; border: 2px solid #333; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 36px; font-weight: bold; color: #333; display: inline-block; line-height: 1;">W</span>
-              </div>
+              <img 
+                src="https://wrapcapstone.com/Wrap.png" 
+                alt="Wrap Icon" 
+                style="
+                  display: block; 
+                  margin: 0 auto; 
+                  width: 80px; 
+                  height: 80px; 
+                  border-radius: 50%; 
+                  border: 2px solid #333;
+                " 
+              />
             </a>
           </div>
           <p>Hello ${name || "User"},</p>
